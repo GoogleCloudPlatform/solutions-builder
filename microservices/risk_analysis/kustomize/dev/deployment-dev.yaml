@@ -1,0 +1,11 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-service
+spec:
+  template:
+    spec:
+      containers:
+      - name: sample-service
+        image: gcr.io/solutions-template/sample-service
+        imagePullPolicy: Always

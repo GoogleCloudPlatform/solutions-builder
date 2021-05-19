@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-port-config
+data:
+  sample-service.PORT: "8888"
+  authentication.PORT: "8889"

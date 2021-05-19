@@ -1,0 +1,9 @@
+__pycache__
+keys
+test
+.vscode
+.venv
+.tmp
+.pytest_cache
+.coverage
+pytest-coverage.txt

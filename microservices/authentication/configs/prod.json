@@ -1,0 +1,9 @@
+{
+    "collection": "@(collection)",
+    "service": "@(service)",
+    "base_url": "@(baseUrl)",
+    "base_url_v2": "@(baseUrlV2)",
+    "redis_host": "@(redisHost)",
+    "api_key": "@(apiKey)",
+    "project_id": "@(projectId)"
+}

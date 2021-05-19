@@ -1,0 +1,56 @@
+apiVersion: skaffold/v2beta12
+kind: Config
+metadata:
+  name: sample-service
+requires:
+  - path: ../../common
+    configs: [common]
+    activeProfiles:
+    - name: custom
+      activatedBy: [custom]
+    - name: dev
+      activatedBy: [dev]
+build:
+  tagPolicy:
+    sha256: {}
+  local:
+    concurrency: 0
+  artifacts:
+  - image: sample-service
+    requires:
+      - image: common
+        alias: BASE_IMG
+    sync:
+      infer:
+        - '**/*.py'
+        - '**/*.json'
+portForward:
+- resourceType: service
+  resourceName: sample-service
+  port: 8888
+deploy:
+  kustomize:
+    paths:
+    - ./kustomize/minikube
+profiles:
+- name: custom
+  deploy:
+    kustomize:
+      paths:
+      - ./kustomize/custom
+- name: dev
+  build:
+    googleCloudBuild: {}
+    artifacts:
+    - image: gcr.io/solutions-template/sample-service
+      requires:
+        - image: gcr.io/solutions-template/common
+          alias: BASE_IMG
+      sync:
+        infer:
+          - '**/*.py'
+          - '**/*.json'
+  deploy:
+    kustomize:
+      paths:
+      - ./kustomize/dev

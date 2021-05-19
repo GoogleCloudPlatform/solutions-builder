@@ -1,0 +1,15 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authentication
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: authentication
+        image: gcr.io/solutions-template/authentication
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "500Mi"

@@ -1,0 +1,15 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Authentication Schema",
+    "type": "object",
+    "required": [
+        "refresh_token"
+    ],
+    "properties": {
+        "refresh_token": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 600
+        }
+    }
+}
