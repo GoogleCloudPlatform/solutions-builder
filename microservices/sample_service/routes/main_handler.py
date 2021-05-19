@@ -7,4 +7,4 @@ class MainHandler(BaseHandler):
 
   def get(self):
     """Method for connection check."""
-    return self.send_json(message="You have Successfully reached Risk Analysis API")
+    return self.send_json(message="You have Successfully reached Sample Service API")
