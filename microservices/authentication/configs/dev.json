@@ -1,0 +1,9 @@
+{
+    "collection": "users",
+    "service": "authentication",
+    "base_url": "api/v1",
+    "base_url_v2": "api/v2",
+    "redis_host": "redis-master",
+    "api_key": "AIzaSyDMntfoVTtoGknSdqqMcGy5E-GsDuyjx0M",
+    "project_id": "walden-cognitivetutor-dev"
+}

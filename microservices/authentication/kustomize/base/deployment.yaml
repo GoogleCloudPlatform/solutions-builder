@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authentication
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authentication
+  template:
+    metadata:
+      labels:
+        app: authentication
+    spec:
+      containers:
+      - name: authentication
+        image: authentication
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "100Mi"
+          limits:
+            memory: "5000Mi"
+            cpu: "2000m" 
+        env:
+        # Define the environment variable
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: config-port-config
+              key: authentication.PORT
+        - name: GCP_PROJECT
+          valueFrom:
+            configMapKeyRef:
+              name: env-vars
+              key: GCP_PROJECT
+        ports:
+        - containerPort: 8889
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /ping
+            port: 8889
+            scheme: HTTP
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        readinessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /ping
+            port: 8889
+            scheme: HTTP
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
