@@ -111,7 +111,8 @@ module "cicd-terraform-account" {
   }
 }
 
-resource "google_container_cluster" "main-cluster" {
+resource "google_container_cluster" "default-cluster" {
+  depends_on = ["google_project_service.project-apis"]
   name     = "default-cluster"
   location = local.region
   # networking_mode = "VPC_NATIVE"

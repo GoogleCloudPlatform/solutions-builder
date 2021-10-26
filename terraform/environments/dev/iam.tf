@@ -1,7 +1,7 @@
 locals {
   # Add users here.
   user_accounts = [
-    "user:jonchen@google.com",
+    # "user:test@google.com",
   ]
 
   sa_accounts = [
