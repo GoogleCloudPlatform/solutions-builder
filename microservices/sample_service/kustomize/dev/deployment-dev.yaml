@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-service
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: sample-service
+        image: gcr.io/solutions-template-dev/sample-service
+        imagePullPolicy: Always
+        env:
+        - name: GCP_PROJECT
+          valueFrom:
+            configMapKeyRef:
+              name: env-vars
+              key: GCP_PROJECT
+        - name: EXTERNAL_DATA_GCP_PROJECT
+          valueFrom:
+            configMapKeyRef:
+              name: env-vars
+              key: EXTERNAL_DATA_GCP_PROJECT
+        - name: DATABASE_PREFIX
+          valueFrom:
+            configMapKeyRef:
+              name: env-vars
+              key: DATABASE_PREFIX

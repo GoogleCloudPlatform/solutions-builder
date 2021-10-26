@@ -4,7 +4,7 @@ metadata:
   name: common
 build:
   tagPolicy:
-    sha256: {}
+    gitCommit: {}
   artifacts:
   - image: common
     sync:
@@ -14,11 +14,39 @@ build:
 
 profiles:
 - name: custom
-- name: dev
   build:
     googleCloudBuild: {}
     artifacts:
-    - image: gcr.io/solutions-template/common
+    - image: common
+      docker:
+        cacheFrom:
+          - common
+          - common:latest
+- name: prod
+  build:
+    googleCloudBuild: {}
+    artifacts:
+    - image: common
+      docker:
+        cacheFrom:
+          - common
+          - common:latest
+      sync:
+        infer:
+          - '**/*.py'
+          - '**/*.json'
+- name: prod_non_cloudbuild
+- name: dev
+  activation:
+  - kubeContext: gke_solutions-template-dev_us-central1-a_default-cluster
+  build:
+    googleCloudBuild: {}
+    artifacts:
+    - image: gcr.io/solutions-template-dev/common
+      docker:
+        cacheFrom:
+          - gcr.io/solutions-template-dev/common
+          - gcr.io/solutions-template-dev/common:latest
       sync:
         infer:
           - '**/*.py'

@@ -2,6 +2,7 @@
 declare -a EnvVars=(
   "PROJECT_ID"
   "SKAFFOLD_NAMESPACE"
+  "REGION"
 )
 for variable in ${EnvVars[@]}; do
   if [[ -z "${!variable}" ]]; then
@@ -10,7 +11,7 @@ for variable in ${EnvVars[@]}; do
   fi
 done
 
-EXPECTED_CONTEXT=gke_${PROJECT_ID}_us-central1-a_default-cluster
+EXPECTED_CONTEXT=gke_${PROJECT_ID}_${REGION}_default-cluster
 
 BLUE=$(tput setaf 4)
 RED=$(tput setaf 1)
@@ -21,7 +22,7 @@ echo "SKAFFOLD_NAMESPACE=${SKAFFOLD_NAMESPACE}"
 echo
 
 printf "\n${BLUE}Set up gcloud and kubectl context ...${NORMAL}\n"
-gcloud container clusters get-credentials default-cluster --zone us-central1-a --project ${PROJECT_ID}
+gcloud container clusters get-credentials default-cluster --region ${REGION} --project ${PROJECT_ID}
 
 printf "\n${BLUE}Creating namespace: ${SKAFFOLD_NAMESPACE} ...${NORMAL}\n"
 kubectl create ns $SKAFFOLD_NAMESPACE
@@ -41,7 +42,7 @@ printf "\n${BLUE}Adding Service Account to cluster ...${NORMAL}\n"
 EXISTING_SECRET=`kubectl get secrets -n $SKAFFOLD_NAMESPACE | grep 'default-sa-key'`
 if [[ "$EXISTING_SECRET" = "" ]]; then
   gcloud iam service-accounts keys create ./.tmp/$PROJECT_ID-sa-key.json \
-  --iam-account=skaffold-dev@$PROJECT_ID.iam.gserviceaccount.com
+  --iam-account=solutions-template-sa-dev@$PROJECT_ID.iam.gserviceaccount.com
   kubectl create secret generic default-sa-key --from-file=./.tmp/${PROJECT_ID}-sa-key.json
   rm ./.tmp/$PROJECT_ID-sa-key.json
 else

@@ -1,7 +1,8 @@
 {
   "project_name": "Google GPS Solutions Template",
-  "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '_').replace('-', '_') }}",
   "project_short_description": "Google GPS Solutions Template.",
+  "project_id": "",
+  "project_slug": "{{ cookiecutter.project_id.lower().replace(' ', '_').replace('-', '_') }}",
   "version": "0.1.0",
   "default_service_name": "sample-service"
 }

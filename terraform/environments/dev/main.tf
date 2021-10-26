@@ -111,7 +111,7 @@ module "cicd-terraform-account" {
   }
 }
 
-resource "google_container_cluster" "default-cluster" {
+resource "google_container_cluster" "main-cluster" {
   depends_on = ["google_project_service.project-apis"]
   name     = "default-cluster"
   location = local.region

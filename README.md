@@ -4,21 +4,42 @@
 > the best practices in architecture on GCP, including GKE clusters, CI/CD,
 > as well as development process.
 
-# Getting Started
+## Creating new project with Solutions Template
 
-## Prerequisites
+### Prerequisites
 
-#### Install required packages
+Install Cookiecutter ([Github](https://github.com/cookiecutter/cookiecutter)):
+- For MacOS:
+  ```
+  brew install cookiecutter
+  ```
 
-For MacOS:
+- For Windows, refer this [installation guide](https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter)
+
+### Run Cookiecutter
+
+Run the following to generate a new project:
 ```
-brew install --cask skaffold kustomize google-cloud-sdk
+cookiecutter https://github.com/GPS-Solutions/solutions-template
 ```
 
-For Windows:
-```
-choco install -y skaffold kustomize gcloudsdk
-```
+
+
+## Development
+
+### Prerequisites
+
+Install required packages:
+
+- For MacOS:
+  ```
+  brew install --cask skaffold kustomize google-cloud-sdk
+  ```
+
+- For Windows:
+  ```
+  choco install -y skaffold kustomize gcloudsdk
+  ```
 
 * Make sure to use __skaffold 1.21__ (Or 1.24.1) for development.
 

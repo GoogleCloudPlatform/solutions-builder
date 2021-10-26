@@ -12,10 +12,6 @@ requires:
   - name: dev
     activatedBy: [dev]
 
-- path: ./microservices/authentication
-  configs: [authentication]
-  activeProfiles: *dev_and_custom_backends
-
 - path: ./microservices/sample_service
   configs: [sample-service]
   activeProfiles:  *dev_and_custom_backends
@@ -23,5 +19,3 @@ requires:
 profiles:
 - name: custom
 - name: dev
-  activation:
-  - kubeContext: gke_solutions-template_us-central1-a_default-cluster
