@@ -8,7 +8,7 @@ import config
 from common.utils.logging_handler import Logger
 from concurrent.futures import ThreadPoolExecutor
 from fastapi import FastAPI, Request
-from routes import risk_profile, rule_config, claim
+from routes import claim
 
 app = FastAPI(title="Sample Service API")
 
@@ -39,8 +39,6 @@ def health_check():
 
 api = FastAPI(title="Sample Service API", version="latest")
 
-api.include_router(rule_config.router)
-api.include_router(risk_profile.router)
 api.include_router(claim.router)
 
 app.mount("/sample_service/v1", api)

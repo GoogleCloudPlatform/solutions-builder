@@ -1,10 +1,10 @@
-# Solutions Template
+# Google Public Sector Solutions Template
 
 > This is the template for building packaged and repeatable solutions with
 > the best practices in architecture on GCP, including GKE clusters, CI/CD,
 > as well as development process.
 
-## Creating new project with Solutions Template
+## Getting Started
 
 ### Prerequisites
 
@@ -16,13 +16,29 @@ Install Cookiecutter ([Github](https://github.com/cookiecutter/cookiecutter)):
 
 - For Windows, refer this [installation guide](https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter)
 
-### Run Cookiecutter
+### Create new project with Cookiecutter
 
 Run the following to generate a new project:
 ```
 cookiecutter https://github.com/GPS-Solutions/solutions-template
 ```
 
+Provide the required variables to Cookiecutter prompt, e.g.:
+```
+
+```
+
+### Setting up GKE Cluster and develompent environment
+
+#### Running all microservices
+
+```
+skaffold dev -p dev --default-repo=gcr.io/$PROJECT_ID
+```
+
+By default, it contains a `sample-service` microservice.
+- Open http://localhost:8888/sample_service/v1/docs in a browser window
+- Verify if you see the Swagger API documentations
 
 
 ## Development

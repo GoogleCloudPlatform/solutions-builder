@@ -7,11 +7,10 @@ import os
 import common.config as global_config
 from common.db_client import bq_client
 from common.models import BaseModel
-from common.utils.neo4j_new_incoming_claim import authenticate_neo4j
 from fireo.fields import Field, TextField
 
 DATABASE_PREFIX = os.getenv("DATABASE_PREFIX", "")
-PROJECT_ID = os.environ.get("PROJECT_ID", os.environ.get("PROJECT_ID", ""))
+PROJECT_ID = os.environ.get("PROJECT_ID", "")
 
 
 # sample class
@@ -62,37 +61,6 @@ class Claim(BaseModel):
       return {}
 
   # pylint: enable= line-too-long
-
-  @classmethod
-  def check_claim_neo4j(cls, claim_id):
-    query = f"""MATCH (c:claim)
-            WHERE c.claim_id = \"{claim_id}\"
-            RETURN c.claim_id as claim_id
-            """
-    graph = authenticate_neo4j()
-    graph_session = graph.session()
-    response = graph_session.run(query)
-    records = [dict(row) for row in response]
-    return records != [] and records[0].get("claim_id")
-
-  @classmethod
-  def generate_similarity_response(cls, claim_id):
-    query = f"""MATCH (c1:claim) -[x]-(c2:claim)
-            WHERE c1.claim_id <> c2.claim_id  and
-            c1.processed_flag = "true" and
-            c2.processed_flag = "true" and
-            c1.claim_id = \"{claim_id}\"
-            RETURN c2.claim_id as claim_id, collect(type(x)) as relationship_list
-            ORDER BY size(relationship_list) DESC LIMIT 5
-            """
-    graph = authenticate_neo4j()
-    graph_session = graph.session()
-    response = graph_session.run(query)
-    records = [dict(row) for row in response]
-    if records != []:
-      return records
-    else:
-      return []
 
   @classmethod
   def find_by_claim_id(cls, uuid):

@@ -3,6 +3,7 @@
   "project_short_description": "Google GPS Solutions Template.",
   "project_id": "",
   "project_slug": "{{ cookiecutter.project_id.lower().replace(' ', '_').replace('-', '_') }}",
+  "gcp_region": "us-central1",
   "version": "0.1.0",
   "default_service_name": "sample-service"
 }

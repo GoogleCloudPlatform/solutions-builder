@@ -11,13 +11,13 @@ spec:
         image: sample-service
         imagePullPolicy: Always
         env:
-        - name: GCP_PROJECT
+        - name: PROJECT_ID
           valueFrom:
             configMapKeyRef:
               name: env-vars
-              key: GCP_PROJECT
-        - name: EXTERNAL_DATA_GCP_PROJECT
+              key: PROJECT_ID
+        - name: EXTERNAL_DATA_PROJECT_ID
           valueFrom:
             configMapKeyRef:
               name: env-vars
-              key: EXTERNAL_DATA_GCP_PROJECT
+              key: EXTERNAL_DATA_PROJECT_ID

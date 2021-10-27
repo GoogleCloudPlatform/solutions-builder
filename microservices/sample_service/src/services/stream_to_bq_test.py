@@ -26,7 +26,7 @@ def test_create_claim():
   claim_expected["all_document_details"] = json.dumps(
       TEST_INPUT_CLAIM.get("document_details"))
   client.insert_rows_json.assert_called_with(
-      f"{config.GCP_PROJECT}.rules_engine.claims", [claim_expected])
+      f"{config.PROJECT_ID}.rules_engine.claims", [claim_expected])
 
 
 #Test update claim
@@ -43,7 +43,7 @@ def test_update_claim():
   claim_expected["all_document_details"] = json.dumps(
       TEST_INPUT_CLAIM.get("document_details"))
   client.insert_rows_json.assert_called_with(
-      f"{config.GCP_PROJECT}.rules_engine.claims", [claim_expected])
+      f"{config.PROJECT_ID}.rules_engine.claims", [claim_expected])
 
 
 #Test delete claim
@@ -57,4 +57,4 @@ def test_delete_claim():
   test_claim["created_timestamp"] = timestamp
   test_claim["last_updated_timestamp"] = timestamp
   client.insert_rows_json.assert_called_with(
-      f"{config.GCP_PROJECT}.rules_engine.claims", [test_claim])
+      f"{config.PROJECT_ID}.rules_engine.claims", [test_claim])
