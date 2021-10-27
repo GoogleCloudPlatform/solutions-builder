@@ -51,6 +51,7 @@ module "gke-pod-service-account" {
       "roles/datastore.owner",
       "roles/datastore.importExportAdmin",
       "roles/storage.objectAdmin",
+      "roles/storage.admin",
       "roles/secretmanager.secretAccessor",
       # Granting Workload Identity User to SA for GKE -> CloudSQL requests
       "roles/iam.workloadIdentityUser",
@@ -79,6 +80,8 @@ module "gke-node-service-account" {
       "roles/monitoring.metricWriter",
       "roles/logging.logWriter",
       "roles/stackdriver.resourceMetadata.writer",
+      "roles/storage.admin",
+      "roles/containerregistry.ServiceAgent",
     ]
   }
 }
