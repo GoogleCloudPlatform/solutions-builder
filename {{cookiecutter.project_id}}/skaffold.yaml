@@ -1,0 +1,23 @@
+# Master Skaffold
+apiVersion: skaffold/v2beta12
+kind: Config
+metadata:
+  name: backends
+requires:
+- path: ./common
+  configs: [common]
+  activeProfiles: &dev_and_custom_backends
+  - name: custom
+    activatedBy: [custom]
+  - name: dev
+    activatedBy: [dev]
+
+- path: ./microservices/sample_service
+  configs: [sample-service]
+  activeProfiles:  *dev_and_custom_backends
+
+profiles:
+- name: custom
+- name: dev
+  activation:
+  - kubeContext: gke_{{cookiecutter.project_id}}_{{cookiecutter.gcp_region}}_default-cluster

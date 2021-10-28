@@ -1,0 +1,8 @@
+fireo==1.4.1
+jsonschema==3.2.0
+fireo==1.4.1
+google-cloud-bigquery==2.20.0
+pandas==1.2.4
+neo4j==4.3.1
+google-cloud-secret-manager==2.5.0
+google-cloud-logging

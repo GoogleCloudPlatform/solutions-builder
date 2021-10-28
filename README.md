@@ -1,152 +1,171 @@
-# Solutions Template
+# Google Public Sector Solutions Template
 
-> This is the template for building packaged and repeatable solutions with
-> the best practices in architecture on GCP, including GKE clusters, CI/CD,
-> as well as development process.
+> This is the boilerplate template for building repeatable solutions with the \
+> best practices in architecture on GCP, including GKE clusters, CI/CD, as \
+> well as development process.
 
-# Getting Started
+Please contact jonchen@google.com for any questions.
 
-## Prerequisites
+## Getting Started
 
-#### Install required packages
+### Prerequisites
 
-For MacOS:
+Set up required environment variables
 ```
-brew install --cask skaffold kustomize google-cloud-sdk
-```
-
-For Windows:
-```
-choco install -y skaffold kustomize gcloudsdk
+export PROJECT_ID={{cookiecutter.project_id}}
 ```
 
-* Make sure to use __skaffold 1.21__ (Or 1.24.1) for development.
+Install Cookiecutter ([Github](https://github.com/cookiecutter/cookiecutter)):
+- For MacOS:
+  ```
+  brew install cookiecutter
+  ```
 
-#### Set up kubectl context and namespace
+- For Windows, refer this [installation guide](https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter)
 
-Export GCP project id and the namespace based on your Github handle (i.e. user ID)
+Install other required dependencies:
+
+- For MacOS:
+  ```
+  brew install --cask skaffold kustomize google-cloud-sdk
+  ```
+
+- For Windows:
+  ```
+  choco install -y skaffold kustomize gcloudsdk
+  ```
+
+* Make sure to use __skaffold 1.24.1__ or later for development.
+
+### Create new project with Cookiecutter
+
+Run the following to generate a new project:
 ```
-export PROJECT_ID=solutions-template
-export SKAFFOLD_NAMESPACE=<Replace with your Github user ID>
-```
-
-Log in gcloud SDK:
-```
-gcloud auth login
-```
-
-Run the following to set up critical context and environment variables:
-
-```
-./setup/setup_local.sh
-```
-
-This shell script does the following:
-- Set the current context to `gke_solutions-template_us-central1-a_default_cluster`. The default cluster name is `default_cluster`.
-  > **IMPORTANT**: Please do not change this context name.
-- Create the namespace $SKAFFOLD_NAMESPACE and set this namespace for any further kubectl operations. It's okay if the namespace already exists.
-- Generate a Service Account JSON keyfile and add to the cluster.
-
-## Run all microservices in `solutions-template` GKE cluster
-
-> **_NOTE:_**  By default, skaffold builds with CloudBuild and runs in `solutions-template` GKE cluster, using the namespace set above.
-
-To build and run in `solutions-template` cluster:
-```
-skaffold run --port-forward
-
-# Or, to build and run in `solutions-template` cluster with hot reload:
-skaffold dev --port-forward
-```
-- Please note that any change in the code will trigger the build process.
-
-## Run with a specific microservice
-
-```
-skaffold run --port-forward -m <Microservice>
+cookiecutter https://source.developers.google.com/p/psds-solutions-template/r/github_gps-solutions_solutions-template
 ```
 
-In this case, `Microservice` could be one of the following:
-- Backend microservices:
-  - `authentication`
-  - `sample-service`
+Provide the required variables to Cookiecutter prompt, e.g.:
+```
+project_id: jonchen-test
+project_name [Google GPS Solutions Template]:
+project_short_description [Google GPS Solutions Template.]:
+project_slug [jonchen_test]:
+gcp_region [us-central1]:
+version [0.1.0]:
+admin_email [jonchen@google.com]:
+```
+- You can leave a particular variable as blank if you'd like to use the default value.
 
-You can also run multiple specific microservices altogether. E.g.:
+Notes: If you run into any issues with `cookiecutter`, please add `--verbose` at
+the end of the command to show detailed errors.
+
+### Inside the newly created folder
+
+Once `cookiecutter` completes, you will see the folder `<project_id>` created in
+the path where you ran `cookiecutter` command.
+
+You will see the file structure like below:
+```
+<project_id>
+│   README.md
+│   skaffold.yaml
+│
+└───microservices/
+│   └───sample_service/
+│       └───kustomize/
+│       └───src/
+│       │   Dockerfile
+│       │   requirements.txt
+│       │   skaffold.yaml
+│       │   ...
+│
+└───common/
+│   └───src/
+│   │   Dockerfile
+│   │   requirements.txt
+│   │   skaffold.yaml
+│   │   ...
+│
+└───.github/
 
 ```
-skaffold run --port-forward -m authentication,sample-service
+#### Details of the file structure:
+
+- **README.md** - This contains all details regarding the development and deployment.
+- **skaffold.yaml** - This is the master Skaffold YAML file that defines how everything is built and deployed, depending on different profiles.
+- **microservices** - The main directory for all microservices, can be broken down into individual folder for each microservie, e.g. `sample_service`.
+  - [**microservice subfolder**] - Each microservice folder is a Docker container with [Skaffold](https://skaffold.dev/) + [Kustomize](https://kustomize.io/) to build images in different environments.
+- **common** - The common image contains shared data models and util libraries used by all other microservices.
+
+## Project Initialization
+
+In your project folder, run the following to set up your project:
+```
+bash setup/setup_project.sh
 ```
 
-## Deploy to a specific GKE cluster
+This will run Terraform to create the following GCP resources:
+- Enabling GCP services
+- GKE Cluster and default node pool
+- Service accounts for GKE cluster
+- Firestore and backup bucket
 
-> **IMPORTANT**: Please change gcloud project and kubectl context before running skaffold.
-
-Replace the `<Custom GCP Project ID>` with a specific project ID and run the following:
+Alternatively, you can run [Terraform](https://www.terraform.io/) manually with the following commands:
 ```
-export PROJECT_ID=<Custom GCP Project ID>
+export BUCKET_NAME=$PROJECT_ID-tfstate
+export BUCKET_LOCATION=us
 
-# Switch to a specific project.
-gcloud config set project $PROJECT_ID
-
-# Assuming the default cluster name is "default_cluster".
-gcloud container clusters get-credentials default_cluster --zone us-central1-a --project $PROJECT_ID
-```
-
-Run with skaffold:
-```
-skaffold run -p custom --default-repo=gcr.io/$PROJECT_ID
-
-# Or run with hot reload and live logs:
-skaffold dev -p custom --default-repo=gcr.io/$PROJECT_ID
+cd terraform/environments/dev
+terraform init -backend-config="bucket=$BUCKET_NAME"
+terraform apply
 ```
 
-## Run with local minikube cluster
+Once Terraform completes the setup, you can verify those newly created GCP resources at the [GCP Console UI](https://console.developers.google.com/).
 
-Install Minikube:
+## Local develompent
+
+### Initialization
+
+For the first time, run the `setup_local.sh` to initialize required setup for local development. This will set up the kubectl as well as setting up the required Service Account permissions.
 
 ```
-# For MacOS:
-brew install minikube
-
-# For Windows:
-choco install -y minikube
-```
-
-Make sure the Docker daemon is running locally. To start minikube:
-```
-minikube start
-```
-- This will reset the kubectl context to the local minikube.
-
-To build and run locally:
-```
-skaffold run --port-forward
-
-# Or, to build and run locally with hot reload:
-skaffold dev --port-forward
+bash setup/setup_local.sh
 ```
 
-Optionally, you may want to set `GOOGLE_APPLICATION_CREDENTIALS` manually to a local JSON key file.
+### Run with all microservices
+
+Set up the required environment variables.
 ```
-GOOGLE_APPLICATION_CREDENTIALS=<Path to Service Account key JSON file>
+export PROJECT_ID=<your-project>
+export SKAFFOLD_NAMESPACE=default
+
+# Or if you'd like to run with a different kubernetes namespace:
+export SKAFFOLD_NAMESPACE=<another_namespace>
 ```
 
-## Useful Kubectl commands
+Deploy all microservices to the default GKE cluster:
 
-To check if pods are deployed and running:
 ```
-kubectl get po
+skaffold dev
 
-# Or, watch the live update in a separate terminal:
-watch kubectl get po
-```
-
-To create a namespace:
-```
-kubectl create ns <New namespace>
+# Alternatively, you can run with a specific Skaffold profile and/or a custom image registry:
+skaffold dev -p dev --default-repo=gcr.io/$PROJECT_ID
 ```
 
-To set a specific namespace for further kubectl operations:
+By default, it will deploy a `sample-service` microservice to the default GKE cluster.
+- Open http://localhost:8888/sample_service/v1/docs in a browser window
+- Verify if you see the Swagger API documentations
+
+### Run with a specific microservice
+
+Deploy a specific microservice to the default GKE cluster:
+
 ```
-kubectl config set-context --current --namespace=<Your namespace>
+skaffold dev -m sample-service
 ```
+
+Likewise, you can open http://localhost:8888/sample_service/v1/docs in a browser window to check if it deploys successfully.
+
+## FAQ
+
+TBD

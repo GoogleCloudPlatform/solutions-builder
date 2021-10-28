@@ -1,4 +1,0 @@
-tornado==6.0.3
-fireo==1.4.1
-jsonschema==3.2.0
-redis==3.4.1
