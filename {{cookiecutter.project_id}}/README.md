@@ -2,27 +2,22 @@
 
 Please contact {{cookiecutter.admin_email}}] for any questions.
 
-
 # Development
 
 ## Overview
-- We will use Fork-and-Branch workflow for all code submission. ([Reference](https://blog.scottlowe.org/2015/01/27/using-fork-branch-git-workflow/))
+- Code submission process: [Fork-and-Branch workflow](https://blog.scottlowe.org/2015/01/27/using-fork-branch-git-workflow/)
 - All local code changes will be made in a fork, then be submitted as a Pull Request to merge back to the repo.
 
 ## Local development
 
-For all python-based microservices, we will be using `skaffold` to build and deploy to a development GKE cluster. Currently we are using `{{cookiecutter.project_id}}`. (We will migrate to `aitutor-dev` soon.)
-
-The following steps work for both:
-- Backend Microservices ([deeplit-backend](https://github.com/GPS-Solutions/deeplit-backend))
-- ML Microservices ([ml-pipeline](https://github.com/GPS-Solutions/ml-pipeline))
+For all python-based microservices, we use `skaffold` to build and deploy to a development GKE cluster. (default cluster name: `default-cluster`)
 
 #### Initial setup for local development
-After cloning the repo, please set up for local development. Please replace `<Github ID>` before running the command.
+After cloning the repo, please set up for local development. Please replace `<your_namespace>` or a custom namespace before running the command.
 
 ```
 export PROJECT_ID={{cookiecutter.project_id}}
-export SKAFFOLD_NAMESPACE=<Github ID>
+export SKAFFOLD_NAMESPACE=<your_namespace>
 gcloud auth login
 bash ./setup/setup_local.sh
 ```
@@ -30,26 +25,12 @@ bash ./setup/setup_local.sh
 The output will look like this:
 ![Skaffold Dev Output](.github/assets/setup_local.png)
 
-#### To build and run entire fleet in `{{cookiecutter.project_id}}` cluster
+#### To build and run all microservices in `{{cookiecutter.project_id}}` cluster
 ```
-skaffold dev -p dev --default-repo=gcr.io/{{cookiecutter.project_id}} --port-forward
+skaffold dev --port-forward
 ```
 - This will build and run all microservices in the repo with port forwarding and live reload.
 - For any changes to `*.py`, it will automatically reload the codes and update to the container. No need to re-run the command.
-
-#### To build and run only Backend or only ML microservices
-
-To run Backends microservices:
-
-```
-skaffold dev -p dev --default-repo=gcr.io/{{cookiecutter.project_id}} --port-forward -m backends
-```
-
-To run ML microservices:
-
-```
-skaffold dev -p dev --default-repo=gcr.io/{{cookiecutter.project_id}} --port-forward -m ml
-```
 
 #### To build and run a specific microservice
 ```
@@ -82,7 +63,37 @@ After running the `skaffold dev`, you will see the logs in your terminal like be
 
 You can now open directly to http://localhost:PORT in a browser, or use tools like Postman to test the API endpoints.
 
-## Code Submission
+
+#### To build and run microservices with a custom Source Repository path
+```
+skaffold dev --default-repo=<Image registry path> --port-forward
+```
+
+E.g. you can point to a different GCP Cloud Source Repository path:
+```
+skaffold dev --default-repo=gcr.io/another-project-path --port-forward
+```
+
+#### To build and run microservices with a different Skaffold profile
+```
+# Using custom profile
+skaffold dev -p custom --port-forward
+
+# Using prod profile
+skaffold dev -p prod --port-forward
+```
+
+Please see the next section for Skaffold's profiles.
+
+### Skaffold profiles
+
+By default, the Skaffold YAML contains the following pre-defined profiles ready to use.
+
+- **dev** - This is the default profile for local development, which will be activated automatically with the Kubectl context set to the default cluster of this GCP project.
+- **prod** - This is the profile for building and deploying to the Prod environment, e.g. to a customer's Prod environment.
+- **custom** - This is the profile for building and deploying to a custom GCP project environments, e.g. to deploy to a staging or a demo environment.
+
+## Code Submission Process
 
 ### For the first-time setup
 * Fork a repo
@@ -113,7 +124,6 @@ cd ~/workspace
 git clone git@github.com:$YOUR_GITHUB_ID/$REPOSITORY_NAME.git
 cd $REPOSITORY_NAME
 ```
-
   - If you encounter permission-related errors while cloning the repo, follow [this guide](https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) to create and add an SSH key for Github access (especially when checking out code with git@github.com URLs)
   - Alternatively, verify if the local git copy has the right remote endpoint.
 ```
@@ -185,9 +195,9 @@ git push
 * For code reviewers, go to the Pull Requests page of the origin repo on Github.
 
   - Go inside the specific pull request page, review and comment on the request.
-	- If all goes well with tests passed, click Merge pull request to merge the changes to the master branch.
-  - Then grab a cup of coffee ☕  and take a break.
-
+branch.
+  - Alternatively, you can use Github CLI (gh) to check out a PR and run the codes locally: https://cli.github.com/manual/gh_pr_checkout
+	- If all goes well with tests passed, click Merge pull request to merge the changes to the master
 
 ### Setting up GKE Cluster and develompent environment
 

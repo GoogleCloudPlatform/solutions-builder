@@ -12,7 +12,10 @@ Please contact jonchen@google.com for any questions.
 
 Set up required environment variables
 ```
-export PROJECT_ID={{cookiecutter.project_id}}
+export PROJECT_ID=<project_id>
+
+# Use the email that has access to this CSR repo: https://source.cloud.google.com/psds-solutions-template/github_gps-solutions_solutions-template
+export EMAIL=<your_email>
 ```
 
 Install Cookiecutter ([Github](https://github.com/cookiecutter/cookiecutter)):
@@ -41,7 +44,7 @@ Install other required dependencies:
 
 Run the following to generate a new project:
 ```
-cookiecutter https://source.developers.google.com/p/psds-solutions-template/r/github_gps-solutions_solutions-template
+cookiecutter ssh://$EMAIL@source.developers.google.com:2022/p/psds-solutions-template/r/github_gps-solutions_solutions-template
 ```
 
 Provide the required variables to Cookiecutter prompt, e.g.:
