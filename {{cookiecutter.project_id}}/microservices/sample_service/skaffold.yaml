@@ -64,17 +64,17 @@ profiles:
         alias: BASE_IMG
 - name: dev
   activation:
-  - kubeContext: gke_solutions-template-dev_us-central1-a_default-cluster
+  - kubeContext: gke_{{cookiecutter.project_id}}_{{cookiecutter.gcp_region}}_default-cluster
   build:
     googleCloudBuild: {}
     artifacts:
-    - image: gcr.io/solutions-template-dev/sample-service
+    - image: gcr.io/{{cookiecutter.project_id}}/sample-service
       docker:
         cacheFrom:
-          - gcr.io/solutions-template-dev/sample-service
-          - gcr.io/solutions-template-dev/sample-service:latest
+          - gcr.io/{{cookiecutter.project_id}}/sample-service
+          - gcr.io/{{cookiecutter.project_id}}/sample-service:latest
       requires:
-        - image: gcr.io/solutions-template-dev/common
+        - image: gcr.io/{{cookiecutter.project_id}}/common
           alias: BASE_IMG
       sync:
         infer:

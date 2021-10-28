@@ -42,7 +42,7 @@ printf "\n${BLUE}Adding Service Account to cluster ...${NORMAL}\n"
 EXISTING_SECRET=`kubectl get secrets -n $SKAFFOLD_NAMESPACE | grep 'default-sa-key'`
 if [[ "$EXISTING_SECRET" = "" ]]; then
   gcloud iam service-accounts keys create ./.tmp/$PROJECT_ID-sa-key.json \
-  --iam-account=solutions-template-sa-dev@$PROJECT_ID.iam.gserviceaccount.com
+  --iam-account=$PROJECT_ID-sa-dev@$PROJECT_ID.iam.gserviceaccount.com
   kubectl create secret generic default-sa-key --from-file=./.tmp/${PROJECT_ID}-sa-key.json
   rm ./.tmp/$PROJECT_ID-sa-key.json
 else

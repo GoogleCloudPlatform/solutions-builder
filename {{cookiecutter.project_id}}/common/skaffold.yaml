@@ -35,18 +35,17 @@ profiles:
         infer:
           - '**/*.py'
           - '**/*.json'
-- name: prod_non_cloudbuild
 - name: dev
   activation:
-  - kubeContext: gke_solutions-template-dev_us-central1-a_default-cluster
+  - kubeContext: gke_{{cookiecutter.project_id}}_{{cookiecutter.gcp_region}}_default-cluster
   build:
     googleCloudBuild: {}
     artifacts:
-    - image: gcr.io/solutions-template-dev/common
+    - image: gcr.io/{{cookiecutter.project_id}}/common
       docker:
         cacheFrom:
-          - gcr.io/solutions-template-dev/common
-          - gcr.io/solutions-template-dev/common:latest
+          - gcr.io/{{cookiecutter.project_id}}/common
+          - gcr.io/{{cookiecutter.project_id}}/common:latest
       sync:
         infer:
           - '**/*.py'

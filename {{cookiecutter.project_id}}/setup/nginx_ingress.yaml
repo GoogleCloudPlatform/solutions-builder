@@ -14,7 +14,7 @@ spec:
   tls:
     - hosts:
       - _API_DOMAIN
-      secretName: solutions-template # [TODO] Change this to anything
+      secretName: {{cookiecutter.project_id}} # [TODO] Change this to anything
   rules:
   - host: _API_DOMAIN
     http:

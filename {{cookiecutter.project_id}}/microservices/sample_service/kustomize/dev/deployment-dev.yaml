@@ -8,7 +8,7 @@ spec:
     spec:
       containers:
       - name: sample-service
-        image: gcr.io/solutions-template-dev/sample-service
+        image: gcr.io/{{cookiecutter.project_id}}/sample-service
         imagePullPolicy: Always
         env:
         - name: PROJECT_ID

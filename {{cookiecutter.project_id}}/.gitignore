@@ -1,0 +1,27 @@
+__pycache__
+keys
+test
+.vscode
+.venv
+.tmp
+.pytest_cache
+.coverage*
+pytest-coverage.txt
+.python-version
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# macOS file
+.DS_Store
+
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# tf lock files
+.terraform
+.terraform.lock.hcl

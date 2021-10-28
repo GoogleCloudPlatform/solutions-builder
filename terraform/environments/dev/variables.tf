@@ -1,6 +1,7 @@
 variable "project_id" {
   type        = string
   description = "GCP Project ID"
+  default     = "{{cookiecutter.project_id}}"
 
   validation {
     condition     = length(var.project_id) > 0

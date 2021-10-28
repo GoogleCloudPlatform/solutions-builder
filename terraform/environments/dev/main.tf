@@ -5,7 +5,7 @@ locals {
   region           = var.region
   firestore_region = var.firestore_region
   multiregion      = var.multiregion
-  project          = var.project_id
+  project_id       = var.project_id
   services = [
     "appengine.googleapis.com",            # AppEngine
     "bigquery.googleapis.com",             # BigQuery
@@ -28,15 +28,15 @@ locals {
 
 resource "google_project_service" "project-apis" {
   for_each                   = toset(local.services)
-  project                    = local.project
+  project                    = local.project_id
   service                    = each.value
   disable_dependent_services = true
 }
 
 module "gke-pod-service-account" {
   source       = "github.com/terraform-google-modules/cloud-foundation-fabric/modules/iam-service-account/"
-  project_id   = local.project
-  name         = "solutions-template-sa-${local.env}"
+  project_id   = local.project_id
+  name         = "${local.project_id}-sa-${local.env}"
   display_name = "The GKE Pod worker service account. Most microservices run as this."
 
   # authoritative roles granted *on* the service accounts to other identities
@@ -45,7 +45,7 @@ module "gke-pod-service-account" {
   }
   # non-authoritative roles granted *to* the service accounts on other resources
   iam_project_roles = {
-    (local.project) = [
+    (local.project_id) = [
       "roles/firebase.admin",
       "roles/bigquery.admin",
       "roles/datastore.owner",
@@ -65,8 +65,8 @@ module "gke-pod-service-account" {
 
 module "gke-node-service-account" {
   source       = "github.com/terraform-google-modules/cloud-foundation-fabric/modules/iam-service-account/"
-  project_id   = local.project
-  name         = "solutions-template-gke-sa-${local.env}"
+  project_id   = local.project_id
+  name         = "${local.project_id}-gke-sa-${local.env}"
   display_name = "This service acount authenticates GKE cluster's access to logging, monitoring and storage services."
 
   # authoritative roles granted *on* the service accounts to other identities
@@ -75,7 +75,7 @@ module "gke-node-service-account" {
   }
   # non-authoritative roles granted *to* the service accounts on other resources
   iam_project_roles = {
-    (local.project) = [
+    (local.project_id) = [
       "roles/monitoring.viewer",
       "roles/monitoring.metricWriter",
       "roles/logging.logWriter",
@@ -88,8 +88,8 @@ module "gke-node-service-account" {
 
 module "cicd-terraform-account" {
   source       = "github.com/terraform-google-modules/cloud-foundation-fabric/modules/iam-service-account/"
-  project_id   = local.project
-  name         = "tf-solutions-template-${local.env}"
+  project_id   = local.project_id
+  name         = "tf-${local.project_id}-${local.env}"
   display_name = "The Terraform Service Account. Used by CICD processes."
 
   # authoritative roles granted *on* the service accounts to other identities
@@ -98,7 +98,7 @@ module "cicd-terraform-account" {
   }
   # non-authoritative roles granted *to* the service accounts on other resources
   iam_project_roles = {
-    (local.project) = [
+    (local.project_id) = [
       "roles/storage.admin",
       "roles/compute.instanceAdmin",
       "roles/iam.serviceAccountAdmin",
@@ -127,7 +127,7 @@ resource "google_container_cluster" "main-cluster" {
   # }
 
   workload_identity_config {
-    workload_pool = "${local.project}.svc.id.goog"
+    workload_pool = "${local.project_id}.svc.id.goog"
   }
 
   #to enable private GKE nodes
@@ -164,7 +164,7 @@ resource "google_container_node_pool" "primary_nodes" {
   node_config {
     machine_type = "n1-standard-8"
     tags = [
-      "solutions-template-${local.env}-gke-nodes",
+      "${local.project_id}-${local.env}-gke-nodes",
       "allow-health-checks",
     ]
 
@@ -197,7 +197,7 @@ resource "google_service_account_iam_binding" "gsa-ksa-binding" {
   role               = "roles/iam.workloadIdentityUser"
 
   members = [
-    "serviceAccount:${local.project}.svc.id.goog[default/ksa]"
+    "serviceAccount:${local.project_id}.svc.id.goog[default/ksa]"
   ]
 
   depends_on = [kubernetes_service_account.ksa]
@@ -211,21 +211,21 @@ resource "google_app_engine_application" "firestore" {
 }
 
 resource "google_storage_bucket" "default" {
-  name          = "${local.project}"
+  name          = "${local.project_id}"
   location      = local.multiregion
   storage_class = "STANDARD"
   uniform_bucket_level_access = true
 }
 
 resource "google_storage_bucket" "assets" {
-  name          = "${local.project}-assets"
+  name          = "${local.project_id}-assets"
   location      = local.multiregion
   storage_class = "STANDARD"
   uniform_bucket_level_access = true
 }
 
 resource "google_storage_bucket" "firestore-backup-bucket" {
-  name          = "${local.project}-firestore-backup"
+  name          = "${local.project_id}-firestore-backup"
   location      = local.multiregion
   storage_class = "NEARLINE"
 
@@ -246,7 +246,7 @@ resource "google_storage_bucket_iam_binding" "firestore_sa_backup_binding" {
   bucket = google_storage_bucket.firestore-backup-bucket.name
   role   = "roles/storage.admin"
   members = [
-    "serviceAccount:${local.project}@appspot.gserviceaccount.com",
+    "serviceAccount:${local.project_id}@appspot.gserviceaccount.com",
   ]
   depends_on = [
     google_app_engine_application.firestore
@@ -254,7 +254,7 @@ resource "google_storage_bucket_iam_binding" "firestore_sa_backup_binding" {
 }
 
 resource "google_compute_router" "router" {
-  name    = "solutions-template-router"
+  name    = "${local.project_id}-router"
   region  = local.region
   network = google_container_cluster.main-cluster.network
 

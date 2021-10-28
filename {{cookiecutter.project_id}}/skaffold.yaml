@@ -19,3 +19,5 @@ requires:
 profiles:
 - name: custom
 - name: dev
+  activation:
+  - kubeContext: gke_{{cookiecutter.project_id}}_{{cookiecutter.gcp_region}}_default-cluster

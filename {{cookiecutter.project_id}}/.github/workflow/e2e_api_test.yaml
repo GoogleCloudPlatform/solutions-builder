@@ -16,7 +16,7 @@ on:
       - 'utils/**'
   workflow_dispatch:
 env:
-  GCP_PROJECT: {{cookiecutter.project_id}}
+  PROJECT_ID: {{cookiecutter.project_id}}
   SKAFFOLD_DEFAULT_REPO: gcr.io/{{cookiecutter.project_id}}
   SKAFFOLD_PROFILE: dev
   SKAFFOLD_NAMESPACE: default
@@ -26,6 +26,8 @@ env:
   SKAFFOLD_VERSION: 1.29.0
   SKAFFOLD_CACHE_GCS: gs://{{cookiecutter.project_id}}/skaffold/cache
   SKIP_NEO4J: true
+
+{% raw %}
 jobs:
   deploy-all-in-pr-namespace:
     name: Deploy all microservices in PR namespace
@@ -37,7 +39,7 @@ jobs:
     - name: Install gcloud
       uses: google-github-actions/setup-gcloud@master
       with:
-        project_id: ${{env.GCP_PROJECT}}
+        project_id: ${{env.PROJECT_ID}}
         service_account_key: ${{ secrets.DEPLOYMENT_DEV_SA_KEY }}
         export_default_credentials: true
 
@@ -99,7 +101,7 @@ jobs:
     - name: Install gcloud
       uses: google-github-actions/setup-gcloud@master
       with:
-        project_id: ${{env.GCP_PROJECT}}
+        project_id: ${{env.PROJECT_ID}}
         service_account_key: ${{ secrets.DEPLOYMENT_DEV_SA_KEY }}
         export_default_credentials: true
 
@@ -164,7 +166,7 @@ jobs:
     - name: Install gcloud
       uses: google-github-actions/setup-gcloud@master
       with:
-        project_id: ${{env.GCP_PROJECT}}
+        project_id: ${{env.PROJECT_ID}}
         service_account_key: ${{ secrets.DEPLOYMENT_DEV_SA_KEY }}
         export_default_credentials: true
 
@@ -197,7 +199,7 @@ jobs:
     - name: Install gcloud
       uses: google-github-actions/setup-gcloud@master
       with:
-        project_id: ${{env.GCP_PROJECT}}
+        project_id: ${{env.PROJECT_ID}}
         service_account_key: ${{ secrets.DEPLOYMENT_DEV_SA_KEY }}
         export_default_credentials: true
 
@@ -232,5 +234,7 @@ jobs:
         NAMESPACE=e2e-pr-$PR_NUMBER
         gcloud iam service-accounts remove-iam-policy-binding \
           --role roles/iam.workloadIdentityUser \
-          --member "serviceAccount:${GCP_PROJECT}.svc.id.goog[${NAMESPACE}/ksa]" \
-          skaffold-dev@${GCP_PROJECT}.iam.gserviceaccount.com
+          --member "serviceAccount:${PROJECT_ID}.svc.id.goog[${NAMESPACE}/ksa]" \
+          ${{env.PROJECT_ID}}-sa-dev@${PROJECT_ID}.iam.gserviceaccount.com
+
+{% endraw %}
