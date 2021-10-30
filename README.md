@@ -1,4 +1,4 @@
-# Google Public Sector Solutions Template
+# Google Solutions Template
 
 > This is the boilerplate template for building repeatable solutions with the \
 > best practices in architecture on GCP, including GKE clusters, CI/CD, as \
@@ -38,7 +38,15 @@ Install other required dependencies:
   choco install -y skaffold kustomize gcloudsdk
   ```
 
-* Make sure to use __skaffold 1.24.1__ or later for development.
+* Make sure to use __skaffold 1.29__ or later for development.
+
+**Project Requirements**
+
+| Tool  | Current Version  |
+|---|---|
+| Skaffold  | v1.29.0  |
+| GKE  | v1.21  |
+| Kustomize  | v4.3.1  |
 
 ### Create new project with Cookiecutter
 
@@ -92,7 +100,7 @@ You will see the file structure like below:
 └───.github/
 
 ```
-#### Details of the file structure:
+#### File structure details
 
 - **README.md** - This contains all details regarding the development and deployment.
 - **skaffold.yaml** - This is the master Skaffold YAML file that defines how everything is built and deployed, depending on different profiles.
@@ -102,16 +110,20 @@ You will see the file structure like below:
 
 ## Project Initialization
 
-In your project folder, run the following to set up your project:
+Once the new project folder is created, run the following to set up your project in your project folder:
 ```
 bash setup/setup_project.sh
 ```
 
-This will run Terraform to create the following GCP resources:
+This will run [Terraform](https://www.terraform.io/) to create the following GCP resources:
 - Enabling GCP services
 - GKE Cluster and default node pool
 - Service accounts for GKE cluster
 - Firestore and backup bucket
+
+Once Terraform completes the setup, you can verify those newly created GCP resources at the [GCP Console UI](https://console.developers.google.com/).
+
+##### Manual Terraform steps
 
 Alternatively, you can run [Terraform](https://www.terraform.io/) manually with the following commands:
 ```
@@ -122,8 +134,6 @@ cd terraform/environments/dev
 terraform init -backend-config="bucket=$BUCKET_NAME"
 terraform apply
 ```
-
-Once Terraform completes the setup, you can verify those newly created GCP resources at the [GCP Console UI](https://console.developers.google.com/).
 
 ## Local develompent
 
@@ -167,7 +177,7 @@ Deploy a specific microservice to the default GKE cluster:
 skaffold dev -m sample-service
 ```
 
-Likewise, you can open http://localhost:8888/sample_service/v1/docs in a browser window to check if it deploys successfully.
+Likewise, open http://localhost:8888/sample_service/v1/docs in a browser window to check if it deploys successfully.
 
 ## FAQ
 
