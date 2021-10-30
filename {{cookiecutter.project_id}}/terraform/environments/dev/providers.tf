@@ -7,7 +7,7 @@ terraform {
 }
 
 provider "google" {
-  project = local.project
+  project = var.project_id
 }
 
 data "google_client_config" "access_token" {}
