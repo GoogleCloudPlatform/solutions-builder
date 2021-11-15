@@ -36,7 +36,7 @@ resource "google_project_service" "project-apis" {
 module "gke-pod-service-account" {
   source       = "github.com/terraform-google-modules/cloud-foundation-fabric/modules/iam-service-account/"
   project_id   = local.project_id
-  name         = "${local.project_id}-sa-${local.env}"
+  name         = "${local.project_id}-sa"
   display_name = "The GKE Pod worker service account. Most microservices run as this."
 
   # authoritative roles granted *on* the service accounts to other identities
@@ -66,7 +66,7 @@ module "gke-pod-service-account" {
 module "gke-node-service-account" {
   source       = "github.com/terraform-google-modules/cloud-foundation-fabric/modules/iam-service-account/"
   project_id   = local.project_id
-  name         = "${local.project_id}-gke-sa-${local.env}"
+  name         = "${local.project_id}-gke-sa"
   display_name = "This service acount authenticates GKE cluster's access to logging, monitoring and storage services."
 
   # authoritative roles granted *on* the service accounts to other identities
@@ -89,7 +89,7 @@ module "gke-node-service-account" {
 module "cicd-terraform-account" {
   source       = "github.com/terraform-google-modules/cloud-foundation-fabric/modules/iam-service-account/"
   project_id   = local.project_id
-  name         = "tf-${local.project_id}-${local.env}"
+  name         = "tf-${local.project_id}"
   display_name = "The Terraform Service Account. Used by CICD processes."
 
   # authoritative roles granted *on* the service accounts to other identities
@@ -164,7 +164,7 @@ resource "google_container_node_pool" "primary_nodes" {
   node_config {
     machine_type = "n1-standard-8"
     tags = [
-      "${local.project_id}-${local.env}-gke-nodes",
+      "${local.project_id}-gke-nodes",
       "allow-health-checks",
     ]
 
