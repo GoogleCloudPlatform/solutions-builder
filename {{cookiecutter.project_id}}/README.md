@@ -27,6 +27,7 @@ After cloning the repo, please set up for local development.
   ```
   export PROJECT_ID=<Your Project ID>
   export SKAFFOLD_NAMESPACE=<Replace with your Github user ID>
+  export REGION=<Your region, e.g. us-central1>
   ```
 * Log in gcloud SDK:
   ```
