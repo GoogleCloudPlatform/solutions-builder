@@ -1,6 +1,6 @@
 # project-specific locals
 locals {
-  env              = var.env
+  env = var.env
   #TODO: change
   region           = var.region
   firestore_region = var.firestore_region
@@ -115,16 +115,16 @@ module "cicd-terraform-account" {
 }
 
 resource "google_container_cluster" "main-cluster" {
-  depends_on = [google_project_service.project-apis]
-  name     = "default-cluster"
-  location = local.region
-  # networking_mode = "VPC_NATIVE"
+  depends_on      = [google_project_service.project-apis]
+  name            = "default-cluster"
+  location        = local.region
+  networking_mode = "VPC_NATIVE"
 
   #to enable VPC native
-  # ip_allocation_policy {
-  #   cluster_secondary_range_name  = google_compute_subnetwork.gke-pods.name
-  #   services_secondary_range_name = google_compute_subnetwork.gke-services.name
-  # }
+  ip_allocation_policy {
+    cluster_ipv4_cidr_block  = null
+    services_ipv4_cidr_block = null
+  }
 
   workload_identity_config {
     workload_pool = "${local.project_id}.svc.id.goog"
@@ -211,16 +211,16 @@ resource "google_app_engine_application" "firestore" {
 }
 
 resource "google_storage_bucket" "default" {
-  name          = "${local.project_id}"
-  location      = local.multiregion
-  storage_class = "STANDARD"
+  name                        = local.project_id
+  location                    = local.multiregion
+  storage_class               = "STANDARD"
   uniform_bucket_level_access = true
 }
 
 resource "google_storage_bucket" "assets" {
-  name          = "${local.project_id}-assets"
-  location      = local.multiregion
-  storage_class = "STANDARD"
+  name                        = "${local.project_id}-assets"
+  location                    = local.multiregion
+  storage_class               = "STANDARD"
   uniform_bucket_level_access = true
 }
 

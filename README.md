@@ -127,11 +127,16 @@ Once Terraform completes the setup, you can verify those newly created GCP resou
 
 Alternatively, you can run [Terraform](https://www.terraform.io/) manually with the following commands:
 ```
+gcloud config set project $PROJECT_ID
+
 export BUCKET_NAME=$PROJECT_ID-tfstate
 export BUCKET_LOCATION=us
 
+gsutil mb -l $BUCKET_LOCATION gs://$BUCKET_NAME
+gsutil versioning set on gs://$BUCKET_NAME
+
 cd terraform/environments/dev
-terraform init -backend-config="bucket=$BUCKET_NAME"
+terraform init
 terraform apply
 ```
 
