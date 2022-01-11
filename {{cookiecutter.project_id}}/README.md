@@ -1,6 +1,6 @@
 # Google Solutions - {{cookiecutter.project_name}}
 
-Please contact {{cookiecutter.admin_email}}] for any questions.
+Please contact {{cookiecutter.admin_email}} for any questions.
 
 ## Development
 

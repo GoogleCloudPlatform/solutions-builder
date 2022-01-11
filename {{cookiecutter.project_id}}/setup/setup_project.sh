@@ -54,7 +54,7 @@ run_terraform () {
   export TF_VAR_region=$REGION
 
   cd terraform/environments/dev
-  terraform init -backend-config="bucket=$BUCKET_NAME"
+  terraform init
   terraform plan
 
   prompt_continue "${BLUE}Do you want to perform these Terraform actions? (y/n) ${NORMAL}"
