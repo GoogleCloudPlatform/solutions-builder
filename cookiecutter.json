@@ -5,5 +5,9 @@
   "project_slug": "{{ cookiecutter.project_id.lower().replace(' ', '_').replace('-', '_') }}",
   "gcp_region": "us-central1",
   "version": "0.1.0",
-  "admin_email": "jonchen@google.com"
+  "admin_email": "your_email@google.com",
+  "_copy_without_render": [
+    "*.html",
+    "**/.terraform"
+  ]
 }
