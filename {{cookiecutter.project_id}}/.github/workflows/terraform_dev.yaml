@@ -17,6 +17,8 @@ env:
   TF_ACTION_WORKING_DIR: terraform/environments/dev
   TF_BUCKET: {{cookiecutter.project_id}}-tfstate
   PROJECT_ID: {{cookiecutter.project_id}}
+
+{% raw %}
 jobs:
   tf_plan_validate:
     runs-on: ubuntu-latest
@@ -82,6 +84,8 @@ jobs:
           ${{ steps.plan.outputs.stderr }}
           ${{ steps.plan.outputs.exitcode }}
           ```
-          
+
           </details>
         edit-mode: replace
+
+{% endraw %}
