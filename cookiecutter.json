@@ -1,7 +1,7 @@
 {
   "project_id": null,
-  "project_name": "Google GPS Solutions Template",
-  "project_short_description": "Google GPS Solutions Template.",
+  "project_name": "My Project Name",
+  "project_short_description": "My Project Description.",
   "project_slug": "{{ cookiecutter.project_id.lower().replace(' ', '_').replace('-', '_') }}",
   "gcp_region": "us-central1",
   "version": "0.1.0",

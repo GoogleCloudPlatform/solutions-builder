@@ -1,4 +1,4 @@
-# Google Solutions Template
+# Google Cloud Solutions Template
 
 > This is the boilerplate template for building repeatable solutions with the \
 > best practices in architecture on GCP, including GKE clusters, CI/CD, as \
@@ -14,7 +14,7 @@ Set up required environment variables
 ```
 export PROJECT_ID=<project_id>
 
-# Use the email that has access to this CSR repo: https://source.cloud.google.com/psds-solutions-template/github_gps-solutions_solutions-template
+# Use the email that has access to this CSR repo: https://source.cloud.google.com/ps-solutions-template/github_gps-solutions_solutions-template
 export EMAIL=<your_email>
 ```
 
@@ -52,7 +52,7 @@ Install other required dependencies:
 
 Run the following to generate a new project:
 ```
-cookiecutter ssh://$EMAIL@source.developers.google.com:2022/p/psds-solutions-template/r/github_gps-solutions_solutions-template
+cookiecutter ssh://$EMAIL@source.developers.google.com:2022/p/ps-solutions-template/r/github_gps-solutions_solutions-template
 ```
 
 Provide the required variables to Cookiecutter prompt, e.g.:
