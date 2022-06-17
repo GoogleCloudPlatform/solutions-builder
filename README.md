@@ -1,10 +1,20 @@
 # Google Cloud Solutions Template
 
-> This is the boilerplate template for building repeatable solutions with the \
-> best practices in architecture on GCP, including GKE clusters, CI/CD, as \
-> well as development process.
+> A template to generate a new project with built-in structure and features
+> to accelerate your project setup. 
 
-Please contact jonchen@google.com for any questions.
+## TL;DR
+
+Solutions Template is a boilerplate template for building repeatable 
+solutions with the best practices in architecture on GCP, including GKE 
+clusters, CI/CD, as well as development process.
+
+This template provides built-in and ready-to-ship sample features including:
+* Kubernetes-based microservices 
+* Simplified deployment using Skaffold and Kustomize.
+* Terraform GCP foundation setup.
+* CI/CD deployment (with Github Actions)
+* [In Progress] CloudRun templates
 
 ## Getting Started
 
