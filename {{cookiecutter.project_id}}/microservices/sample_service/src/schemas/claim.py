@@ -34,7 +34,7 @@ class ClaimModel(BaseModel):
     orm_mode = True
     schema_extra = {
         "example": {
-        "claim_id" : "c61d7e3c-22ed-497b-97f5-438334c9d0f8",
+        "claim_id" : "fake-claim-id",
         "first_name" : "Tony",
         "middle_name" : "I",
         "last_name" : "Stark",
