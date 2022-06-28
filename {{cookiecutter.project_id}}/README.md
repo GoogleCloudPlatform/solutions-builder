@@ -1,4 +1,6 @@
-# Google Solutions - {{cookiecutter.project_name}}
+# {{cookiecutter.project_name}}
+
+> This solution skeleton is created from 
 
 Please contact {{cookiecutter.admin_email}} for any questions.
 
