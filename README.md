@@ -6,27 +6,19 @@
 ## TL;DR
 
 Solutions Template is a boilerplate template for building repeatable 
-solutions with the best practices in architecture on GCP, including GKE 
+solutions with the best practices in architecture on Google Cloud, including GKE 
 clusters, CI/CD, as well as development process.
 
 This template provides built-in and ready-to-ship sample features including:
 * Kubernetes-based microservices 
 * Simplified deployment using Skaffold and Kustomize.
-* Terraform GCP foundation setup.
+* Terraform Google Cloud foundation setup.
 * CI/CD deployment (with Github Actions)
 * [In Progress] CloudRun templates
 
 ## Getting Started
 
 ### Prerequisites
-
-Set up required environment variables
-```
-export PROJECT_ID=<project_id>
-
-# Use the email that has access to this CSR repo: https://source.cloud.google.com/ps-solutions-template/github_gps-solutions_solutions-template
-export EMAIL=<your_email>
-```
 
 Install Cookiecutter ([Github](https://github.com/cookiecutter/cookiecutter)):
 - For MacOS:
@@ -62,18 +54,18 @@ Install other required dependencies:
 
 Run the following to generate a new project:
 ```
-cookiecutter ssh://$EMAIL@source.developers.google.com:2022/p/ps-solutions-template/r/github_gps-solutions_solutions-template
+cookiecutter git@github.com:GoogleCloudPlatform/solutions-template.git
 ```
 
 Provide the required variables to Cookiecutter prompt, e.g.:
 ```
-project_id: jonchen-test
-project_name [Google GPS Solutions Template]:
-project_short_description [Google GPS Solutions Template.]:
-project_slug [jonchen_test]:
-gcp_region [us-central1]:
+project_id: my-project
+project_name [My Awesome Project]:
+project_short_description [My Awesome Project]:
+project_slug [my_project]:
+Google Cloud_region [us-central1]:
 version [0.1.0]:
-admin_email [jonchen@google.com]:
+admin_email [admin@example.com]:
 ```
 - You can leave a particular variable as blank if you'd like to use the default value.
 
@@ -125,15 +117,15 @@ Once the new project folder is created, run the following to set up your project
 bash setup/setup_project.sh
 ```
 
-This will run [Terraform](https://www.terraform.io/) to create the following GCP resources:
-- Enabling GCP services
+This will run [Terraform](https://www.terraform.io/) to create the following Google Cloud resources:
+- Enabling Google Cloud services
 - GKE Cluster and default node pool
 - Service accounts for GKE cluster
 - Firestore and backup bucket
 
-Once Terraform completes the setup, you can verify those newly created GCP resources at the [GCP Console UI](https://console.developers.google.com/).
+Once Terraform completes the setup, you can verify those newly created Google Cloud resources at the [Google Cloud Console UI](https://console.developers.google.com/).
 
-##### Manual Terraform steps
+#### Manual Terraform steps
 
 Alternatively, you can run [Terraform](https://www.terraform.io/) manually with the following commands:
 ```
@@ -150,7 +142,7 @@ terraform init
 terraform apply
 ```
 
-## Local develompent
+## Microservices on Kubernetes (GKE)
 
 ### Initialization
 

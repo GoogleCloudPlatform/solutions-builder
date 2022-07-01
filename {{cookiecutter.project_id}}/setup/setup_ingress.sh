@@ -2,9 +2,9 @@
 
 # Example:
 # PROJECT_ID=<GCP Project ID> \
-#  EMAIL=jonchen@google.com \
-#  WEB_APP_DOMAIN=<GCP Project ID>.cloudpssolutions.com \
-#  API_DOMAIN=<GCP Project ID>-api.cloudpssolutions.com \
+#  EMAIL=admin@example.com \
+#  WEB_APP_DOMAIN=<GCP Project ID>.example.com \
+#  API_DOMAIN=<GCP Project ID>-api.example.com \
 #  bash ./setup/setup_ingress.sh
 #
 
@@ -57,7 +57,7 @@ while [[ "$INGRESS_IP_ADDRESS" = "" ]]; do
   sleep 3
 done
 
-printf "\n${BLUE}Please create a DNS A record in https://domains.google.com/registrar/cloudpssolutions.com/dns to the following IP address: ${NORMAL}\n"
+printf "\n${BLUE}Please create a DNS A record in https://domains.google.com/registrar/example.com/dns to the following IP address: ${NORMAL}\n"
 printf "API domain: https://$API_DOMAIN\n"
 printf "${INGRESS_IP_ADDRESS}\n"
 read -p  "${BLUE}Press any key to continue... \n ${NORMAL}" -n 1 -r
