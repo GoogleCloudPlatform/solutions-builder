@@ -7,13 +7,14 @@
 
 Solutions Template is a boilerplate template for building repeatable 
 solutions with the best practices in architecture on Google Cloud, including GKE 
-clusters, CI/CD, as well as development process.
+clusters, Test Automation, CI/CD, as well as development process.
 
 This template provides built-in and ready-to-ship sample features including:
 * Kubernetes-based microservices 
-* Simplified deployment using Skaffold and Kustomize.
-* Terraform Google Cloud foundation setup.
+* Simplified deployment using Skaffold and Kustomize
+* Terraform Google Cloud foundation setup
 * CI/CD deployment (with Github Actions)
+* [In Progress] CI/CD deployment with CloudBuild
 * [In Progress] CloudRun templates
 
 ## Getting Started
@@ -42,24 +43,24 @@ Install other required dependencies:
 
 * Make sure to use __skaffold 1.29__ or later for development.
 
-**Project Requirements**
+### Project Requirements
 
 | Tool  | Current Version  |
 |---|---|
 | Skaffold  | v1.29.0  |
-| GKE  | v1.21  |
+| GKE  | v1.22  |
 | Kustomize  | v4.3.1  |
 
-### Create new project with Cookiecutter
+### Create a new project with Cookiecutter
 
-Run the following to generate a new project:
+Run the following to generate skeleton code in a new folder:
 ```
 cookiecutter git@github.com:GoogleCloudPlatform/solutions-template.git
 ```
 
 Provide the required variables to Cookiecutter prompt, e.g.:
 ```
-project_id: my-project
+project_id: my-project-id
 project_name [My Awesome Project]:
 project_short_description [My Awesome Project]:
 project_slug [my_project]:
@@ -67,19 +68,18 @@ Google Cloud_region [us-central1]:
 version [0.1.0]:
 admin_email [admin@example.com]:
 ```
-- You can leave a particular variable as blank if you'd like to use the default value.
-
-Notes: If you run into any issues with `cookiecutter`, please add `--verbose` at
+- You may leave variables as blank if you'd like to use the default value (except projdct_id).
+- Notes: If you run into any issues with `cookiecutter`, please add `--verbose` at
 the end of the command to show detailed errors.
-
-### Inside the newly created folder
 
 Once `cookiecutter` completes, you will see the folder `<project_id>` created in
 the path where you ran `cookiecutter` command.
 
+### Inside the newly created folder
+
 You will see the file structure like below:
 ```
-<project_id>
+<project_id>/
 │   README.md
 │   skaffold.yaml
 │
@@ -102,7 +102,7 @@ You will see the file structure like below:
 └───.github/
 
 ```
-#### File structure details
+### File structure details
 
 - **README.md** - This contains all details regarding the development and deployment.
 - **skaffold.yaml** - This is the master Skaffold YAML file that defines how everything is built and deployed, depending on different profiles.
@@ -112,28 +112,17 @@ You will see the file structure like below:
 
 ## Project Initialization
 
-Once the new project folder is created, run the following to set up your project in your project folder:
+Once the new project folder is created, run the following [Terraform](https://www.terraform.io/) commands to set up your project in your project folder:
+
 ```
-bash setup/setup_project.sh
-```
-
-This will run [Terraform](https://www.terraform.io/) to create the following Google Cloud resources:
-- Enabling Google Cloud services
-- GKE Cluster and default node pool
-- Service accounts for GKE cluster
-- Firestore and backup bucket
-
-Once Terraform completes the setup, you can verify those newly created Google Cloud resources at the [Google Cloud Console UI](https://console.developers.google.com/).
-
-#### Manual Terraform steps
-
-Alternatively, you can run [Terraform](https://www.terraform.io/) manually with the following commands:
-```
+# Init gcloud command.
+export PROJECT_ID=<my-project-id>
+gcloud auth application-default login
 gcloud config set project $PROJECT_ID
 
+# Create Terraform State bucket.
 export BUCKET_NAME=$PROJECT_ID-tfstate
 export BUCKET_LOCATION=us
-
 gsutil mb -l $BUCKET_LOCATION gs://$BUCKET_NAME
 gsutil versioning set on gs://$BUCKET_NAME
 
@@ -142,49 +131,60 @@ terraform init
 terraform apply
 ```
 
-## Microservices on Kubernetes (GKE)
+## Built-in Features
 
-### Initialization
+In a nutshell, Solutions Template offers the following built-in features with working sample code:
+- A sample microservice with CRUD API endpoints on Kubernetes (GKE).
+- A built-in Ingress supporting custom DNS domain.
+- Test Automation and CI/CD with Github Action.
 
-For the first time, run the `setup_local.sh` to initialize required setup for local development. This will set up the kubectl as well as setting up the required Service Account permissions.
+We are also working on the following features:
+- CloudRun Services
+- Test Automation and Ci/CD with CloudBuild
 
-```
-bash setup/setup_local.sh
-```
+### Microservices on Kubernetes (GKE)
 
-### Run with all microservices
+This Solutions Template contains a working stack of microservices on Kubernetes (GKE).
+You will be able to deploy and run the `sample-service` with simple CRUD operations for `User` objects stored in Firestore. 
 
-Set up the required environment variables.
+It comes with ready-to-deploy structure using Skaffold and Kustomize. See examples below.
+
+#### Run with all microservices
+
+To deploy all microservices to the GKE cluster, simply run the following:
+
 ```
 export PROJECT_ID=<your-project>
 export SKAFFOLD_NAMESPACE=default
 
 # Or if you'd like to run with a different kubernetes namespace:
 export SKAFFOLD_NAMESPACE=<another_namespace>
-```
 
-Deploy all microservices to the default GKE cluster:
-
-```
+# Deploy all microservices to the default GKE cluster:
 skaffold dev
 
 # Alternatively, you can run with a specific Skaffold profile and/or a custom image registry:
 skaffold dev -p dev --default-repo=gcr.io/$PROJECT_ID
 ```
 
-By default, it will deploy a `sample-service` microservice to the default GKE cluster.
+This will deploy a `sample-service` microservice to the default GKE cluster. Now you can:
 - Open http://localhost:8888/sample_service/v1/docs in a browser window
 - Verify if you see the Swagger API documentations
 
-### Run with a specific microservice
+For more information about Kubernetes microservices development using Solutions Template, please refer to [this documentation]().
 
-Deploy a specific microservice to the default GKE cluster:
 
-```
-skaffold dev -m sample-service
-```
+### CloudRun Services
 
-Likewise, open http://localhost:8888/sample_service/v1/docs in a browser window to check if it deploys successfully.
+TBD
+
+### Test automation and CI/CD
+
+TBD
+
+## Roadmap
+
+TBD
 
 ## FAQ
 
