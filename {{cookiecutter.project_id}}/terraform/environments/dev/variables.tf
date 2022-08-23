@@ -1,6 +1,7 @@
 variable "project_id" {
   type        = string
   description = "GCP Project ID"
+  # TODO: Update below to your PROJECT_ID
   default     = "{{cookiecutter.project_id}}"
 
   validation {
@@ -9,9 +10,23 @@ variable "project_id" {
   }
 }
 
+variable "feature_flags" {
+  type        = string
+  description = "A comma-seperated string of feature flags to enable specific terraform blocks."
+
+  # TODO: Use Cookiecutter to replace this string.
+  # Default: "gke,cloudrun"
+  default = "{{cookiecutter.feature_flags}}"
+}
+
+variable "env" {
+  type    = string
+  default = "dev"
+}
+
 variable "region" {
   type        = string
-  description = "GCP Region"
+  description = "Default GCP region"
   default     = "us-central1"
 
   validation {
@@ -26,18 +41,31 @@ variable "firestore_region" {
   default     = "us-central"
 }
 
-variable "dataset_location" {
+variable "bq_dataset_location" {
   type        = string
   description = "BigQuery Dataset location"
   default     = "US"
 }
 
-variable "multiregion" {
-  type        = string
-  default     = "us"
+variable "storage_multiregion" {
+  type    = string
+  default = "us"
 }
 
-variable "env" {
-  type        = string
-  default     = "dev"
+variable "admin_email" {
+  type = string
+  # TODO: replace with your own email
+  default = "{{cookiecutter.admin_email}}"
+}
+
+variable "api_domain" {
+  type = string
+  description = "API endpoint domain, excluding protocol"
+  default = "{{cookiecutter.api_domain}}"
+}
+
+variable "web_app_domain" {
+  type = string
+  description = "Web app domain, excluding protocol"
+  default = "{{cookiecutter.web_app_domain}}"
 }

@@ -1,10 +1,10 @@
 # {{cookiecutter.project_name}}
 
-> This solution skeleton is created from 
+> This solution skeleton is created from https://github.com/GoogleCloudPlatform/solutions-template
 
 Please contact {{cookiecutter.admin_email}} for any questions.
 
-## Development
+## Getting Started
 
 ### Prerequisites
 
@@ -22,6 +22,12 @@ Install required packages:
 
 * Make sure to use __skaffold 1.24.1__ or later for development.
 
+### Init GCP foundation
+
+
+
+## Development
+
 ### Initial setup for local development
 After cloning the repo, please set up for local development.
 
@@ -33,7 +39,7 @@ After cloning the repo, please set up for local development.
   ```
 * Log in gcloud SDK:
   ```
-  gcloud auth login
+  gcloud auth application-default login
   ```
 * Run the following to set up critical context and environment variables:
   ```
