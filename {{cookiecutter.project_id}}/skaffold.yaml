@@ -6,18 +6,21 @@ metadata:
 requires:
 - path: ./common
   configs: [common]
-  activeProfiles: &dev_and_custom_backends
-  - name: custom
-    activatedBy: [custom]
+  activeProfiles: &profiles
+  - name: prod
+    activatedBy: [prod]
+  - name: staging
+    activatedBy: [staging]
   - name: dev
     activatedBy: [dev]
 
 - path: ./microservices/sample_service
   configs: [sample-service]
-  activeProfiles:  *dev_and_custom_backends
+  activeProfiles:  *profiles
 
 profiles:
-- name: custom
+- name: prod
+- name: staging
 - name: dev
   activation:
-  - kubeContext: gke_{{cookiecutter.project_id}}_{{cookiecutter.gcp_region}}_default-cluster
+  - kubeContext: gke_{{cookiecutter.project_id}}_us-central1_main-cluster

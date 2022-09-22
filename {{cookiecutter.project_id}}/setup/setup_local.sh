@@ -11,8 +11,8 @@ for variable in ${EnvVars[@]}; do
   fi
 done
 
-CLUSTER_NAME=default-cluster
-EXPECTED_CONTEXT=gke_${PROJECT_ID}_${REGION}_default-cluster
+CLUSTER_NAME=main-cluster
+EXPECTED_CONTEXT=gke_${PROJECT_ID}_${REGION}_main-cluster
 
 BLUE=$(tput setaf 4)
 RED=$(tput setaf 1)
@@ -38,32 +38,7 @@ init() {
   gcloud config set project $PROJECT_ID
 
   printf "\n${BLUE}Set up gcloud and kubectl context ...${NORMAL}\n"
-  gcloud container clusters get-credentials default-cluster --zone ${REGION} --project ${PROJECT_ID}
-}
-
-add_service_account_keys() {
-  NAMESPACE=${SKAFFOLD_NAMESPACE}
-  GSA_NAME="${PROJECT_ID}-sa"
-  KSA_NAME="ksa"
-
-  printf "\n${BLUE}Create Kubernetes Service Account to cluster ...${NORMAL}\n"
-  declare EXISTING_KSA=`kubectl get sa -n ${NAMESPACE} | grep ${KSA_NAME}`
-  if [[ "$EXISTING_KSA" = "" ]]; then
-    kubectl create serviceaccount -n ${NAMESPACE} ${KSA_NAME}
-  fi
-
-  printf "\n${BLUE}Binding Kubernetes Service Account ${KSA_NAME} to GCP service account ${GSA_NAME} ...${NORMAL}\n"
-  gcloud iam service-accounts add-iam-policy-binding \
-    --role roles/iam.workloadIdentityUser \
-    --member "serviceAccount:${PROJECT_ID}.svc.id.goog[${NAMESPACE}/${KSA_NAME}]" \
-    ${GSA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com
-
-  printf "\n${BLUE}Adding service account annotation to ${KSA_NAME} ...${NORMAL}\n"
-  kubectl annotate serviceaccount \
-    --overwrite \
-    --namespace ${NAMESPACE} \
-    ${KSA_NAME} \
-    iam.gke.io/gcp-service-account=${GSA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com
+  gcloud container clusters get-credentials main-cluster --zone ${REGION} --project ${PROJECT_ID}
 }
 
 setup_namespace() {

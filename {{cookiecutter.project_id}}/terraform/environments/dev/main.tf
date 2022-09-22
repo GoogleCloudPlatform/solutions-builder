@@ -21,6 +21,8 @@ locals {
   ]
 }
 
+data "google_project" "project" {}
+
 module "project_services" {
   source     = "../../modules/project_services"
   project_id = var.project_id
@@ -28,10 +30,11 @@ module "project_services" {
 }
 
 module "service_accounts" {
-  depends_on = [module.project_services]
-  source     = "../../modules/service_accounts"
-  project_id = var.project_id
-  env        = var.env
+  depends_on     = [module.project_services]
+  source         = "../../modules/service_accounts"
+  project_id     = var.project_id
+  env            = var.env
+  project_number = data.google_project.project.number
 }
 
 module "vpc_network" {
@@ -70,21 +73,23 @@ module "ingress" {
   # Domains for API endpoint, excluding protocols.
   domain            = var.api_domain
   region            = var.region
-  cors_allow_origin = "http://localhost:4200,http://localhost:3000,${var.web_app_domain}"
+  cors_allow_origin = "http://localhost:4200,http://localhost:3000,http://${var.web_app_domain},https://${var.web_app_domain}"
 }
 
 module "firebase" {
+  depends_on       = [module.project_services]
   source           = "../../modules/firebase"
   project_id       = var.project_id
   firestore_region = var.firestore_region
 }
 
-module "cloudrun" {
-  depends_on = [module.project_services, module.vpc_network]
-  source     = "../../modules/cloudrun"
-  project_id = var.project_id
-  region     = var.region
-  services   = [
-    "cloudrun-sample"
-  ]
+module "cloudrun-sample" {
+  depends_on            = [module.project_services, module.vpc_network]
+  source                = "../../modules/cloudrun"
+  project_id            = var.project_id
+  region                = var.region
+  source_dir            = "../../../microservices/sample_service"
+  service_name          = "cloudrun-sample"
+  repository_id         = "cloudrun"
+  allow_unauthenticated = true
 }

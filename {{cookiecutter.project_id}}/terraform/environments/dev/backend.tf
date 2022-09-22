@@ -1,7 +1,7 @@
 terraform {
   backend "gcs" {
-    # Specify a GCS bucket for TF state.
-    bucket = "{{cookiecutter.project_id}}-tfstate"
+    # Uncomment below and specify a GCS bucket for TF state.
+    # bucket = "PROJECT_ID-tfstate"
     prefix = "env/dev"
   }
 }
