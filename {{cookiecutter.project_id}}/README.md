@@ -104,6 +104,12 @@ cd $BASE_DIR
 skaffold run -p prod --default-repo=gcr.io/$PROJECT_ID
 ```
 
+Test with API endpoint:
+```
+export API_DOMAIN=$(kubectl describe ingress | grep Address | awk '{print $2}')
+echo "http://${API_DOMAIN}/sample_service/docs"
+```
+
 ### Deploying Microservices to CloudRun
 
 Build common image
