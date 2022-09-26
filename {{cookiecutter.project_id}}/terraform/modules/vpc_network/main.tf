@@ -9,7 +9,7 @@ module "vpc" {
     {
       subnet_name               = "vpc-01-subnet-01"
       subnet_ip                 = "10.0.0.0/16"
-      subnet_region             = "{{cookiecutter.gcp_region}}"
+      subnet_region             = "us-central1"
       subnet_flow_logs          = "true"
       subnet_flow_logs_interval = "INTERVAL_10_MIN"
       subnet_flow_logs_sampling = 0.7

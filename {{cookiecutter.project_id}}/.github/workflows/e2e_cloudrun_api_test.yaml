@@ -14,10 +14,10 @@ on:
   workflow_dispatch:
 env:
   PROJECT_ID: {{cookiecutter.project_id}}
-  REGION: {{cookiecutter.gcp_region}}
+  REGION: us-central1
   ENV: dev
 
-{% raw %}
+# cookiecutter:raw {% raw %}
 jobs:
   build_common:
     name: Build Common image
@@ -162,4 +162,4 @@ jobs:
         SERVICE_NAME_PREFIX=e2e-pr${PR_NUMBER}-
         gcloud run services delete ${SERVICE_NAME_PREFIX}${{ matrix.cloudrun-services }} --region=${{ env.REGION }} --quiet
 
-{% endraw %}
+# cookiecutter:endraw {% endraw %}

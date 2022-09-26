@@ -12,7 +12,7 @@ env:
   TF_BUCKET: {{cookiecutter.project_id}}-tfstate
   PROJECT_ID: {{cookiecutter.project_id}}
 
-{% raw %}
+# cookiecutter:raw {% raw %}
 jobs:
   tf_plan_validate:
     runs-on: ubuntu-latest
@@ -82,4 +82,4 @@ jobs:
           </details>
         edit-mode: replace
 
-{% endraw %}
+# cookiecutter:endraw {% endraw %}

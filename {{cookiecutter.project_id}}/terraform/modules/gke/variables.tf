@@ -1,3 +1,20 @@
+/**
+ * Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 variable "project_id" {
   type        = string
   description = "project ID"
@@ -19,25 +36,35 @@ variable "region" {
 }
 
 variable "min_node_count" {
-  type = number
+  type        = number
   description = "Minimum number of nodes per zone"
-  default = 1
+  default     = 1
 }
 
 variable "max_node_count" {
-  type = number
+  type        = number
   description = "Maximum number of nodes per zone"
-  default = 1
+  default     = 1
 }
 
 variable "machine_type" {
-  type = string
+  type        = string
   description = "Node compute engine machine type"
-  default = "n1-standard-8"
+  default     = "n1-standard-8"
 }
 
 variable "disk_size_gb" {
-  type = number
+  type        = number
   description = "disk_size_gb"
-  default = 1000
+  default     = 1000
+}
+
+variable "node_locations" {
+  type    = string
+  default = ""
+}
+
+variable "kubernetes_version" {
+  type    = string
+  default = "1.22.10-gke.600"
 }

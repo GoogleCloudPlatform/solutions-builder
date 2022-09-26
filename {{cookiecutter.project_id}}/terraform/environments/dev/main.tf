@@ -50,14 +50,15 @@ module "gke" {
   # Only execute this module when feature_flags contains the keyword.
   count = (contains(regexall("[\\w\\d\\-_\\+\\.]+", var.feature_flags), "gke") ? 1 : 0)
 
-  source         = "../../modules/gke"
-  project_id     = var.project_id
-  cluster_name   = "main-cluster"
-  vpc_network    = "default-vpc"
-  region         = var.region
-  min_node_count = 1
-  max_node_count = 1
-  machine_type   = "n1-standard-8"
+  source             = "../../modules/gke"
+  project_id         = var.project_id
+  cluster_name       = "main-cluster"
+  kubernetes_version = "1.22.12-gke.2300"
+  vpc_network        = "default-vpc"
+  region             = var.region
+  min_node_count     = 1
+  max_node_count     = 1
+  machine_type       = "n1-standard-8"
 }
 
 module "ingress" {

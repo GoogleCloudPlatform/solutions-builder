@@ -16,12 +16,12 @@ env:
   SKAFFOLD_PROFILE: dev
   SKAFFOLD_NAMESPACE: default
   GKE_CLUSTER: main-cluster
-  GKE_ZONE: {{cookiecutter.gcp_region}}
+  GKE_ZONE: us-central1
   KUSTOMIZE_VERSION: 4.1.3
   SKAFFOLD_VERSION: 1.29.0
   SKAFFOLD_CACHE_GCS: gs://{{cookiecutter.project_id}}.appspot.com/skaffold/cache
 
-{% raw %}
+# cookiecutter:raw {% raw %}
 jobs:
   deploy_backends:
     name: Deploy microservices to GKE cluster
@@ -75,4 +75,4 @@ jobs:
         run: |
           gsutil cp ~/.skaffold/cache $SKAFFOLD_CACHE_GCS
 
-{% endraw %}
+# cookiecutter:endraw {% endraw %}

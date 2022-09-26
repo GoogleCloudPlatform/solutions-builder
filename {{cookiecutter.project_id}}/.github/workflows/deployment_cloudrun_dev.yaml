@@ -10,12 +10,12 @@ on:
       - 'utils/**'
   workflow_dispatch:
 
-{% raw %}
 env:
   PROJECT_ID: {{cookiecutter.project_id}}
-  REGION: {{cookiecutter.gcp_region}}
+  REGION: us-central1
   ENV: dev
 
+# cookiecutter:raw {% raw %}
 jobs:
   build_common:
     name: Build Common image
@@ -78,4 +78,4 @@ jobs:
           _IMAGE="${{ matrix.target-folder[1] }}",\
           _SERVICE_ACCOUNT="deployment-${{ env.ENV }}@${{ env.PROJECT_ID }}.iam.gserviceaccount.com"
 
-{% endraw %}
+# cookiecutter:endraw {% endraw %}

@@ -71,7 +71,7 @@ resource "kubernetes_ingress_v1" "default_ingress" {
     name = "default-ingress"
     annotations = {
       "kubernetes.io/ingress.class"                        = "nginx"
-      "cert-manager.io/cluster-issuer"                     = "module.cert_manager.cluster_issuer_name"
+      "cert-manager.io/cluster-issuer"                     = module.cert_manager.cluster_issuer_name
       "nginx.ingress.kubernetes.io/enable-cors"            = "true"
       "nginx.ingress.kubernetes.io/cors-allow-methods"     = "PUT,GET,POST,DELETE,OPTIONS"
       "nginx.ingress.kubernetes.io/cors-allow-origin"      = var.cors_allow_origin
@@ -81,115 +81,8 @@ resource "kubernetes_ingress_v1" "default_ingress" {
   }
 
   spec {
-    # Default backend to UI app.
-    default_backend {
-      service {
-        name = "adp-ui"
-        port {
-          number = 80
-        }
-      }
-    }
-
     rule {
       http {
-        # Upload Service
-        path {
-          backend {
-            service {
-              name = "upload-service"
-              port {
-                number = 80
-              }
-            }
-          }
-          path_type = "Prefix"
-          path      = "/upload_service"
-        }
-
-        # classification Service
-        path {
-          backend {
-            service {
-              name = "classification-service"
-              port {
-                number = 80
-              }
-            }
-          }
-          path_type = "Prefix"
-          path      = "/classification_service"
-        }
-
-        # validation Service
-        path {
-          backend {
-            service {
-              name = "validation-service"
-              port {
-                number = 80
-              }
-            }
-          }
-          path_type = "Prefix"
-          path      = "/validation_service"
-        }
-
-        # extraction Service
-        path {
-          backend {
-            service {
-              name = "extraction-service"
-              port {
-                number = 80
-              }
-            }
-          }
-          path_type = "Prefix"
-          path      = "/extraction_service"
-        }
-
-        # hitl Service
-        path {
-          backend {
-            service {
-              name = "hitl-service"
-              port {
-                number = 80
-              }
-            }
-          }
-          path_type = "Prefix"
-          path      = "/hitl_service"
-        }
-
-        # document-status Service
-        path {
-          backend {
-            service {
-              name = "document-status-service"
-              port {
-                number = 80
-              }
-            }
-          }
-          path_type = "Prefix"
-          path      = "/document_status_service"
-        }
-
-        # matching Service
-        path {
-          backend {
-            service {
-              name = "matching-service"
-              port {
-                number = 80
-              }
-            }
-          }
-          path = "/matching_service"
-        }
-
         # Sample Service
         path {
           backend {

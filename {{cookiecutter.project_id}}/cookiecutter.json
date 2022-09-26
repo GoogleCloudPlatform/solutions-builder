@@ -1,0 +1,15 @@
+{
+  "project_id": null,
+  "project_name": "My Project Name",
+  "project_short_description": "My Project Description",
+  "project_slug": "{{ cookiecutter.project_id.lower().replace(' ', '_').replace('-', '_') }}",
+  "gcp_region": "us-central1",
+  "version": "0.1.0",
+  "admin_email": "your_email@example.com",
+  "api_domain": "localhost",
+  "web_app_domain": "localhost",
+  "_copy_without_render": [
+    "*.html",
+    "**/.terraform"
+  ]
+}

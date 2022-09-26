@@ -21,6 +21,7 @@ ui-debug.log
 # .tfstate files
 *.tfstate
 *.tfstate.*
+.!*
 
 # tf lock files
 .terraform

@@ -13,6 +13,7 @@ Please contact {{cookiecutter.admin_email}} for any questions.
 export PROJECT_ID={{cookiecutter.project_id}}
 export ADMIN_EMAIL={{cookiecutter.admin_email}}
 export REGION={{cookiecutter.gcp_region}}
+export API_DOMAIN={{cookiecutter.api_domain}}
 export BASE_DIR=$(pwd)
 
 # Login to Google Cloud
@@ -61,11 +62,14 @@ Or, change the following Organization policy constraints in [GCP Console](https:
 
 ### GCP Foundation Setup - Terraform
 
-Set up Terraform environment variables and GCS bucket for state file:
+Set up Terraform environment variables and GCS bucket for state file.
+If the new project is just created recently, you may need to wait for 1-2 minutes
+before running the Terraform command.
 
 ```
 export TF_VAR_project_id=$PROJECT_ID
 export TF_VAR_api_domain=$API_DOMAIN
+export TF_VAR_web_app_domain=$API_DOMAIN
 export TF_VAR_admin_email=$ADMIN_EMAIL
 export TF_BUCKET_NAME="${PROJECT_ID}-tfstate"
 export TF_BUCKET_LOCATION="us"
@@ -78,16 +82,13 @@ Run Terraform apply
 
 ```
 cd terraform/environments/dev
-terraform init
-terraform apply
+terraform init -backend-config=bucket=$TF_BUCKET_NAME
 
-# Enter yes at the promopt to apply Terraform changes.
+# Enabling GCP services first.
+terraform apply -target=module.project_services -target=module.service_accounts -auto-approve
 
-Do you want to perform these actions?
-  Terraform will perform the actions described above.
-  Only 'yes' will be accepted to approve.
-
-  Enter a value: yes
+# Run the rest of Terraform
+terraform apply -auto-approve
 ```
 
 ### Deploying Kubernetes Microservices to GKE

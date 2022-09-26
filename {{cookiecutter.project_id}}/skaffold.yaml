@@ -22,5 +22,3 @@ profiles:
 - name: prod
 - name: staging
 - name: dev
-  activation:
-  - kubeContext: gke_{{cookiecutter.project_id}}_us-central1_main-cluster

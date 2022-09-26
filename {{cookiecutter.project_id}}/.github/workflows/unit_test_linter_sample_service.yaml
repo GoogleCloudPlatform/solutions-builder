@@ -14,7 +14,7 @@ on:
 env:
   PROJECT_ID: {{cookiecutter.project_id}}
 
-{% raw %}
+# cookiecutter:raw {% raw %}
 jobs:
   unit-test:
     runs-on: ubuntu-latest
@@ -93,4 +93,4 @@ jobs:
         cd ${{ matrix.target-folder }}/src
         python -m pylint $(git ls-files '*.py') --rcfile=$BASE_DIR/.pylintrc
 
-{% endraw %}
+# cookiecutter:endraw {% endraw %}
