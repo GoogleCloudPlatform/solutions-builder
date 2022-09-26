@@ -104,7 +104,7 @@ module "gke" {
 
 resource "time_sleep" "wait_for_gke" {
   depends_on      = [module.gke]
-  create_duration = "60s"
+  create_duration = "120s"
 }
 
 # Creating a Kubernetes Service account for Workload Identity
