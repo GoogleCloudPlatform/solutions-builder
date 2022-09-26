@@ -1,8 +1,40 @@
-locals {
-  compute_engine_sa = "serviceAccount:${data.google_project.project.number}@cloudbuild.gserviceaccount.com"
+resource "google_project_iam_member" "cloudbuild-sa-iam" {
+  for_each = toset([
+    "roles/compute.admin",
+    "roles/compute.serviceAgent",
+    "roles/eventarc.admin",
+    "roles/eventarc.eventReceiver",
+    "roles/eventarc.serviceAgent",
+    "roles/iam.serviceAccountTokenCreator",
+    "roles/iam.serviceAccountUser",
+    "roles/run.admin",
+    "roles/run.invoker",
+    "roles/serviceusage.serviceUsageConsumer",
+    "roles/storage.admin",
+  ])
+  role    = each.key
+  member  = "serviceAccount:${var.project_number}@cloudbuild.gserviceaccount.com"
+  project = var.project_id
 }
 
-data "google_project" "project" {}
+resource "google_project_iam_member" "default-compute-sa-iam" {
+  for_each = toset([
+    "roles/compute.admin",
+    "roles/compute.serviceAgent",
+    "roles/eventarc.admin",
+    "roles/eventarc.eventReceiver",
+    "roles/eventarc.serviceAgent",
+    "roles/iam.serviceAccountTokenCreator",
+    "roles/iam.serviceAccountUser",
+    "roles/run.admin",
+    "roles/run.invoker",
+    "roles/serviceusage.serviceUsageConsumer",
+    "roles/storage.admin",
+  ])
+  role    = each.key
+  member  = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+  project = var.project_id
+}
 
 module "service_accounts" {
   source       = "terraform-google-modules/service-accounts/google"
@@ -32,17 +64,4 @@ module "service_accounts" {
     "roles/viewer",
   ] : "${var.project_id}=>${i}"]
   generate_keys = false
-}
-
-module "cloudbuild_sa_iam_bindings" {
-  source  = "terraform-google-modules/iam/google//modules/projects_iam"
-  version = "7.4.1"
-
-  projects = [var.project_id]
-  mode     = "additive"
-
-  bindings = {
-    "roles/run.admin" = [local.compute_engine_sa]
-    "roles/iam.serviceAccountUser" = [local.compute_engine_sa]
-  }
 }

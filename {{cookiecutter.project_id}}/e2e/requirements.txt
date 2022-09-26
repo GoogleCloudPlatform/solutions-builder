@@ -1,0 +1,17 @@
+faker==8.5.1
+firebase_admin
+fireo==1.4.1
+google-cloud-bigquery==2.20.0
+google-cloud-bigquery==2.20.0
+google-cloud-logging
+google-cloud-pubsub==2.8.0
+google-cloud-secret-manager==2.5.0
+mock
+pandas==1.2.4
+pylint
+pytest
+pytest - cov
+pytest - custom_exit_code
+pytest - mock
+pyyaml
+requests

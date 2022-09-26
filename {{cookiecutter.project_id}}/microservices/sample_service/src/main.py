@@ -8,7 +8,7 @@ import config
 from common.utils.logging_handler import Logger
 from concurrent.futures import ThreadPoolExecutor
 from fastapi import FastAPI, Request
-from routes import claim
+from routes import user
 
 app = FastAPI(title="Sample Service API")
 
@@ -37,11 +37,16 @@ def health_check():
   return True
 
 
+@app.get("/")
+def hello():
+  return "Hello World."
+
+
 api = FastAPI(title="Sample Service API", version="latest")
 
-api.include_router(claim.router)
+api.include_router(user.router)
 
-app.mount("/sample_service/v1", api)
+app.mount("/sample_service", api)
 
 if __name__ == "__main__":
   uvicorn.run(

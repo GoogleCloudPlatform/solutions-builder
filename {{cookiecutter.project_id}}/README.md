@@ -4,9 +4,25 @@
 
 Please contact {{cookiecutter.admin_email}} for any questions.
 
-## Getting Started
+# Getting Started
 
 ### Prerequisites
+
+```
+# Set up environmental variables
+export PROJECT_ID={{cookiecutter.project_id}}
+export ADMIN_EMAIL={{cookiecutter.admin_email}}
+export REGION={{cookiecutter.gcp_region}}
+export API_DOMAIN={{cookiecutter.api_domain}}
+export BASE_DIR=$(pwd)
+
+# Login to Google Cloud
+gcloud auth application-default login
+gcloud auth application-default set-quota-project $PROJECT_ID
+gcloud config set project $PROJECT_ID
+```
+
+For development with Kubernetes on GKE:
 
 Install required packages:
 
@@ -20,73 +36,152 @@ Install required packages:
   choco install -y skaffold kustomize gcloudsdk
   ```
 
+- For Linux/Ubuntu:
+  ```
+  curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && \
+  sudo install skaffold /usr/local/bin/
+  ```
+
 * Make sure to use __skaffold 1.24.1__ or later for development.
 
-### Init GCP foundation
+### GCP Orgnization policy
 
+Optionally, you may need to update Organization policies for CI/CD test automation.
 
+Run the following commands to update Organization policies:
+```
+export ORGANIZATION_ID=$(gcloud organizations list --format="value(name)")
+gcloud resource-manager org-policies disable-enforce constraints/compute.requireOsLogin --organization=$ORGANIZATION_ID
+gcloud resource-manager org-policies delete constraints/compute.vmExternalIpAccess --organization=$ORGANIZATION_ID
+gcloud resource-manager org-policies delete constraints/iam.allowedPolicyMemberDomains --organization=$ORGANIZATION_ID
+```
 
-## Development
+Or, change the following Organization policy constraints in [GCP Console](https://console.cloud.google.com/iam-admin/orgpolicies)
+- constraints/compute.requireOsLogin - Enforced Off
+- constraints/compute.vmExternalIpAccess - Allow All
+
+### GCP Foundation Setup - Terraform
+
+Set up Terraform environment variables and GCS bucket for state file.
+If the new project is just created recently, you may need to wait for 1-2 minutes
+before running the Terraform command.
+
+```
+export TF_VAR_project_id=$PROJECT_ID
+export TF_VAR_api_domain=$API_DOMAIN
+export TF_VAR_web_app_domain=$API_DOMAIN
+export TF_VAR_admin_email=$ADMIN_EMAIL
+export TF_BUCKET_NAME="${PROJECT_ID}-tfstate"
+export TF_BUCKET_LOCATION="us"
+
+# Create Terraform Statefile in GCS bucket.
+bash setup/setup_terraform.sh
+```
+
+Run Terraform apply
+
+```
+cd terraform/environments/dev
+terraform init -backend-config=bucket=$TF_BUCKET_NAME
+
+# Enabling GCP services first.
+terraform apply -target=module.project_services -target=module.service_accounts -auto-approve
+
+# Run the rest of Terraform
+terraform apply -auto-approve
+```
+
+### Deploying Kubernetes Microservices to GKE
+
+Connect to the `default-cluster`:
+```
+gcloud container clusters get-credentials main-cluster --region $REGION --project $PROJECT_ID
+```
+
+Build all microservices (including web app) and deploy to the cluster:
+```
+cd $BASE_DIR
+skaffold run -p prod --default-repo=gcr.io/$PROJECT_ID
+```
+
+### Deploying Microservices to CloudRun
+
+Build common image
+```
+cd common
+gcloud builds submit --config=cloudbuild.yaml --substitutions=\
+_PROJECT_ID="$PROJECT_ID",\
+_REGION="$REGION",\
+_REPOSITORY="cloudrun",\
+_IMAGE="common"
+```
+
+Set up endpoint permission:
+```
+export SERVICE_NAME=sample-service
+gcloud run services add-iam-policy-binding $SERVICE_NAME \
+--region="$REGION" \
+--member="allUsers" \
+--role="roles/run.invoker"
+```
+
+Build service image
+```
+gcloud builds submit --config=cloudbuild.yaml --substitutions=\
+_CLOUD_RUN_SERVICE_NAME=$SERVICE_NAME,\
+_PROJECT_ID="$PROJECT_ID",\
+_REGION="$REGION",\
+_REPOSITORY="cloudrun",\
+_IMAGE="cloudrun-sample",\
+_SERVICE_ACCOUNT="deployment-dev@$PROJECT_ID.iam.gserviceaccount.com",\
+_ALLOW_UNAUTHENTICATED_FLAG="--allow-unauthenticated"
+```
+
+Manually deploy a microservice to CloudRun with public endpoint:
+```
+gcloud run services add-iam-policy-binding $SERVICE_NAME \
+--region="$REGION" \
+--member="allUsers" \
+--role="roles/run.invoker"
+```
+
+# Development
+
+## Development with Kubernetes
 
 ### Initial setup for local development
 After cloning the repo, please set up for local development.
 
 * Export GCP project id and the namespace based on your Github handle (i.e. user ID)
   ```
-  export PROJECT_ID=<Your Project ID>
+  export PROJECT_ID={{cookiecutter.project_id}}
+  export REGION={{cookiecutter.gcp_region}}
   export SKAFFOLD_NAMESPACE=<Replace with your Github user ID>
-  export REGION=<Your region, e.g. us-central1>
   ```
-* Log in gcloud SDK:
-  ```
-  gcloud auth application-default login
-  ```
-* Run the following to set up critical context and environment variables:
+* Run the following to create skaffold namespace, and use the default cluster name as `default_cluster`:
   ```
   ./setup/setup_local.sh
   ```
-  This shell script does the following:
-  - Set the current context to `gke_{{cookiecutter.project_id}}_{{cookiecutter.gcp_region}}_default_cluster`. The default cluster name is `default_cluster`.
-    > **IMPORTANT**: Please do not change this context name.
-  - Create the namespace $SKAFFOLD_NAMESPACE and set this namespace for any further kubectl operations. It's okay if the namespace already exists.
 
-### Build and run all microservices in the default GKE cluster
+## Build and Run
+
+### Build and run all microservices in the default GKE cluster with live reload
 
 > **_NOTE:_**  By default, skaffold builds with CloudBuild and runs in GKE cluster, using the namespace set above.
-
-To build and run in cluster:
 ```
-skaffold run --port-forward
+skaffold dev
 ```
+- Please note that any change in the code locally will rerun the build process.
 
-### Build and run all microservices in Develompent mode with live reload
-
-To build and run in cluster with hot reload:
-```
-skaffold dev --port-forward
-```
-- Please note that any change in the code will trigger the build process.
-
-### Build and run with a specific microservice
+### Build and run with specific microservice(s)
 
 ```
-skaffold run --port-forward -m <Microservice>
-```
-
-You can also run multiple specific microservices altogether. E.g.:
-
-```
-skaffold run --port-forward -m sample-service,other-service
+skaffold dev -m <service1>,<service2>
 ```
 
 ### Build and run microservices with a custom Source Repository path
 ```
-skaffold dev --default-repo=<Image registry path> --port-forward
-```
-
-E.g. you can point to a different GCP Cloud Source Repository path:
-```
-skaffold dev --default-repo=gcr.io/another-project-path --port-forward
+skaffold dev --default-repo=gcr.io/$PROJECT_ID
 ```
 
 ### Run with local minikube cluster
@@ -103,36 +198,25 @@ choco install -y minikube
 
 Make sure the Docker daemon is running locally. To start minikube:
 ```
+# This will reset the kubectl context to the local minikube.
 minikube start
-```
-- This will reset the kubectl context to the local minikube.
 
-To build and run locally:
-```
-skaffold run --port-forward
-
-# Or, to build and run locally with hot reload:
-skaffold dev --port-forward
-```
-
-Optionally, you may want to set `GOOGLE_APPLICATION_CREDENTIALS` manually to a local JSON key file.
-```
-GOOGLE_APPLICATION_CREDENTIALS=<Path to Service Account key JSON file>
+# Build and run locally with hot reload:
+skaffold dev
 ```
 
 ### Deploy to a specific GKE cluster
 
 > **IMPORTANT**: Please change gcloud project and kubectl context before running skaffold.
 
-Replace the `<Custom GCP Project ID>` with a specific project ID and run the following:
 ```
-export PROJECT_ID=<Custom GCP Project ID>
+export PROJECT_ID={{cookiecutter.project_id}}
 
 # Switch to a specific project.
 gcloud config set project $PROJECT_ID
 
 # Assuming the default cluster name is "default_cluster".
-gcloud container clusters get-credentials default_cluster --zone us-central1-a --project $PROJECT_ID
+gcloud container clusters get-credentials default_cluster --zone {{cookiecutter.gcp_region}}-a --project $PROJECT_ID
 ```
 
 Run with skaffold:
@@ -146,10 +230,10 @@ skaffold dev -p custom --default-repo=gcr.io/$PROJECT_ID
 ### Build and run microservices with a different Skaffold profile
 ```
 # Using custom profile
-skaffold dev -p custom --port-forward
+skaffold dev -p custom
 
 # Using prod profile
-skaffold dev -p prod --port-forward
+skaffold dev -p prod
 ```
 
 ### Skaffold profiles
@@ -160,25 +244,77 @@ By default, the Skaffold YAML contains the following pre-defined profiles ready 
 - **prod** - This is the profile for building and deploying to the Prod environment, e.g. to a customer's Prod environment.
 - **custom** - This is the profile for building and deploying to a custom GCP project environments, e.g. to deploy to a staging or a demo environment.
 
-### Useful Kubectl commands
+## Development with CloudRun (serverless)
 
-To check if pods are deployed and running:
-```
-kubectl get po
+TBD
 
-# Or, watch the live update in a separate terminal:
-watch kubectl get po
-```
+## Unit tests - microservices
 
-To create a namespace:
+Install Firebase CLI:
 ```
-kubectl create ns <New namespace>
+curl -sL https://firebase.tools | bash
 ```
 
-To set a specific namespace for further kubectl operations:
+Install Virtualenv and pip requirements
 ```
-kubectl config set-context --current --namespace=<Your namespace>
+# Go to a specific microservie folder:
+export BASE_DIR=$(pwd)
+cd microservices/sample_service
+virtualenv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+pip install -r requirements-test.txt
 ```
+
+Run unit tests locally:
+```
+PYTEST_ADDOPTS="--cache-clear --cov . " PYTHONPATH=$BASE_DIR/common/src python -m pytest
+```
+
+#### Run linter locally:
+```
+python -m pylint $(git ls-files '*.py') --rcfile=$BASE_DIR/.pylintrc
+```
+
+#### Unit test file format:
+
+All unit test files follow the filename format:
+
+- Python:
+  ```
+  <original_filename>_test.py
+  ```
+
+## End-to-End API tests
+
+TBD
+
+# CI/CD and Test Automation
+
+## Github Actions
+
+### Test Github Action workflows locally
+
+- Install Docker desktop: https://www.docker.com/products/docker-desktop/
+- Install [Act](https://github.com/nektos/act)
+  ```
+  # Mac
+  brew install act
+
+  # Windows
+  choco install act-cli
+  ```
+
+- Run a specific Workflow
+  ```
+  act --workflows .github/workflows/e2e_gke_api_test.yaml
+  ```
+
+## CloudBuild
+
+TBD
+
+# Development Process & Best Practices
 
 ## Code Submission Process
 
@@ -197,8 +333,8 @@ kubectl config set-context --current --namespace=<Your namespace>
   ```
   git remote -v
   # This will display the detailed remote list like below.
-  # origin  git@github.com:jonchenn/$REPOSITORY_NAME.git (fetch)
-  # origin  git@github.com:jonchenn/$REPOSITORY_NAME.git (push)
+  # origin  git@github.com:<your-github-id>/$REPOSITORY_NAME.git (fetch)
+  # origin  git@github.com:<your-github-id>/$REPOSITORY_NAME.git (push)
   ```
 
   - If for some reason your local git copy doesn’t have the correct remotes, run the following:

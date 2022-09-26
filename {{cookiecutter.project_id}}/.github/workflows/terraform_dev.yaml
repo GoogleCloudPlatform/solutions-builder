@@ -1,15 +1,9 @@
 # This workflow will run Terraform init, validate, and plan on Pull Request=
-name: Dev Project Terraform
+name: Terraform apply in Dev
 on:
-  pull_request:
-    branches:
-      - master
-    paths:
-      - 'terraform/environments/dev/**'
-      - 'terraform/modules/**'
   push:
     branches:
-      - master
+      - main
     paths:
       - 'terraform/environments/dev/**'
       - 'terraform/modules/**'
@@ -18,7 +12,7 @@ env:
   TF_BUCKET: {{cookiecutter.project_id}}-tfstate
   PROJECT_ID: {{cookiecutter.project_id}}
 
-{% raw %}
+# cookiecutter:raw {% raw %}
 jobs:
   tf_plan_validate:
     runs-on: ubuntu-latest
@@ -35,7 +29,7 @@ jobs:
       uses: google-github-actions/setup-gcloud@master
       with:
         project_id: ${{ env.PROJECT_ID }}
-        service_account_key: ${{ secrets.DEV_TF_SA_KEY }}
+        service_account_key: ${{ secrets.TF_DEV_SA_KEY }}
         export_default_credentials: true
 
     - name: Terraform Init
@@ -88,4 +82,4 @@ jobs:
           </details>
         edit-mode: replace
 
-{% endraw %}
+# cookiecutter:endraw {% endraw %}

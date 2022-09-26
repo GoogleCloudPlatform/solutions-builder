@@ -1,16 +1,16 @@
 # Google Cloud Solutions Template
 
 > A template to generate a new project with built-in structure and features
-> to accelerate your project setup. 
+> to accelerate your project setup.
 
 ## TL;DR
 
-Solutions Template is a boilerplate template for building repeatable 
-solutions with the best practices in architecture on Google Cloud, including GKE 
+Solutions Template is a boilerplate template for building repeatable
+solutions with the best practices in architecture on Google Cloud, including GKE
 clusters, Test Automation, CI/CD, as well as development process.
 
 This template provides built-in and ready-to-ship sample features including:
-* Kubernetes-based microservices 
+* Kubernetes-based microservices
 * Simplified deployment using Skaffold and Kustomize
 * Terraform Google Cloud foundation setup
 * CI/CD deployment (with Github Actions)
@@ -145,7 +145,7 @@ We are also working on the following features:
 ### Microservices on Kubernetes (GKE)
 
 This Solutions Template contains a working stack of microservices on Kubernetes (GKE).
-You will be able to deploy and run the `sample-service` with simple CRUD operations for `User` objects stored in Firestore. 
+You will be able to deploy and run the `sample-service` with simple CRUD operations for `User` objects stored in Firestore.
 
 It comes with ready-to-deploy structure using Skaffold and Kustomize. See examples below.
 

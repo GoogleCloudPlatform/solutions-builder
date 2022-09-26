@@ -1,23 +1,21 @@
 """
-Firestore emulator fixture for re-use in testing
+  Pytest Fixture for getting testclient from fastapi
 """
-
 import os
 import signal
 import subprocess
 import time
-
 import requests
-
 import pytest
 
 # disabling pylint rules that conflict with pytest fixtures
-# pylint: disable=unused-argument,redefined-outer-name
-
+# pylint: disable=unused-argument,redefined-outer-name,unused-import
+from fastapi.testclient import TestClient
+from main import app
 
 # recreate the emulator each module - could consider changing to session
 # pylint: disable = consider-using-with, subprocess-popen-preexec-fn
-@pytest.fixture(scope="module")
+@pytest.fixture
 def firestore_emulator():
 
   emulator = subprocess.Popen(
@@ -46,10 +44,14 @@ def firestore_emulator():
   # TODO: script to unset / reset the environmental variables
   # instead of just delete
 
-
 # pylint: disable = line-too-long
 @pytest.fixture
 def clean_firestore(firestore_emulator):
   requests.delete(
       "http://localhost:8080/emulator/v1/projects/fake-project/databases/(default)/documents"
   )
+
+@pytest.fixture
+def client_with_emulator(clean_firestore, scope="module"):
+  test_client = TestClient(app)
+  yield test_client

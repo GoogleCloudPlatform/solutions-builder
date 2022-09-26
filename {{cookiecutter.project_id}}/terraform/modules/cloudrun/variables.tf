@@ -8,7 +8,23 @@ variable "region" {
   description = "GCP region"
 }
 
-variable "services" {
-  type        = list(any)
-  description = "List of CloudRun services"
+variable "service_name" {
+  type        = string
+  description = "CloudRun service name"
+}
+
+variable "source_dir" {
+  type        = string
+  description = "Source directory of the CloudRun service"
+}
+
+variable "repository_id" {
+  type        = string
+  description = "Repository ID in Artifact Registry"
+}
+
+variable "allow_unauthenticated" {
+  type        = bool
+  description = "Whether to allow unauthenticated access"
+
 }
