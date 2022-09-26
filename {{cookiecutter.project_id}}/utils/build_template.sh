@@ -75,9 +75,12 @@ build_template() {
   echo
 
   for folder in ${folders[@]}; do
-    rsync -av $folder "$build_folder/" \
-    --exclude=.venv --exclude=.pytest_cache --exclude=.coverage \
-    --exclude=.vscode --exclude=__pycache__ \
+    rsync -rv $folder "$build_folder/" \
+    --exclude=.venv \
+    --exclude=.pytest_cache \
+    --exclude=.coverage \
+    --exclude=.vscode \
+    --exclude=__pycache__ \
     --exclude=.terraform*
 
     echo
