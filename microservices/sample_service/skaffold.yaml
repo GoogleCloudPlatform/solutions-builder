@@ -1,0 +1,86 @@
+apiVersion: skaffold/v2beta12
+kind: Config
+metadata:
+  name: sample-service
+requires:
+  - path: ../../common
+    configs: [common]
+build:
+  tagPolicy:
+    gitCommit: {}
+  local:
+    concurrency: 0
+  artifacts:
+  - image: sample-service
+    requires:
+      - image: common
+        alias: BASE_IMG
+    sync:
+      infer:
+        - '**/*.py'
+        - '**/*.json'
+portForward:
+- resourceType: service
+  resourceName: sample-service
+  port: 80
+  localPort: 8888
+deploy:
+  kustomize:
+    paths:
+    - ./kustomize/minikube
+profiles:
+- name: custom
+  build:
+    googleCloudBuild: {}
+    artifacts:
+    - image: sample-service
+      requires:
+      - image: common
+        alias: BASE_IMG
+  deploy:
+    kustomize:
+      paths:
+      - ./kustomize/custom
+- name: prod_non_cloudbuild
+  deploy:
+    kustomize:
+      paths:
+      - ./kustomize/prod
+- name: prod
+  deploy:
+    kustomize:
+      paths:
+      - ./kustomize/prod
+  build:
+    googleCloudBuild: {}
+    artifacts:
+    - image: sample-service
+      docker:
+        cacheFrom:
+          - sample-service
+          - sample-service:latest
+      requires:
+      - image: common
+        alias: BASE_IMG
+- name: dev
+  activation:
+  - kubeContext: gke_solutions-template-sandbox_us-central1_default-cluster
+  build:
+    googleCloudBuild: {}
+    artifacts:
+    - image: gcr.io/solutions-template-sandbox/sample-service
+      docker:
+        cacheFrom:
+          - gcr.io/solutions-template-sandbox/sample-service
+          - gcr.io/solutions-template-sandbox/sample-service:latest
+      requires:
+        - image: gcr.io/solutions-template-sandbox/common
+          alias: BASE_IMG
+      sync:
+        infer:
+          - '**/*.py'
+          - '**/*.json'
+  deploy:
+    kustomize:
+      paths:
+      - ./kustomize/dev

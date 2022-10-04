@@ -1,0 +1,96 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Unit test & lint for all services
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      # TODO: Add all microservice folders below.
+      - 'microservices/**.py'
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: solutions-template-sandbox
+
+# cookiecutter:raw {% raw %}
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.7]
+        target-folder: [
+          # TODO: Add all microservice folders below.
+          microservices/sample_service,
+        ]
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install gcloud
+      uses: google-github-actions/setup-gcloud@v0
+      with:
+        project_id: ${{env.PROJECT_ID}}
+        service_account_key: ${{ secrets.DEPLOYMENT_DEV_SA_KEY }}
+        export_default_credentials: true
+
+    - name: Install Firebase CLI
+      run: |
+        curl -sL https://firebase.tools | bash
+
+    - name: Download Firestore emulator
+      run: |
+        firebase setup:emulators:firestore
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        BASE_DIR=$(pwd)
+        cd ${{ matrix.target-folder }}
+        python -m pip install --upgrade pip
+        python -m pip install pytest pytest-custom_exit_code pytest-cov pylint pytest-mock mock
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
+        if [ -f $BASE_DIR/common/requirements.txt ]; then pip install -r $BASE_DIR/common/requirements.txt; fi
+
+    - name: Run pytest with coverage
+      run: |
+        BASE_DIR=$(pwd)
+        cd ${{ matrix.target-folder }}/src
+        PYTEST_ADDOPTS="--cache-clear --cov . " PYTHONPATH=$BASE_DIR/common/src python -m pytest
+
+  linter:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.7]
+        target-folder: [
+          common,
+        ]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        cd ${{ matrix.target-folder }}
+        python -m pip install --upgrade pip
+        python -m pip install pylint
+
+    - name: Lint with pylint
+      run: |
+        BASE_DIR=$(pwd)
+        cd ${{ matrix.target-folder }}/src
+        python -m pylint $(git ls-files '*.py') --rcfile=$BASE_DIR/.pylintrc
+
+# cookiecutter:endraw {% endraw %}

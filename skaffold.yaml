@@ -1,0 +1,24 @@
+# Master Skaffold
+apiVersion: skaffold/v2beta12
+kind: Config
+metadata:
+  name: backends
+requires:
+- path: ./common
+  configs: [common]
+  activeProfiles: &profiles
+  - name: prod
+    activatedBy: [prod]
+  - name: staging
+    activatedBy: [staging]
+  - name: dev
+    activatedBy: [dev]
+
+- path: ./microservices/sample_service
+  configs: [sample-service]
+  activeProfiles:  *profiles
+
+profiles:
+- name: prod
+- name: staging
+- name: dev

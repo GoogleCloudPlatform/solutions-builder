@@ -1,0 +1,7 @@
+backports-unittest-mock
+faker
+mock
+pylint
+pytest
+pytest-cov
+pytest-custom_exit_code

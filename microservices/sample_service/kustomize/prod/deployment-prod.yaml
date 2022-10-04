@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-service
+spec:
+  replicas: 3
+  template:
+    spec:
+      containers:
+      - name: sample-service
+        image: sample-service
+        imagePullPolicy: Always
+        env:
+        - name: PROJECT_ID
+          valueFrom:
+            configMapKeyRef:
+              name: env-vars
+              key: PROJECT_ID
+        - name: EXTERNAL_DATA_PROJECT_ID
+          valueFrom:
+            configMapKeyRef:
+              name: env-vars
+              key: EXTERNAL_DATA_PROJECT_ID
