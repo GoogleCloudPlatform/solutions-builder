@@ -37,7 +37,7 @@ create_bucket () {
   printf "PROJECT_ID=${PROJECT_ID}\n"
   printf "TF_BUCKET_NAME=${TF_BUCKET_NAME}\n"
   printf "TF_BUCKET_LOCATION=${TF_BUCKET_LOCATION}\n"
-  
+
   print_highlight "Creating terraform state bucket: ${TF_BUCKET_NAME}\n"
   gsutil mb -l $TF_BUCKET_LOCATION gs://$TF_BUCKET_NAME
   gsutil versioning set on gs://$TF_BUCKET_NAME
@@ -53,7 +53,7 @@ print_highlight () {
   printf "${BLUE}$1${NORMAL}\n"
 }
 
-create_bucket
 enable_apis
+create_bucket
 
 print_highlight "Terraform state bucket: ${TF_BUCKET_NAME}\n"

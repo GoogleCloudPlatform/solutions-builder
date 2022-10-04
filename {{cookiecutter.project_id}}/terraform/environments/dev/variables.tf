@@ -3,7 +3,7 @@ variable "feature_flags" {
   description = "A comma-seperated string of feature flags to enable specific terraform blocks."
 
   # TODO: Use Cookiecutter to replace this string.
-  default = "gke,gke-ingress,cloudrun"
+  default = "gke,gke-ingress"
 }
 
 variable "env" {
