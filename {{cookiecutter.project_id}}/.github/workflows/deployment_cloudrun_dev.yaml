@@ -12,7 +12,7 @@ on:
 
 env:
   PROJECT_ID: {{cookiecutter.project_id}}
-  REGION: us-central1
+  REGION: {{cookiecutter.gcp_region}}
   ENV: dev
 
 # cookiecutter:raw {% raw %}

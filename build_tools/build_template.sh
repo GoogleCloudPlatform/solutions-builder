@@ -13,13 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-PROJECT_ID="{{cookiecutter.project_id}}"
-REGOIN="us-central1"
-ADMIN_EMAIL="{{cookiecutter.admin_email}}"
+PROJECT_ID="solutions-template-sandbox"
+REGION="us-central1"
+ADMIN_EMAIL="your_email@example.com"
 
 declare -a EnvVars=(
   "PROJECT_ID"
-  "REGOIN"
+  "REGION"
   "ADMIN_EMAIL"
 )
 for variable in ${EnvVars[@]}; do
@@ -66,6 +66,10 @@ build_template() {
   echo "Creating build folder at ${build_folder}"
   mkdir -p $build_folder
   cp * $build_folder
+  cp build_tools/README.md $build_folder
+
+  # Remove Cookiecutter file in the root.
+  rm $build_folder/cookiecutter.json
 
   echo "Replacing with cookiecutter vars with:"
   echo
@@ -88,6 +92,9 @@ build_template() {
     replace_cookiecutter_vars "$build_folder/$folder"
     echo
   done
+
+  # Clean up backup files
+  find . -name '.!*' -exec rm -rf {} \;
 
   # Verify
   verify_result=""

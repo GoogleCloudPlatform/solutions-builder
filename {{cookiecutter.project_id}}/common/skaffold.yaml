@@ -37,7 +37,7 @@ profiles:
           - '**/*.json'
 - name: dev
   activation:
-  - kubeContext: gke_{{cookiecutter.project_id}}_us-central1_main-cluster
+  - kubeContext: gke_{{cookiecutter.project_id}}_{{cookiecutter.gcp_region}}_main-cluster
   build:
     googleCloudBuild: {}
     artifacts:

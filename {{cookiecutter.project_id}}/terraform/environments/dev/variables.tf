@@ -26,7 +26,7 @@ variable "project_id" {
 variable "region" {
   type        = string
   description = "Default GCP region"
-  default     = "us-central1"
+  default     = "{{cookiecutter.gcp_region}}"
 
   validation {
     condition     = length(var.region) > 0
@@ -54,7 +54,7 @@ variable "storage_multiregion" {
 variable "admin_email" {
   type = string
   # TODO: replace with your own email
-  default = "{{cookiecutter.admin_email}}"
+  default = "admin@google.com"
 }
 
 variable "api_domain" {
