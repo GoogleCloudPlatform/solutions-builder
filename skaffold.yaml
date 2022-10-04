@@ -6,17 +6,10 @@ metadata:
 requires:
 - path: ./common
   configs: [common]
-  activeProfiles: &profiles
-  - name: prod
-    activatedBy: [prod]
-  - name: staging
-    activatedBy: [staging]
-  - name: dev
-    activatedBy: [dev]
 
 - path: ./microservices/sample_service
   configs: [sample-service]
-  activeProfiles:  *profiles
+
 
 profiles:
 - name: prod
