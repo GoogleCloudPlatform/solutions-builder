@@ -40,7 +40,6 @@ declare -a folders=(
   "microservices"
   "setup"
   "terraform"
-  "utils"
 )
 
 get_machine_type() {
@@ -65,7 +64,7 @@ build_template() {
 
   echo "Creating build folder at ${build_folder}"
   mkdir -p $build_folder
-  cp * $build_folder
+  cp {.,}* $build_folder
   cp build_tools/README.md $build_folder
 
   # Remove Cookiecutter file in the root.

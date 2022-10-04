@@ -74,6 +74,10 @@ export TF_VAR_admin_email=$ADMIN_EMAIL
 export TF_BUCKET_NAME="${PROJECT_ID}-tfstate"
 export TF_BUCKET_LOCATION="us"
 
+# Grant Storage admin to the current user IAM.
+export CURRENT_USER=$(gcloud config list account --format "value(core.account)")
+gcloud projects add-iam-policy-binding $PROJECT_ID --member="user:$CURRENT_USER" --role='roles/storage.admin'
+
 # Create Terraform Statefile in GCS bucket.
 bash setup/setup_terraform.sh
 ```

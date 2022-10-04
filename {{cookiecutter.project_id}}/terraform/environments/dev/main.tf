@@ -86,6 +86,9 @@ module "firebase" {
 
 module "cloudrun-sample" {
   depends_on            = [module.project_services, module.vpc_network]
+  # Only execute this module when feature_flags contains the keyword.
+  count = (contains(regexall("[\\w\\d\\-_\\+\\.]+", var.feature_flags), "cloudrun") ? 1 : 0)
+
   source                = "../../modules/cloudrun"
   project_id            = var.project_id
   region                = var.region
