@@ -9,9 +9,3 @@ requires:
 
 - path: ./microservices/sample_service
   configs: [sample-service]
-
-
-profiles:
-- name: prod
-- name: staging
-- name: dev
