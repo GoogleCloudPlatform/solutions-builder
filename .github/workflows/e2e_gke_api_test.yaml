@@ -13,15 +13,15 @@ on:
       - 'utils/**'
   workflow_dispatch:
 env:
-  PROJECT_ID: {{cookiecutter.project_id}}
-  SKAFFOLD_DEFAULT_REPO: gcr.io/{{cookiecutter.project_id}}
+  PROJECT_ID: solutions-template-sandbox
+  SKAFFOLD_DEFAULT_REPO: gcr.io/solutions-template-sandbox
   SKAFFOLD_PROFILE: dev
   SKAFFOLD_NAMESPACE: default
   GKE_CLUSTER: main-cluster
   GKE_ZONE: us-central1
   KUSTOMIZE_VERSION: 4.1.3
   SKAFFOLD_VERSION: 1.29.0
-  SKAFFOLD_CACHE_GCS: gs://{{cookiecutter.project_id}}.appspot.com/skaffold/cache
+  SKAFFOLD_CACHE_GCS: gs://solutions-template-sandbox.appspot.com/skaffold/cache
 
 # cookiecutter:raw {% raw %}
 jobs:

@@ -9,8 +9,8 @@ on:
       - 'terraform/modules/**'
 env:
   TF_ACTION_WORKING_DIR: terraform/environments/dev
-  TF_BUCKET: {{cookiecutter.project_id}}-tfstate
-  PROJECT_ID: {{cookiecutter.project_id}}
+  TF_BUCKET: solutions-template-sandbox-tfstate
+  PROJECT_ID: solutions-template-sandbox
 
 # cookiecutter:raw {% raw %}
 jobs:
