@@ -142,48 +142,6 @@ We are also working on the following features:
 - CloudRun Services
 - Test Automation and Ci/CD with CloudBuild
 
-### Microservices locally using Minikube
-
-Minikube provides a local GKE development experience that allows for rapid prototyping without the need to deploy to GKE - though `skaffold` makes deploying to GKE quite easy as you'll see.
-
-- [Install minikube](https://minikube.sigs.k8s.io/docs/start/)
-- Turn on minikube
-  - `minikube start`
-
-#### Run all microservices
-
-To deploy all microservices to your minikube cluster, run the following:
-
-```
-# if PROJECT_ID variable is used in your containers
-export PROJECT_ID=<your-project>
-
-# Deploy all microservices to the default GKE cluster:
-skaffold dev
-```
-
-#### ADVANCED: Run on minikube with your GCP credentials
-
-This will mount your GCP credentials to every pod created in minikube. See [this guide](https://minikube.sigs.k8s.io/docs/handbook/addons/gcp-auth/) for more info.
-
-The addon normally uses the [Google Application Default Credentials](https://google.aip.dev/auth/4110) as configured with `gcloud auth application-default login`. If you already have a json credentials file you want specify, such as to use a service account, set the GOOGLE_APPLICATION_CREDENTIALS environment variable to point to that file.
-
-##### User credentials
-
-```
-gcloud auth application-default login
-
-minikube addons enable gcp-auth
-```
-
-##### File based credentials
-
-```
-# Download a service accouunt credential file
-export GOOGLE_APPLICATION_CREDENTIALS=<creds-path>.json
-minikube addons enable gcp-auth
-```
-
 ### Microservices on Kubernetes (GKE)
 
 This Solutions Template contains a working stack of microservices on Kubernetes (GKE).
@@ -191,9 +149,9 @@ You will be able to deploy and run the `sample-service` with simple CRUD operati
 
 It comes with ready-to-deploy structure using Skaffold and Kustomize. See examples below.
 
-#### Run all microservices
+#### Run with all microservices
 
-To deploy all microservices to the GKE cluster, run the following:
+To deploy all microservices to the GKE cluster, simply run the following:
 
 ```
 export PROJECT_ID=<your-project>
