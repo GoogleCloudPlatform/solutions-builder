@@ -12,7 +12,6 @@ spec:
       labels:
         app: sample-service
     spec:
-      serviceAccountName: ksa
       containers:
       - name: sample-service
         image: sample-service

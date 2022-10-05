@@ -47,7 +47,7 @@ Install other required dependencies:
 
 | Tool  | Current Version  |
 |---|---|
-| Skaffold  | v1.29.0  |
+| Skaffold  | v1.39.2  |
 | GKE  | v1.22  |
 | Kustomize  | v4.3.1  |
 
