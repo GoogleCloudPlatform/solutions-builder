@@ -6,6 +6,7 @@ spec:
   replicas: 3
   template:
     spec:
+      serviceAccountName: ksa
       containers:
       - name: sample-service
         image: sample-service

@@ -196,7 +196,7 @@ skaffold dev --default-repo=gcr.io/$PROJECT_ID
 
 ### Run with local minikube cluster
 
-Install Minikube:
+#### Install Minikube:
 
 ```
 # For MacOS:
@@ -206,6 +206,8 @@ brew install minikube
 choco install -y minikube
 ```
 
+#### Simple local run
+
 Make sure the Docker daemon is running locally. To start minikube:
 ```
 # This will reset the kubectl context to the local minikube.
@@ -213,6 +215,36 @@ minikube start
 
 # Build and run locally with hot reload:
 skaffold dev
+```
+
+#### Minikube run with ENV variables
+
+```
+# if PROJECT_ID variable is used in your containers
+export PROJECT_ID=<your-project>
+
+skaffold dev
+```
+
+#### ADVANCED: Run on minikube with your GCP credentials
+
+This will mount your GCP credentials to every pod created in minikube. See [this guide](https://minikube.sigs.k8s.io/docs/handbook/addons/gcp-auth/) for more info.
+
+The addon normally uses the [Google Application Default Credentials](https://google.aip.dev/auth/4110) as configured with `gcloud auth application-default login`. If you already have a json credentials file you want specify, such as to use a service account, set the GOOGLE_APPLICATION_CREDENTIALS environment variable to point to that file.
+
+##### User credentials
+
+```
+gcloud auth application-default login
+minikube addons enable gcp-auth
+```
+
+##### File based credentials
+
+```
+# Download a service accouunt credential file
+export GOOGLE_APPLICATION_CREDENTIALS=<creds-path>.json
+minikube addons enable gcp-auth
 ```
 
 ### Deploy to a specific GKE cluster
