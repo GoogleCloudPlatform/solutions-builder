@@ -40,8 +40,8 @@ Install other required dependencies:
   ```
   choco install -y skaffold kustomize gcloudsdk
   ```
-
-### Toolset Verions Requirements
+  
+### Project Requirements
 
 | Tool  | Current Version  |
 |---|---|
