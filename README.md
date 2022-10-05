@@ -41,7 +41,7 @@ Install other required dependencies:
   choco install -y skaffold kustomize gcloudsdk
   ```
 
-* Make sure to use __skaffold 1.29__ or later for development.
+* Make sure to use __skaffold 1.39__ or later for development.
 
 ### Project Requirements
 
