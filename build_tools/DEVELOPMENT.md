@@ -151,7 +151,7 @@ minikube start
 skaffold dev
 ```
 
-* Minikube run with ENV variables that are captured [here](./microservices/sample_service/kustomize/base/env.properties) in Kustomize
+* Minikube run with ENV variables that are captured in Kustomize, for example [here](./microservices/sample_service/kustomize/base/env.properties)
 
 ```
 # if PROJECT_ID variable is used in your containers
