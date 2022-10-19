@@ -9,3 +9,10 @@ requires:
 
 - path: ./microservices/sample_service
   configs: [sample-service]
+
+profiles:
+- name: custom
+- name: prod
+- name: dev
+  activation:
+    - kubeContext: gke_aitutor-dev_us-east4-b_default-cluster
