@@ -197,6 +197,12 @@ After cloning the repo, please set up for local development.
   ```
   ./setup/setup_local.sh
   ```
+* Run the following to setup the Kubernetes Service Account (ksa) in your namespace:
+  ```
+  export NAMESPACE=$SKAFFOLD_NAMESPACE
+  export GCP_PROJECT=$PROJECT_ID
+  ./setup/setup_ksa.sh
+  ```
 
 ###  4.2. <a name='BuildandrunallmicroservicesinthedefaultGKEclusterwithlivereload'></a>Build and run all microservices in the default GKE cluster with live reload
 
