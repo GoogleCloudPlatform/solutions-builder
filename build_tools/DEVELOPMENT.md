@@ -5,22 +5,27 @@
 	* 2.1. [For the first-time setup:](#Forthefirst-timesetup:)
 	* 2.2. [When making code changes](#Whenmakingcodechanges)
 	* 2.3. [(For Repo Admins) Reviewing a Pull Request](#ForRepoAdminsReviewingaPullRequest)
-* 3. [Local Development (minikube)](#LocalDevelopmentminikube)
-	* 3.1. [ADVANCED: Run on minikube with your GCP credentials](#ADVANCED:RunonminikubewithyourGCPcredentials)
-* 4. [Development with Kubernetes (GKE)](#DevelopmentwithKubernetesGKE)
-	* 4.1. [ Initial setup for GKE development](#InitialsetupforGKEdevelopment)
-	* 4.2. [Build and run all microservices in the default GKE cluster with live reload](#BuildandrunallmicroservicesinthedefaultGKEclusterwithlivereload)
-	* 4.3. [Deploy to a specific GKE cluster](#DeploytoaspecificGKEcluster)
-* 5. [Advanced Skaffold features (minikube or GKE)](#AdvancedSkaffoldfeaturesminikubeorGKE)
-	* 5.1. [Build and run with specific microservice(s)](#Buildandrunwithspecificmicroservices)
-	* 5.2. [Build and run microservices with a custom Source Repository path](#BuildandrunmicroserviceswithacustomSourceRepositorypath)
-	* 5.3. [Build and run microservices with a different Skaffold profile](#BuildandrunmicroserviceswithadifferentSkaffoldprofile)
-	* 5.4. [Skaffold profiles](#Skaffoldprofiles)
-	* 5.5. [Switching from local (minikube) to GKE development](#SwitchingfromlocalminikubetoGKEdevelopment)
-* 6. [Development with CloudRun (serverless)](#DevelopmentwithCloudRunserverless)
-* 7. [Unit tests - microservices](#Unittests-microservices)
-		* 7.1. [Run linter locally:](#Runlinterlocally:)
-		* 7.2. [Unit test file format:](#Unittestfileformat:)
+* 3. [Local IDE Development (VS Code)](#LocalIDEDevelopmentVSCode)
+	* 3.1. ["Common" container setup](#Commoncontainersetup)
+	* 3.2. [Developing just "Common" container (VSCode)](#DevelopingjustCommoncontainerVSCode)
+	* 3.3. [Microservice container setup](#Microservicecontainersetup)
+	* 3.4. [Other IDE Setup](#OtherIDESetup)
+* 4. [Local Development (minikube)](#LocalDevelopmentminikube)
+	* 4.1. [ADVANCED: Run on minikube with your GCP credentials](#ADVANCED:RunonminikubewithyourGCPcredentials)
+* 5. [Development with Kubernetes (GKE)](#DevelopmentwithKubernetesGKE)
+	* 5.1. [ Initial setup for GKE development](#InitialsetupforGKEdevelopment)
+	* 5.2. [Build and run all microservices in the default GKE cluster with live reload](#BuildandrunallmicroservicesinthedefaultGKEclusterwithlivereload)
+	* 5.3. [Deploy to a specific GKE cluster](#DeploytoaspecificGKEcluster)
+* 6. [Advanced Skaffold features (minikube or GKE)](#AdvancedSkaffoldfeaturesminikubeorGKE)
+	* 6.1. [Build and run with specific microservice(s)](#Buildandrunwithspecificmicroservices)
+	* 6.2. [Build and run microservices with a custom Source Repository path](#BuildandrunmicroserviceswithacustomSourceRepositorypath)
+	* 6.3. [Build and run microservices with a different Skaffold profile](#BuildandrunmicroserviceswithadifferentSkaffoldprofile)
+	* 6.4. [Skaffold profiles](#Skaffoldprofiles)
+	* 6.5. [Switching from local (minikube) to GKE development](#SwitchingfromlocalminikubetoGKEdevelopment)
+* 7. [Development with CloudRun (serverless)](#DevelopmentwithCloudRunserverless)
+* 8. [Unit tests - microservices](#Unittests-microservices)
+		* 8.1. [Run linter locally:](#Runlinterlocally:)
+		* 8.2. [Unit test file format:](#Unittestfileformat:)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -126,7 +131,144 @@ branch.
 * Alternatively, you can use Github CLI `gh` to check out a PR and run the codes locally: https://cli.github.com/manual/gh_pr_checkout
 * If all goes well with tests passed, click Merge pull request to merge the changes to the master.
 
-##  3. <a name='LocalDevelopmentminikube'></a>Local Development (minikube)
+##  3. <a name='LocalIDEDevelopmentVSCode'></a>Local IDE Development (VS Code)
+
+Here are settings and tips to set up your local IDE for development and testing of the code. These instructions are for VS Code.
+
+As a shortcut, here is a sample `settings.json` for VS Code you will want to start with
+
+```json
+{
+  "python.linting.enabled": true,
+  "python.linting.pylintPath": "pylint",
+  "editor.formatOnSave": true,
+  "python.formatting.provider": "yapf",
+  "python.formatting.yapfArgs": [
+    "--style={based_on_style: pep8, indent_width: 2}"
+  ],
+  "python.linting.pylintEnabled": true,
+  "terminal.integrated.env.osx": {
+    "PYTHONPATH": "${workspaceFolder}/common/src/"
+  },
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/common/src/",
+  ],
+  "python.autoComplete.extraPaths": [
+    "${workspaceFolder}/common/src/",
+  ]
+}
+```
+
+You may need to reload VS Code for these to take effect:
+* CMD + SHIFT + P
+* __Developer: Reload Window__
+
+###  3.1. <a name='Commoncontainersetup'></a>"Common" container setup
+
+The `common` container houses any common libraries, modules, data objects (ORM) etc that might be needed by other microservices. It can serve as the base container for builds in other microservices as shown in [this Dockerfile](./microservices/sample_service/Dockerfile#L1-L2)
+
+Additional setup is required in a Python development environment so libraries added here are included in your IDE's code completion, etc.
+
+###  3.2. <a name='DevelopingjustCommoncontainerVSCode'></a>Developing just "Common" container (VSCode)
+
+* Set up VENV just for common
+
+```
+cd common
+
+python3 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+* Open Command Palette (CMD + SHIFT + P)
+* Type "Python: Select Interpreter"
+* Choose your new interpreter
+  * will look something like `./common/.venv/bin/python3`
+
+You should now be able to load modules and test them locally:
+
+```
+cd src
+python
+```
+
+* In REPL:
+```python
+from common.models import User
+user = User()
+```
+
+* Exit the VENV
+```
+deactivate
+```
+
+###  3.3. <a name='Microservicecontainersetup'></a>Microservice container setup
+
+Any microservice containers that use common will follow the same setup, but will also require additional setup for your IDE's code-completion to register the common modules:
+
+* Set up VENV just for microservice
+
+Make sure you aren't in a VENV
+```
+deactivate
+```
+
+```
+cd microservices/sample_service
+
+python3 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+
+# install requirements from common!
+pip install -r ../../common/requirements.txt
+
+# install microservice requirements
+pip install -r requirements.txt
+```
+
+* Open Command Palette (CMD + SHIFT + P)
+* Type "Python: Select Interpreter"
+* Choose your new interpreter
+  * will look something like `./microservices/sample_service/.venv/bin/python3`
+
+If you added the following to your VS Code `settings.json` file like mentiond before, the modules should load when you run from command line, and you should see code completion hints.
+
+```json
+{
+  "terminal.integrated.env.osx": {
+    "PYTHONPATH": "${workspaceFolder}/common/src/"
+  },
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/common/src/"
+  ]
+}
+```
+
+You should now be able to load modules and test them locally:
+
+```
+cd microservices/sample_service/src
+
+# run web server
+python main.py
+```
+
+* Exit the VENV
+```
+deactivate
+```
+
+###  3.4. <a name='OtherIDESetup'></a>Other IDE Setup
+
+* If VS Code asks you to install tools like `pylint`, etc. go ahead and do so.
+
+
+
+##  4. <a name='LocalDevelopmentminikube'></a>Local Development (minikube)
 
 Minikube can be used to provide an easy local Kuberentes environment for fast prototyping and debugging
 
@@ -160,7 +302,7 @@ export PROJECT_ID=<your-project>
 skaffold dev
 ```
 
-###  3.1. <a name='ADVANCED:RunonminikubewithyourGCPcredentials'></a>ADVANCED: Run on minikube with your GCP credentials
+###  4.1. <a name='ADVANCED:RunonminikubewithyourGCPcredentials'></a>ADVANCED: Run on minikube with your GCP credentials
 
 This will mount your GCP credentials to every pod created in minikube. See [this guide](https://minikube.sigs.k8s.io/docs/handbook/addons/gcp-auth/) for more info.
 
@@ -182,9 +324,9 @@ minikube addons enable gcp-auth
 ```
 
 
-##  4. <a name='DevelopmentwithKubernetesGKE'></a>Development with Kubernetes (GKE)
+##  5. <a name='DevelopmentwithKubernetesGKE'></a>Development with Kubernetes (GKE)
 
-###  4.1. <a name='InitialsetupforGKEdevelopment'></a> Initial setup for GKE development
+###  5.1. <a name='InitialsetupforGKEdevelopment'></a> Initial setup for GKE development
 After cloning the repo, please set up for local development.
 
 * Export GCP project id and the namespace based on your Github handle (i.e. user ID)
@@ -204,7 +346,7 @@ After cloning the repo, please set up for local development.
   ./setup/setup_ksa.sh
   ```
 
-###  4.2. <a name='BuildandrunallmicroservicesinthedefaultGKEclusterwithlivereload'></a>Build and run all microservices in the default GKE cluster with live reload
+###  5.2. <a name='BuildandrunallmicroservicesinthedefaultGKEclusterwithlivereload'></a>Build and run all microservices in the default GKE cluster with live reload
 
 > **_NOTE:_**  By default, skaffold builds with CloudBuild and runs in kubernetes cluster set in your local `kubeconfig`, using the namespace set above in `SKAFFOLD_NAMESPACE`. If it is set to your GKE cluster, it will deploy to the the cluster. If it's set to `minikube`, it will deploy there.
 ```
@@ -215,7 +357,7 @@ skaffold dev
 ```
 - Please note that any change in the code locally will rerun the build process.
 
-###  4.3. <a name='DeploytoaspecificGKEcluster'></a>Deploy to a specific GKE cluster
+###  5.3. <a name='DeploytoaspecificGKEcluster'></a>Deploy to a specific GKE cluster
 
 > **IMPORTANT**: Please change gcloud project and kubectl context before running skaffold.
 
@@ -237,21 +379,21 @@ skaffold run -p custom --default-repo=gcr.io/$PROJECT_ID
 skaffold dev -p custom --default-repo=gcr.io/$PROJECT_ID
 ```
 
-##  5. <a name='AdvancedSkaffoldfeaturesminikubeorGKE'></a>Advanced Skaffold features (minikube or GKE)
+##  6. <a name='AdvancedSkaffoldfeaturesminikubeorGKE'></a>Advanced Skaffold features (minikube or GKE)
 
-###  5.1. <a name='Buildandrunwithspecificmicroservices'></a>Build and run with specific microservice(s)
+###  6.1. <a name='Buildandrunwithspecificmicroservices'></a>Build and run with specific microservice(s)
 
 ```
 skaffold dev -m <service1>,<service2>
 ```
 
-###  5.2. <a name='BuildandrunmicroserviceswithacustomSourceRepositorypath'></a>Build and run microservices with a custom Source Repository path
+###  6.2. <a name='BuildandrunmicroserviceswithacustomSourceRepositorypath'></a>Build and run microservices with a custom Source Repository path
 ```
 skaffold dev --default-repo=gcr.io/$PROJECT_ID
 ```
 
 
-###  5.3. <a name='BuildandrunmicroserviceswithadifferentSkaffoldprofile'></a>Build and run microservices with a different Skaffold profile
+###  6.3. <a name='BuildandrunmicroserviceswithadifferentSkaffoldprofile'></a>Build and run microservices with a different Skaffold profile
 ```
 # Using custom profile
 skaffold dev -p custom
@@ -260,7 +402,7 @@ skaffold dev -p custom
 skaffold dev -p prod
 ```
 
-###  5.4. <a name='Skaffoldprofiles'></a>Skaffold profiles
+###  6.4. <a name='Skaffoldprofiles'></a>Skaffold profiles
 
 By default, the Skaffold YAML contains the following pre-defined profiles ready to use.
 
@@ -268,7 +410,7 @@ By default, the Skaffold YAML contains the following pre-defined profiles ready 
 - **prod** - This is the profile for building and deploying to the Prod environment, e.g. to a customer's Prod environment.
 - **custom** - This is the profile for building and deploying to a custom GCP project environments, e.g. to deploy to a staging or a demo environment.
 
-###  5.5. <a name='SwitchingfromlocalminikubetoGKEdevelopment'></a>Switching from local (minikube) to GKE development
+###  6.5. <a name='SwitchingfromlocalminikubetoGKEdevelopment'></a>Switching from local (minikube) to GKE development
 
 Use the `kubectx` tool to change KubeConfig contexts, which are used by skaffold to target the appropriate cluster.
 
@@ -297,11 +439,11 @@ skaffold dev
 
 
 
-##  6. <a name='DevelopmentwithCloudRunserverless'></a>Development with CloudRun (serverless)
+##  7. <a name='DevelopmentwithCloudRunserverless'></a>Development with CloudRun (serverless)
 
 TBD
 
-##  7. <a name='Unittests-microservices'></a>Unit tests - microservices
+##  8. <a name='Unittests-microservices'></a>Unit tests - microservices
 
 Install Firebase CLI:
 ```
@@ -324,12 +466,12 @@ Run unit tests locally:
 PYTEST_ADDOPTS="--cache-clear --cov . " PYTHONPATH=$BASE_DIR/common/src python -m pytest
 ```
 
-####  7.1. <a name='Runlinterlocally:'></a>Run linter locally:
+####  8.1. <a name='Runlinterlocally:'></a>Run linter locally:
 ```
 python -m pylint $(git ls-files '*.py') --rcfile=$BASE_DIR/.pylintrc
 ```
 
-####  7.2. <a name='Unittestfileformat:'></a>Unit test file format:
+####  8.2. <a name='Unittestfileformat:'></a>Unit test file format:
 
 All unit test files follow the filename format:
 
