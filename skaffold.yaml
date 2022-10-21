@@ -15,4 +15,4 @@ profiles:
 - name: prod
 - name: dev
   activation:
-    - kubeContext: gke_aitutor-dev_us-east4-b_default-cluster
+    - kubeContext: solutions-template-sandbox_us-central1-main-cluster
