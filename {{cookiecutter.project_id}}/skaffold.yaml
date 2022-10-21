@@ -9,10 +9,3 @@ requires:
 
 - path: ./microservices/sample_service
   configs: [sample-service]
-
-profiles:
-- name: custom
-- name: prod
-- name: dev
-  activation:
-    - kubeContext: solutions-template-sandbox_us-central1-main-cluster
