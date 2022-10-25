@@ -42,7 +42,6 @@ jobs:
 
       - name: Set up Service Account
         run: |
-          export GCP_PROJECT=$PROJECT_ID
           NAMESPACE=${SKAFFOLD_NAMESPACE} bash setup/setup_ksa.sh
 
       - name: Install Kustomize

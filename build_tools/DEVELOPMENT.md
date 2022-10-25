@@ -342,7 +342,6 @@ After cloning the repo, please set up for local development.
 * Run the following to setup the Kubernetes Service Account (ksa) in your namespace:
   ```
   export NAMESPACE=$SKAFFOLD_NAMESPACE
-  export GCP_PROJECT=$PROJECT_ID
   ./setup/setup_ksa.sh
   ```
 
