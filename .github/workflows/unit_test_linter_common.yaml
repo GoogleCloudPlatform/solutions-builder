@@ -7,7 +7,7 @@ on:
     branches:
       - main
     paths:
-      - 'common/src/**.py'
+      - 'common/**'
   workflow_dispatch:
 
 env:

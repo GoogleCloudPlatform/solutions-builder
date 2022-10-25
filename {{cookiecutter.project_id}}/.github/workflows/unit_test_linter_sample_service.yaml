@@ -8,7 +8,7 @@ on:
       - main
     paths:
       # TODO: Add all microservice folders below.
-      - 'microservices/**.py'
+      - 'microservices/**'
   workflow_dispatch:
 
 env:
