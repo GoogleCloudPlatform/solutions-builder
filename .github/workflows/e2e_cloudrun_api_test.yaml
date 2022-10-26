@@ -10,7 +10,10 @@ on:
       - 'microservices/**'
       - 'common/**'
       - 'e2e/cloudrun_api_tests/**'
+      - 'e2e/requirements.txt'
+      - 'e2e/utils/**'
       - 'utils/**'
+      - '.github/workflows/e2e_cloudrun_api_test.yaml'
   workflow_dispatch:
 env:
   PROJECT_ID: solutions-template-sandbox
@@ -24,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install gcloud
         uses: google-github-actions/setup-gcloud@v0
@@ -59,7 +62,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install gcloud
         uses: google-github-actions/setup-gcloud@v0
@@ -103,7 +106,7 @@ jobs:
         python-version: [3.7]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Install gcloud
       uses: google-github-actions/setup-gcloud@v0
@@ -113,7 +116,7 @@ jobs:
         export_default_credentials: true
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -148,7 +151,7 @@ jobs:
         ]
     steps:
     - name: Check out repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Install gcloud
       uses: google-github-actions/setup-gcloud@v0
       with:
