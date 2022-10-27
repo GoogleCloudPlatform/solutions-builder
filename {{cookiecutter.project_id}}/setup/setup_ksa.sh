@@ -10,7 +10,7 @@ for variable in ${EnvVars[@]}; do
   fi
 done
 
-GSA_NAME="gke-node-sa"
+GSA_NAME="gke-pod-sa"
 KSA_NAME="ksa"
 
 BLUE=$(tput setaf 4)
