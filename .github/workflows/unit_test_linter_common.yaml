@@ -9,6 +9,7 @@ on:
     paths:
       - 'common/**'
       - '.github/workflows/unit_test_linter_common.yaml'
+      - '.pylintrc'
   workflow_dispatch:
 
 env:
