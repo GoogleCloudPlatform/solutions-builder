@@ -14,7 +14,6 @@ on:
 env:
   PROJECT_ID: solutions-template-sandbox
   SKAFFOLD_DEFAULT_REPO: gcr.io/solutions-template-sandbox
-  SKAFFOLD_PROFILE: dev
   SKAFFOLD_NAMESPACE: default
   GKE_CLUSTER: main-cluster
   GKE_REGION: us-central1
