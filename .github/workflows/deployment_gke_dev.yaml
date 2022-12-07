@@ -8,15 +8,15 @@ on:
       - 'common/**'
       - 'e2e/**'
       - 'utils/**'
+      - '.github/workflows/deployment_gke_dev.yaml'
   workflow_dispatch:
 
 env:
   PROJECT_ID: solutions-template-sandbox
   SKAFFOLD_DEFAULT_REPO: gcr.io/solutions-template-sandbox
-  SKAFFOLD_PROFILE: dev
   SKAFFOLD_NAMESPACE: default
   GKE_CLUSTER: main-cluster
-  GKE_ZONE: us-central1
+  GKE_REGION: us-central1
   KUSTOMIZE_VERSION: 4.1.3
   SKAFFOLD_VERSION: 1.29.0
   SKAFFOLD_CACHE_GCS: gs://solutions-template-sandbox.appspot.com/skaffold/cache
@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install gcloud
         uses: google-github-actions/setup-gcloud@v0
         with:
@@ -42,7 +42,6 @@ jobs:
 
       - name: Set up Service Account
         run: |
-          export GCP_PROJECT=$PROJECT_ID
           NAMESPACE=${SKAFFOLD_NAMESPACE} bash setup/setup_ksa.sh
 
       - name: Install Kustomize
@@ -72,6 +71,7 @@ jobs:
           --add-skaffold-labels=false
 
       - name: Upload Skaffold cache
+        if: always()
         run: |
           gsutil cp ~/.skaffold/cache $SKAFFOLD_CACHE_GCS
 

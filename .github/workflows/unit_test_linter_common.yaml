@@ -7,7 +7,9 @@ on:
     branches:
       - main
     paths:
-      - 'common/src/**.py'
+      - 'common/**'
+      - '.github/workflows/unit_test_linter_common.yaml'
+      - '.pylintrc'
   workflow_dispatch:
 
 env:
@@ -25,7 +27,7 @@ jobs:
           common,
         ]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Install gcloud
       uses: google-github-actions/setup-gcloud@v0
@@ -43,7 +45,7 @@ jobs:
         firebase setup:emulators:firestore
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -73,9 +75,9 @@ jobs:
           common,
         ]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
 

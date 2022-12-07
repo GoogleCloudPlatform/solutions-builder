@@ -10,12 +10,14 @@ on:
       - 'microservices/**'
       - 'common/**'
       - 'e2e/gke_api_tests/**'
+      - 'e2e/requirements.txt'
+      - 'e2e/utils/**'
       - 'utils/**'
+      - '.github/workflows/e2e_gke_api_test.yaml'
   workflow_dispatch:
 env:
   PROJECT_ID: solutions-template-sandbox
   SKAFFOLD_DEFAULT_REPO: gcr.io/solutions-template-sandbox
-  SKAFFOLD_PROFILE: dev
   SKAFFOLD_NAMESPACE: default
   GKE_CLUSTER: main-cluster
   GKE_ZONE: us-central1
@@ -30,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Check out repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Install gcloud
       uses: google-github-actions/setup-gcloud@v0
@@ -80,6 +82,7 @@ jobs:
         --tag PR${{ github.event.pull_request.number }}
 
     - name: Upload Skaffold cache
+      if: always()
       run: |
         gsutil cp ~/.skaffold/cache $SKAFFOLD_CACHE_GCS
 
@@ -92,7 +95,7 @@ jobs:
         python-version: [3.7]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Install gcloud
       uses: google-github-actions/setup-gcloud@v0
@@ -102,7 +105,7 @@ jobs:
         export_default_credentials: true
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -153,7 +156,7 @@ jobs:
         python-version: [3.7]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Install gcloud
       uses: google-github-actions/setup-gcloud@v0
@@ -163,7 +166,7 @@ jobs:
         export_default_credentials: true
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -186,7 +189,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Check out repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Install gcloud
       uses: google-github-actions/setup-gcloud@v0
       with:

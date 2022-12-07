@@ -1,5 +1,4 @@
 backports-unittest-mock
-faker
 mock
 pylint
 pytest

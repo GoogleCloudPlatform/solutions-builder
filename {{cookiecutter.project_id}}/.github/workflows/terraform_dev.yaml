@@ -7,6 +7,7 @@ on:
     paths:
       - 'terraform/environments/dev/**'
       - 'terraform/modules/**'
+      - '.github/workflows/terraform_dev.yaml'
 env:
   TF_ACTION_WORKING_DIR: terraform/environments/dev
   TF_BUCKET: {{cookiecutter.project_id}}-tfstate
@@ -21,7 +22,7 @@ jobs:
       run:
         working-directory: ${{ env.TF_ACTION_WORKING_DIR }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: hashicorp/setup-terraform@v1
       with:
         terraform_version: 1.0.5
