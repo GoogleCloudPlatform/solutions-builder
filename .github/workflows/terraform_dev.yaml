@@ -30,7 +30,7 @@ jobs:
       uses: google-github-actions/setup-gcloud@master
       with:
         project_id: ${{ env.PROJECT_ID }}
-        service_account_key: ${{ secrets.TF_DEV_SA_KEY }}
+        service_account: ${{ secrets.TF_DEV_SA_KEY }}
         export_default_credentials: true
 
     - name: Terraform Init
