@@ -1,3 +1,5 @@
+set -e
+
 declare -a EnvVars=(
   "NAMESPACE"
   "PROJECT_ID"
@@ -13,27 +15,24 @@ done
 GSA_NAME="gke-pod-sa"
 KSA_NAME="ksa"
 
-BLUE=$(tput setaf 4)
-RED=$(tput setaf 1)
-NORMAL=$(tput sgr0)
 echo
 echo "NAMESPACE=${NAMESPACE}"
 echo "PROJECT_ID=${PROJECT_ID}"
 echo
 
 declare EXISTING_KSA=`kubectl get sa -n ${NAMESPACE} | egrep -i "^${KSA_NAME} "`
-printf "\n${BLUE}Creating kubernetes service account on the cluster ...${NORMAL}\n"
+printf "\nCreating kubernetes service account on the cluster ...\n"
 if [[ "$EXISTING_KSA" = "" ]]; then
   kubectl create serviceaccount -n ${NAMESPACE} ${KSA_NAME}
 fi
 
-printf "\n${BLUE}Adding Service Account IAM policy ...${NORMAL}\n"
+printf "\nAdding Service Account IAM policy ...\n"
 gcloud iam service-accounts add-iam-policy-binding \
   --role roles/iam.workloadIdentityUser \
   --member "serviceAccount:${PROJECT_ID}.svc.id.goog[${NAMESPACE}/${KSA_NAME}]" \
   ${GSA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com
 
-printf "\n${BLUE}Connecting ksa with Service Account ...${NORMAL}\n"
+printf "\nConnecting ksa with Service Account ...\n"
 kubectl annotate serviceaccount \
   --overwrite \
   --namespace ${NAMESPACE} \

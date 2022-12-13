@@ -22,7 +22,7 @@ env:
   GKE_CLUSTER: main-cluster
   GKE_ZONE: us-central1
   KUSTOMIZE_VERSION: 4.1.3
-  SKAFFOLD_VERSION: 1.29.0
+  SKAFFOLD_VERSION: 2.0.3
   SKAFFOLD_CACHE_GCS: gs://solutions-template-sandbox.appspot.com/skaffold/cache
 
 # cookiecutter:raw {% raw %}

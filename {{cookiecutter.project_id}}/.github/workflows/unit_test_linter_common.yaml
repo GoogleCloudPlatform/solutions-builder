@@ -9,6 +9,7 @@ on:
     paths:
       - 'common/**'
       - '.github/workflows/unit_test_linter_common.yaml'
+      - '.pylintrc'
   workflow_dispatch:
 
 env:
@@ -21,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.7]
+        python-version: [3.9]
         target-folder: [
           common,
         ]
@@ -69,7 +70,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.7]
+        python-version: [3.9]
         target-folder: [
           common,
         ]

@@ -1,11 +1,12 @@
 # Master Skaffold
-apiVersion: skaffold/v2beta12
+apiVersion: skaffold/v4beta1
 kind: Config
 metadata:
   name: backends
 requires:
-- path: ./common
-  configs: [common]
-
-- path: ./microservices/sample_service
-  configs: [sample-service]
+- configs:
+  - common
+  path: ./common
+- configs:
+  - sample-service
+  path: ./microservices/sample_service
