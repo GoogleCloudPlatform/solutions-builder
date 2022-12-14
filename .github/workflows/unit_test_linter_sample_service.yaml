@@ -13,7 +13,6 @@ on:
       - '.github/workflows/unit_test_linter_sample_service.yaml'
       - '.pylintrc'
   workflow_dispatch:
-
 env:
   PROJECT_ID: solutions-template-sandbox
 
