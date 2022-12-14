@@ -26,12 +26,19 @@ jobs:
     - uses: hashicorp/setup-terraform@v1
       with:
         terraform_version: 1.0.5
-    - name: Install gcloud
-      uses: google-github-actions/setup-gcloud@master
+
+    # https://github.com/google-github-actions/auth
+    - id: 'auth'
+      name: Auth with Service Account
+      uses: 'google-github-actions/auth@v1'
       with:
-        project_id: ${{ env.PROJECT_ID }}
-        credentials_json: ${{ secrets.TF_DEV_SA_KEY }}
-        export_default_credentials: true
+        credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+        # FIXME: Use workload identity instead of service account key.
+        # workload_identity_provider: ''
+        # service_account: 'deployment-dev@${{ env.PROJECT_ID }}.iam.gserviceaccount.com'
+
+    - name: Set up Cloud SDK
+      uses: 'google-github-actions/setup-gcloud@v1'
 
     - name: Terraform Init
       id: init
