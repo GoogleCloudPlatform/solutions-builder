@@ -9,3 +9,4 @@ requires:
 
 - path: ./microservices/sample_service
   configs: [sample-service]
+
