@@ -25,18 +25,10 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
 
-      # https://github.com/google-github-actions/auth
-      - id: 'auth'
-        name: Auth with Service Account
-        uses: 'google-github-actions/auth@v1'
-        with:
-          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
-          # FIXME: Use workload identity instead of service account key.
-          # workload_identity_provider: ''
-          # service_account: 'deployment-dev@${{ env.PROJECT_ID }}.iam.gserviceaccount.com'
-
       - name: Set up Cloud SDK
-        uses: 'google-github-actions/setup-gcloud@v1'
+        uses: ./.github/workflows/setup_gcloud.yaml
+        secrets:
+          GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
 
       - id: 'build'
         name: Build common
