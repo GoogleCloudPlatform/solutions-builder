@@ -1,52 +1,51 @@
-apiVersion: skaffold/v2beta12
+apiVersion: skaffold/v4beta1
 kind: Config
 metadata:
   name: common
 build:
-  tagPolicy:
-    gitCommit: {}
   artifacts:
   - image: common
     sync:
       infer:
-        - '**/*.py'
-        - '**/*.json'
-
+      - '**/*.py'
+      - '**/*.json'
+  tagPolicy:
+    gitCommit: {}
 profiles:
 - name: custom
   build:
-    googleCloudBuild: {}
     artifacts:
     - image: common
       docker:
         cacheFrom:
-          - common
-          - common:latest
+        - common
+        - common:latest
+    googleCloudBuild: {}
 - name: prod
   build:
-    googleCloudBuild: {}
     artifacts:
     - image: common
-      docker:
-        cacheFrom:
-          - common
-          - common:latest
       sync:
         infer:
-          - '**/*.py'
-          - '**/*.json'
+        - '**/*.py'
+        - '**/*.json'
+      docker:
+        cacheFrom:
+        - common
+        - common:latest
+    googleCloudBuild: {}
 - name: dev
   activation:
   - kubeContext: gke_{{cookiecutter.project_id}}_{{cookiecutter.gcp_region}}_main-cluster
   build:
-    googleCloudBuild: {}
     artifacts:
     - image: gcr.io/{{cookiecutter.project_id}}/common
-      docker:
-        cacheFrom:
-          - gcr.io/{{cookiecutter.project_id}}/common
-          - gcr.io/{{cookiecutter.project_id}}/common:latest
       sync:
         infer:
-          - '**/*.py'
-          - '**/*.json'
+        - '**/*.py'
+        - '**/*.json'
+      docker:
+        cacheFrom:
+        - gcr.io/{{cookiecutter.project_id}}/common
+        - gcr.io/{{cookiecutter.project_id}}/common:latest
+    googleCloudBuild: {}

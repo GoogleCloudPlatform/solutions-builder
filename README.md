@@ -17,6 +17,10 @@ This template provides built-in and ready-to-ship sample features including:
 * CloudRun templates
 * [In Progress] CI/CD deployment with CloudBuild
 
+## Roadmap
+
+Please see Feature Requests in the Github issue list at https://github.com/GoogleCloudPlatform/solutions-template/issues?q=is%3Aopen+is%3Aissue+label%3A%22feature+request%22
+
 ## Getting Started
 
 ### Prerequisites
@@ -29,27 +33,15 @@ Install Cookiecutter ([Github](https://github.com/cookiecutter/cookiecutter)):
 
 - For Windows, refer this [installation guide](https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter)
 
-Install other required dependencies:
+Project requirements:
 
-- For MacOS:
-  ```
-  brew install --cask skaffold kustomize google-cloud-sdk
-  ```
+| Tool  | Current Version  | Documentation site |
+|---|---|---|
+| Skaffold   | v2.x    | https://skaffold.dev/ |
+| Kustomize  | v4.3.1  | https://kustomize.io/ |
+| gcloud CLI | Latest  | https://cloud.google.com/sdk/docs/install |
 
-- For Windows:
-  ```
-  choco install -y skaffold kustomize gcloudsdk
-  ```
-  
-### Project Requirements
-
-| Tool  | Current Version  |
-|---|---|
-| Skaffold  | v1.39.2  |
-| GKE  | v1.22  |
-| Kustomize  | v4.3.1  |
-
-### Create a new project with Cookiecutter
+### Create skeleton code in a new folder with Cookiecutter
 
 Run the following to generate skeleton code in a new folder:
 ```
@@ -102,27 +94,17 @@ You will see the file structure like below:
 ```
 ### File structure details
 
-- **README.md** - This contains all details regarding the development and deployment.
+- **README.md** - This contains all details regarding the development and deployment for your particular project.
 - **skaffold.yaml** - This is the master Skaffold YAML file that defines how everything is built and deployed, depending on different profiles.
 - **microservices** - The main directory for all microservices, can be broken down into individual folder for each microservie, e.g. `sample_service`.
   - [**microservice subfolder**] - Each microservice folder is a Docker container with [Skaffold](https://skaffold.dev/) + [Kustomize](https://kustomize.io/) to build images in different environments.
 - **common** - The common image contains shared data models and util libraries used by all other microservices.
 
-## Built-in Features
+### Getting started with the solution development
 
-In a nutshell, Solutions Template offers the following built-in features with working sample code:
-- A sample microservice with CRUD API endpoints on Kubernetes (GKE).
-- A built-in Ingress supporting custom DNS domain.
-- Test Automation and CI/CD with Github Action.
-- CloudRun Services
-
-We are also working on the following features:
-- Test Automation and Ci/CD with CloudBuild
-
-## Roadmap
-
-TBD
+Once the solution skeleton code generated in the <project-id> folder, please follow the `README.md` inside **your project folder** to get started with the solution development,
 
 ## FAQ
 
-TBD
+- Who are the target audience/users for this Solutions template?
+  - A: Any engineering team to start a new solution development project.

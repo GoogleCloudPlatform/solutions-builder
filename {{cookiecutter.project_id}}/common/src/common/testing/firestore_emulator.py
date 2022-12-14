@@ -1,5 +1,5 @@
 """
-  Pytest Fixture for getting testclient from fastapi
+  Pytest Fixture for getting firestore emulator
 """
 import os
 import signal
@@ -10,18 +10,24 @@ import pytest
 
 # disabling pylint rules that conflict with pytest fixtures
 # pylint: disable=unused-argument,redefined-outer-name,unused-import
-from fastapi.testclient import TestClient
-from main import app
+import platform
+
 
 # recreate the emulator each module - could consider changing to session
 # pylint: disable = consider-using-with, subprocess-popen-preexec-fn
 @pytest.fixture
 def firestore_emulator():
 
-  emulator = subprocess.Popen(
-      "firebase emulators:start --only firestore --project fake-project",
-      shell=True,
-      preexec_fn=os.setsid)
+  is_windows = bool(platform.system() == "Windows")
+  if is_windows:
+    emulator = subprocess.Popen(
+        "firebase emulators:start --only firestore --project fake-project",
+        shell=True)
+  else:
+    emulator = subprocess.Popen(
+        "firebase emulators:start --only firestore --project fake-project",
+        shell=True,
+        preexec_fn=os.setsid)
   time.sleep(15)
 
   os.environ["FIRESTORE_EMULATOR_HOST"] = "localhost:8080"
@@ -31,7 +37,11 @@ def firestore_emulator():
   # yield so emulator isn't recreated each test
   yield emulator
 
-  os.killpg(os.getpgid(emulator.pid), signal.SIGTERM)
+  if is_windows:
+    os.kill(emulator.pid, signal.CTRL_BREAK_EVENT)
+  else:
+    os.killpg(os.getpgid(emulator.pid), signal.SIGTERM)
+
   # delete debug files
   # some get deleted, not all
 
@@ -44,14 +54,10 @@ def firestore_emulator():
   # TODO: script to unset / reset the environmental variables
   # instead of just delete
 
+
 # pylint: disable = line-too-long
 @pytest.fixture
 def clean_firestore(firestore_emulator):
   requests.delete(
-      "http://localhost:8080/emulator/v1/projects/fake-project/databases/(default)/documents"
-  )
-
-@pytest.fixture
-def client_with_emulator(clean_firestore, scope="module"):
-  test_client = TestClient(app)
-  yield test_client
+      "http://localhost:8080/emulator/v1/projects/fake-project/databases/(default)/documents",
+      timeout=10)

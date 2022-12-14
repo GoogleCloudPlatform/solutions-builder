@@ -29,12 +29,18 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
 
-      - name: Install gcloud
-        uses: google-github-actions/setup-gcloud@v0
+      # https://github.com/google-github-actions/auth
+      - id: 'auth'
+        name: Auth with Service Account
+        uses: 'google-github-actions/auth@v1'
         with:
-          project_id: ${{ env.PROJECT_ID }}
-          service_account_key: ${{ secrets.DEPLOYMENT_DEV_SA_KEY }}
-          export_default_credentials: true
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+          # FIXME: Use workload identity instead of service account key.
+          # workload_identity_provider: ''
+          # service_account: 'deployment-dev@${{ env.PROJECT_ID }}.iam.gserviceaccount.com'
+
+      - name: Set up Cloud SDK
+        uses: 'google-github-actions/setup-gcloud@v1'
 
       - id: 'build'
         name: Build common
@@ -65,10 +71,10 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install gcloud
-        uses: google-github-actions/setup-gcloud@v0
+        uses: google-github-actions/setup-gcloud@v1
         with:
           project_id: ${{ env.PROJECT_ID }}
-          service_account_key: ${{ secrets.DEPLOYMENT_DEV_SA_KEY }}
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
           export_default_credentials: true
 
       - id: 'build_and_deploy'
@@ -109,10 +115,10 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Install gcloud
-      uses: google-github-actions/setup-gcloud@v0
+      uses: google-github-actions/setup-gcloud@v1
       with:
         project_id: ${{env.PROJECT_ID}}
-        service_account_key: ${{ secrets.DEPLOYMENT_DEV_SA_KEY }}
+        credentials_json: ${{ secrets.GCP_CREDENTIALS }}
         export_default_credentials: true
 
     - name: Set up Python ${{ matrix.python-version }}
@@ -153,10 +159,10 @@ jobs:
     - name: Check out repository
       uses: actions/checkout@v3
     - name: Install gcloud
-      uses: google-github-actions/setup-gcloud@v0
+      uses: google-github-actions/setup-gcloud@v1
       with:
         project_id: ${{env.PROJECT_ID}}
-        service_account_key: ${{ secrets.DEPLOYMENT_DEV_SA_KEY }}
+        credentials_json: ${{ secrets.GCP_CREDENTIALS }}
         export_default_credentials: true
 
     - name: Delete CloudRun service

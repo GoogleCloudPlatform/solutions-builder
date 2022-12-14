@@ -1,7 +1,7 @@
 # This workflow will install Python dependencies, run tests and lint with a variety of Python versions
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: Unit test & lint for all services
+name: Unit test & lint for Sample Service
 on:
   pull_request:
     branches:
@@ -11,8 +11,8 @@ on:
       - 'microservices/**'
       - 'common/**'
       - '.github/workflows/unit_test_linter_sample_service.yaml'
+      - '.pylintrc'
   workflow_dispatch:
-
 env:
   PROJECT_ID: {{cookiecutter.project_id}}
 
@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.7]
+        python-version: [3.9]
         target-folder: [
           # TODO: Add all microservice folders below.
           microservices/sample_service,
@@ -31,12 +31,18 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Install gcloud
-      uses: google-github-actions/setup-gcloud@v0
+    # https://github.com/google-github-actions/auth
+    - id: 'auth'
+      name: Auth with Service Account
+      uses: 'google-github-actions/auth@v1'
       with:
-        project_id: ${{env.PROJECT_ID}}
-        service_account_key: ${{ secrets.DEPLOYMENT_DEV_SA_KEY }}
-        export_default_credentials: true
+        credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+        # FIXME: Use workload identity instead of service account key.
+        # workload_identity_provider: ''
+        # service_account: 'deployment-dev@${{ env.PROJECT_ID }}.iam.gserviceaccount.com'
+
+    - name: Set up Cloud SDK
+      uses: 'google-github-actions/setup-gcloud@v1'
 
     - name: Install Firebase CLI
       run: |
@@ -72,7 +78,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.7]
+        python-version: [3.9]
         target-folder: [
           common,
         ]

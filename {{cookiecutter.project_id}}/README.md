@@ -30,11 +30,11 @@ Please contact {{cookiecutter.admin_email}} for any questions.
 
 ##  1. <a name='ProjectRequirements'></a>Project Requirements
 
-| Tool  | Current Version  |
-|---|---|
-| Skaffold  | v1.39.2  |
-| GKE  | v1.22  |
-| Kustomize  | v4.3.1  |
+| Tool  | Current Version  | Documentation site |
+|---|---|---|
+| Skaffold   | v2.x    | https://skaffold.dev/ |
+| Kustomize  | v4.3.1  | https://kustomize.io/ |
+| gcloud CLI | Latest  | https://cloud.google.com/sdk/docs/install |
 
 ##  2. <a name='GettingStarted'></a>Getting Started
 
