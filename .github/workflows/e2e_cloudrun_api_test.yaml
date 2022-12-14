@@ -31,8 +31,6 @@ jobs:
 
       - name: Set up Cloud SDK
         uses: ./.github/workflows/setup_gcloud.yaml
-        secrets:
-          GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
 
       - id: 'build'
         name: Build common
@@ -64,8 +62,6 @@ jobs:
 
       - name: Set up Cloud SDK
         uses: ./.github/workflows/setup_gcloud.yaml
-        secrets:
-          GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
 
       - id: 'build_and_deploy'
         name: Build and deploy CloudRun services
@@ -106,8 +102,6 @@ jobs:
 
     - name: Set up Cloud SDK
       uses: ./.github/workflows/setup_gcloud.yaml
-      secrets:
-        GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
@@ -146,12 +140,9 @@ jobs:
     steps:
     - name: Check out repository
       uses: actions/checkout@v3
-    - name: Install gcloud
-      uses: google-github-actions/setup-gcloud@v1
-      with:
-        project_id: ${{env.PROJECT_ID}}
-        credentials_json: ${{ secrets.GCP_CREDENTIALS }}
-        export_default_credentials: true
+
+    - name: Set up Cloud SDK
+      uses: ./.github/workflows/setup_gcloud.yaml
 
     - name: Delete CloudRun service
       run: |

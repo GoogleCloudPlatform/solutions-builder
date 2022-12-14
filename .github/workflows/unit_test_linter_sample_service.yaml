@@ -33,8 +33,6 @@ jobs:
 
     - name: Set up Cloud SDK
       uses: ./.github/workflows/setup_gcloud.yaml
-      secrets:
-        GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
 
     - name: Install Firebase CLI
       run: |
