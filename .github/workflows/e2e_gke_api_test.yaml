@@ -38,7 +38,7 @@ jobs:
       uses: google-github-actions/setup-gcloud@v1
       with:
         project_id: ${{env.PROJECT_ID}}
-        service_account: ${{ secrets.DEPLOYMENT_DEV_SA_KEY }}
+        credentials_json: ${{ secrets.DEPLOYMENT_DEV_SA_KEY }}
         export_default_credentials: true
 
     - name: Connect to cluster
@@ -101,7 +101,7 @@ jobs:
       uses: google-github-actions/setup-gcloud@v1
       with:
         project_id: ${{env.PROJECT_ID}}
-        service_account: ${{ secrets.DEPLOYMENT_DEV_SA_KEY }}
+        credentials_json: ${{ secrets.DEPLOYMENT_DEV_SA_KEY }}
         export_default_credentials: true
 
     - name: Set up Python ${{ matrix.python-version }}
@@ -162,7 +162,7 @@ jobs:
       uses: google-github-actions/setup-gcloud@v1
       with:
         project_id: ${{env.PROJECT_ID}}
-        service_account: ${{ secrets.DEPLOYMENT_DEV_SA_KEY }}
+        credentials_json: ${{ secrets.DEPLOYMENT_DEV_SA_KEY }}
         export_default_credentials: true
 
     - name: Set up Python ${{ matrix.python-version }}
@@ -194,7 +194,7 @@ jobs:
       uses: google-github-actions/setup-gcloud@v1
       with:
         project_id: ${{env.PROJECT_ID}}
-        service_account: ${{ secrets.DEPLOYMENT_DEV_SA_KEY }}
+        credentials_json: ${{ secrets.DEPLOYMENT_DEV_SA_KEY }}
         export_default_credentials: true
 
     - name: Connect to cluster
