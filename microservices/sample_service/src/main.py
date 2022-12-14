@@ -39,7 +39,7 @@ def health_check():
 
 @app.get("/")
 def hello():
-  return "Hello World."
+  return "Hello World change for testing."
 
 
 api = FastAPI(title="Sample Service API", version="latest")
