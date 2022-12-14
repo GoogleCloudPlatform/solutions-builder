@@ -33,6 +33,11 @@ Install Cookiecutter ([Github](https://github.com/cookiecutter/cookiecutter)):
 
 - For Windows, refer this [installation guide](https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter)
 
+- For unix (including [crostini](https://chromeos.dev/en/linux))
+  ```
+  pip3 install cookiecutter
+  ```
+
 Project requirements:
 
 | Tool  | Current Version  | Documentation site |
@@ -45,7 +50,7 @@ Project requirements:
 
 Run the following to generate skeleton code in a new folder:
 ```
-cookiecutter git@github.com:GoogleCloudPlatform/solutions-template.git
+cookiecutter https://github.com/GoogleCloudPlatform/solutions-template.git
 ```
 
 Provide the required variables to Cookiecutter prompt, e.g.:
