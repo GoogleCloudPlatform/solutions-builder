@@ -42,6 +42,8 @@ jobs:
     - name: Install gke-gcloud-auth-plugin
       run: |
         gcloud components install gke-gcloud-auth-plugin
+        gke-gcloud-auth-plugin --version
+        export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 
     - name: Connect to cluster
       run: |
