@@ -1,12 +1,14 @@
 name: Auth and setup Cloud SDK with Service Account
 
-inputs:
-  credentials_json:
-    description: |-
-      Google Cloud credential JSON of a Service Account with
-      necessary permissions to access gcloud and set up the
-      project.
-    required: true
+on:
+  workflow_dispatch:
+    inputs:
+      credentials_json:
+        description: |-
+          Google Cloud credential JSON of a Service Account with
+          necessary permissions to access gcloud and set up the
+          project.
+        required: true
 
 jobs:
   gcloud_setup:
