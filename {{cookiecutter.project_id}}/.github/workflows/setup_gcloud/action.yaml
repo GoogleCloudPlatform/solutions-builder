@@ -8,19 +8,18 @@ inputs:
       project.
     required: true
 
-jobs:
-  gcloud_setup:
-    runs-on: ubuntu-latest
-    steps:
-    # https://github.com/google-github-actions/auth
-    - id: 'auth'
-      name: Auth with Service Account
-      uses: 'google-github-actions/auth@v1'
-      with:
-        # FIXME: Use workload identity instead of service account key.
-        # workload_identity_provider: ''
-        # service_account: 'deployment-dev@${{ env.PROJECT_ID }}.iam.gserviceaccount.com'
-        credentials_json: '${{ inputs.credentials_json }}'
+runs:
+  using: "composite"
+  steps:
+  # https://github.com/google-github-actions/auth
+  - id: 'auth'
+    name: Auth with Service Account
+    uses: 'google-github-actions/auth@v1'
+    with:
+      # FIXME: Use workload identity instead of service account key.
+      # workload_identity_provider: ''
+      # service_account: 'deployment-dev@${{ env.PROJECT_ID }}.iam.gserviceaccount.com'
+      credentials_json: ${{ inputs.credentials_json }}
 
-    - name: Set up Cloud SDK
-      uses: 'google-github-actions/setup-gcloud@v1'
+  - name: Set up Cloud SDK
+    uses: 'google-github-actions/setup-gcloud@v1'
