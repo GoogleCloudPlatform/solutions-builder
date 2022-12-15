@@ -32,9 +32,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Set up Cloud SDK
-      uses: ./.github/workflows/setup_gcloud.yaml
-      secrets:
-        GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+      uses: ./.github/workflows/setup_gcloud
 
     - name: Install Firebase CLI
       run: |
