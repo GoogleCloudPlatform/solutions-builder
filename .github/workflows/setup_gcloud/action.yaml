@@ -1,18 +1,16 @@
 name: Auth and setup Cloud SDK with Service Account
 
-on:
-  workflow_dispatch:
-    inputs:
-      credentials_json:
-        description: |-
-          Google Cloud credential JSON of a Service Account with
-          necessary permissions to access gcloud and set up the
-          project.
-        required: true
+inputs:
+  credentials_json:
+    description: |-
+      Google Cloud credential JSON of a Service Account with
+      necessary permissions to access gcloud and set up the
+      project.
+    required: true
 
 jobs:
   gcloud_setup:
-    runs-on: ubuntu-latest
+    using: composite
     steps:
     # https://github.com/google-github-actions/auth
     - id: 'auth'
@@ -22,7 +20,7 @@ jobs:
         # FIXME: Use workload identity instead of service account key.
         # workload_identity_provider: ''
         # service_account: 'deployment-dev@${{ env.PROJECT_ID }}.iam.gserviceaccount.com'
-        credentials_json: '${{ inputs.credentials_json }}'
+        credentials_json: ${{ inputs.credentials_json }}
 
     - name: Set up Cloud SDK
       uses: 'google-github-actions/setup-gcloud@v1'
