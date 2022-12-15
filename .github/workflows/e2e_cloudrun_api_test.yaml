@@ -31,6 +31,8 @@ jobs:
 
       - name: Set up Cloud SDK
         uses: ./.github/workflows/setup_gcloud
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
       - id: 'build'
         name: Build common
@@ -102,6 +104,8 @@ jobs:
 
     - name: Set up Cloud SDK
       uses: ./.github/workflows/setup_gcloud
+      with:
+        credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4

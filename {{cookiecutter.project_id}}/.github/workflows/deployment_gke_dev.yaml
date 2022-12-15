@@ -32,6 +32,8 @@ jobs:
 
       - name: Set up Cloud SDK
         uses: ./.github/workflows/setup_gcloud
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
       - name: Connect to cluster
         run: |
