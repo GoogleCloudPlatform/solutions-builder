@@ -34,7 +34,8 @@ jobs:
     steps:
     - name: "Set environmental variables"
       run: |
-        echo "PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")" >> $GITHUB_ENV
+        PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+        echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
         echo "NAMESPACE=e2e-pr-$PR_NUMBER" >> $GITHUB_ENV
 
     - name: Check out repository
