@@ -12,15 +12,6 @@ build:
   tagPolicy:
     gitCommit: {}
 profiles:
-- name: custom
-  build:
-    artifacts:
-    - image: common
-      docker:
-        cacheFrom:
-        - common
-        - common:latest
-    googleCloudBuild: {}
 - name: prod
   build:
     artifacts:

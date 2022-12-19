@@ -6,19 +6,26 @@ spec:
   replicas: 3
   template:
     spec:
-      serviceAccountName: ksa
+      serviceAccountName: gke-sa
       containers:
       - name: sample-service
         image: sample-service
         imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "100Mi"
+          limits:
+            memory: "5000Mi"
+            cpu: "2000m"
         env:
         - name: PROJECT_ID
           valueFrom:
             configMapKeyRef:
               name: env-vars
               key: PROJECT_ID
-        - name: EXTERNAL_DATA_PROJECT_ID
+        - name: DATABASE_PREFIX
           valueFrom:
             configMapKeyRef:
               name: env-vars
-              key: EXTERNAL_DATA_PROJECT_ID
+              key: DATABASE_PREFIX

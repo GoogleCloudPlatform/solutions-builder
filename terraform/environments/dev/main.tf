@@ -45,19 +45,25 @@ module "vpc_network" {
 }
 
 # Use GKE autopilot cluster.
-module "gke-autopilot" {
+module "gke" {
   depends_on = [module.project_services, module.vpc_network]
 
-  source             = "../../modules/gke_autopilot"
-  project_id         = var.project_id
-  cluster_name       = "main-cluster"
+  source               = "../../modules/gke_autopilot"
+  project_id           = var.project_id
+  cluster_name         = "main-cluster"
+  vpc_network          = "default-vpc"
+  vpc_subnetwork       = "default-vpc-subnet"
+  namespace            = "default"
+  service_account_name = "gke-sa" # This will be used in each microservice.
+  region               = var.region
+
+  # See latest stable version at https://cloud.google.com/kubernetes-engine/docs/release-notes-stable
   kubernetes_version = "1.22.12-gke.2300"
-  vpc_network        = "default-vpc"
-  region             = var.region
 }
 
-# Optional: Use standard/customize GKE cluster.
-# Comment out the module "gke-autopilot" block out and use the following block to customize GKE cluster with standard mode.
+# # [Optional] Use standard/customize GKE cluster.
+# #   Comment out the module "gke-autopilot" block out and use the following block to customize GKE cluster with standard mode.
+#
 # module "gke" {
 #   depends_on = [module.project_services, module.vpc_network]
 
@@ -75,21 +81,21 @@ module "gke-autopilot" {
 #   machine_type       = "n1-standard-8"
 # }
 
-module "ingress" {
-  depends_on = [module.gke]
+# module "gke-ingress" {
+#   depends_on = [module.gke]
 
-  # Only execute this module when feature_flags contains the keyword.
-  count = (contains(regexall("[\\w\\d\\-_\\+\\.]+", var.feature_flags), "gke-ingress") ? 1 : 0)
+#   # Only execute this module when feature_flags contains the keyword.
+#   count = (contains(regexall("[\\w\\d\\-_\\+\\.]+", var.feature_flags), "gke-ingress") ? 1 : 0)
 
-  source            = "../../modules/ingress"
-  project_id        = var.project_id
-  cert_issuer_email = var.admin_email
+#   source            = "../../modules/ingress"
+#   project_id        = var.project_id
+#   cert_issuer_email = var.admin_email
 
-  # Domains for API endpoint, excluding protocols.
-  domain            = var.api_domain
-  region            = var.region
-  cors_allow_origin = "http://localhost:4200,http://localhost:3000,http://${var.web_app_domain},https://${var.web_app_domain}"
-}
+#   # Domains for API endpoint, excluding protocols.
+#   domain            = var.api_domain
+#   region            = var.region
+#   cors_allow_origin = "http://localhost:4200,http://localhost:3000,http://${var.web_app_domain},https://${var.web_app_domain}"
+# }
 
 module "firebase" {
   depends_on       = [module.project_services]
@@ -98,16 +104,16 @@ module "firebase" {
   firestore_region = var.firestore_region
 }
 
-module "cloudrun-sample" {
-  depends_on = [module.project_services, module.vpc_network]
-  # Only execute this module when feature_flags contains the keyword.
-  count = (contains(regexall("[\\w\\d\\-_\\+\\.]+", var.feature_flags), "cloudrun") ? 1 : 0)
+# module "cloudrun-sample" {
+#   depends_on = [module.project_services, module.vpc_network]
+#   # Only execute this module when feature_flags contains the keyword.
+#   count = (contains(regexall("[\\w\\d\\-_\\+\\.]+", var.feature_flags), "cloudrun") ? 1 : 0)
 
-  source                = "../../modules/cloudrun"
-  project_id            = var.project_id
-  region                = var.region
-  source_dir            = "../../../microservices/sample_service"
-  service_name          = "cloudrun-sample"
-  repository_id         = "cloudrun"
-  allow_unauthenticated = true
-}
+#   source                = "../../modules/cloudrun"
+#   project_id            = var.project_id
+#   region                = var.region
+#   source_dir            = "../../../microservices/sample_service"
+#   service_name          = "cloudrun-sample"
+#   repository_id         = "cloudrun"
+#   allow_unauthenticated = true
+# }

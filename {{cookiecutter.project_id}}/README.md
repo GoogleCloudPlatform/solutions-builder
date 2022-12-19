@@ -42,41 +42,22 @@ This guide will detail how to set up your new solutions template project. See th
 
 ###  2.1. <a name='Prerequisites'></a>Prerequisites
 
+Set up environmental variables
 ```
-# Set up environmental variables
 export PROJECT_ID={{cookiecutter.project_id}}
 export ADMIN_EMAIL={{cookiecutter.admin_email}}
 export REGION={{cookiecutter.gcp_region}}
 export API_DOMAIN={{cookiecutter.api_domain}}
 export BASE_DIR=$(pwd)
+```
 
-# Login to Google Cloud
+Login to Google Cloud (Optional in Cloud Shell)
+```
 gcloud auth application-default login
 gcloud auth application-default set-quota-project $PROJECT_ID
 gcloud config set project $PROJECT_ID
 ```
-
-For development with Kubernetes on GKE:
-
-Install required packages:
-
-- For MacOS:
-  ```
-  brew install --cask skaffold kustomize google-cloud-sdk
-  ```
-
-- For Windows:
-  ```
-  choco install -y skaffold kustomize gcloudsdk
-  ```
-
-- For Linux/Ubuntu:
-  ```
-  curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && \
-  sudo install skaffold /usr/local/bin/
-  ```
-
-* Make sure to use __skaffold 1.24.1__ or later for development.
+- NOTE: you will need to run ```gcloud auth application-default login``` instead of ```gcloud auth login``` if you have multiple projects in the gcloud config.
 
 ###  2.2. <a name='GCPOrganizationalpolicies'></a>GCP Organizational policies
 
@@ -122,8 +103,11 @@ Run Terraform apply
 cd terraform/environments/dev
 terraform init -backend-config=bucket=$TF_BUCKET_NAME
 
-# Enabling GCP services first.
+# Enabling GCP services.
 terraform apply -target=module.project_services -target=module.service_accounts -auto-approve
+
+# If using GKE, create GKE cluster first.
+terraform apply -target=module.vpc_network -target=module.gke -auto-approve
 
 # Run the rest of Terraform
 terraform apply -auto-approve
@@ -131,14 +115,31 @@ terraform apply -auto-approve
 
 ###  2.4. <a name='DeployingKubernetesMicroservicestoGKE'></a>Deploying Kubernetes Microservices to GKE
 
-Connect to the `default-cluster`:
-```
-gcloud container clusters get-credentials main-cluster --region $REGION --project $PROJECT_ID
-```
+Install required packages:
+
+- For MacOS:
+  ```
+  brew install --cask skaffold kustomize google-cloud-sdk
+  ```
+
+- For Windows:
+  ```
+  choco install -y skaffold kustomize gcloudsdk
+  ```
+
+- For Linux/Ubuntu:
+  ```
+  curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && \
+  sudo install skaffold /usr/local/bin/
+  ```
+
+* Make sure to use __skaffold 2.0.4__ or later for development.
 
 Build all microservices (including web app) and deploy to the cluster:
 ```
 cd $BASE_DIR
+export CLUSTER_NAME=main-cluster
+gcloud container clusters get-credentials $CLUSTER_NAME --region $REGION --project $PROJECT_ID
 skaffold run -p prod --default-repo=gcr.io/$PROJECT_ID
 ```
 

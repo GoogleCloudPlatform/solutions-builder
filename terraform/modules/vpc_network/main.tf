@@ -7,24 +7,20 @@ module "vpc" {
 
   subnets = [
     {
-      subnet_name               = "default-vpc-subnet"
-      subnet_ip                 = "10.0.0.0/16"
-      subnet_region             = "us-central1"
-      subnet_flow_logs          = "true"
-      subnet_flow_logs_interval = "INTERVAL_10_MIN"
-      subnet_flow_logs_sampling = 0.7
-      subnet_flow_logs_metadata = "INCLUDE_ALL_METADATA"
+      subnet_name   = "default-vpc-subnet"
+      subnet_ip     = "10.0.0.0/16"
+      subnet_region = "us-central1"
     }
   ]
 
   secondary_ranges = {
     default-vpc-subnet = [
       {
-        range_name    = "secondary-pod-range-01"
+        range_name    = "secondary-range-pods"
         ip_cidr_range = "10.1.0.0/16"
       },
       {
-        range_name    = "secondary-service-range-01"
+        range_name    = "secondary-range-services"
         ip_cidr_range = "10.2.0.0/16"
       },
     ]
