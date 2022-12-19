@@ -44,22 +44,36 @@ module "vpc_network" {
   region      = var.region
 }
 
-module "gke" {
+# Use GKE autopilot cluster.
+module "gke-autopilot" {
   depends_on = [module.project_services, module.vpc_network]
 
-  # Only execute this module when feature_flags contains the keyword.
-  count = (contains(regexall("[\\w\\d\\-_\\+\\.]+", var.feature_flags), "gke") ? 1 : 0)
-
-  source             = "../../modules/gke"
+  source             = "../../modules/gke_autopilot"
   project_id         = var.project_id
   cluster_name       = "main-cluster"
   kubernetes_version = "1.22.12-gke.2300"
   vpc_network        = "default-vpc"
   region             = var.region
-  min_node_count     = 1
-  max_node_count     = 1
-  machine_type       = "n1-standard-8"
 }
+
+# Optional: Use standard/customize GKE cluster.
+# Comment out the module "gke-autopilot" block out and use the following block to customize GKE cluster with standard mode.
+# module "gke" {
+#   depends_on = [module.project_services, module.vpc_network]
+
+#   # Only execute this module when feature_flags contains the keyword.
+#   count = (contains(regexall("[\\w\\d\\-_\\+\\.]+", var.feature_flags), "gke") ? 1 : 0)
+
+#   source             = "../../modules/gke"
+#   project_id         = var.project_id
+#   cluster_name       = "main-cluster"
+#   kubernetes_version = "1.22.12-gke.2300"
+#   vpc_network        = "default-vpc"
+#   region             = var.region
+#   min_node_count     = 1
+#   max_node_count     = 1
+#   machine_type       = "n1-standard-8"
+# }
 
 module "ingress" {
   depends_on = [module.gke]
@@ -85,7 +99,7 @@ module "firebase" {
 }
 
 module "cloudrun-sample" {
-  depends_on            = [module.project_services, module.vpc_network]
+  depends_on = [module.project_services, module.vpc_network]
   # Only execute this module when feature_flags contains the keyword.
   count = (contains(regexall("[\\w\\d\\-_\\+\\.]+", var.feature_flags), "cloudrun") ? 1 : 0)
 

@@ -29,6 +29,8 @@ portForward:
   resourceName: sample-service
   port: 80
   localPort: 8888
+deploy:
+  kubectl: {}
 profiles:
 - name: custom
   build:

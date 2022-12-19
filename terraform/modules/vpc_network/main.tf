@@ -7,7 +7,7 @@ module "vpc" {
 
   subnets = [
     {
-      subnet_name               = "vpc-01-subnet-01"
+      subnet_name               = "default-vpc-subnet"
       subnet_ip                 = "10.0.0.0/16"
       subnet_region             = "us-central1"
       subnet_flow_logs          = "true"
@@ -18,7 +18,7 @@ module "vpc" {
   ]
 
   secondary_ranges = {
-    vpc-01-subnet-01 = [
+    default-vpc-subnet = [
       {
         range_name    = "secondary-pod-range-01"
         ip_cidr_range = "10.1.0.0/16"
