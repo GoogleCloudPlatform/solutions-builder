@@ -54,15 +54,20 @@ module "cert_manager" {
   # and https://github.com/cert-manager/cert-manager/issues/3717#issuecomment-972088152
   additional_set = [{
     name  = "global.leaderElection.namespace"
-    value = "cert-manager"
+    value = "ingress-nginx"
   }]
+
+  # Workaround to let nginx controller to read secret from cert-manager.
+  # See https://github.com/kubernetes/ingress-nginx/issues/2170
+  namespace_name   = "ingress-nginx"
+  create_namespace = false
 }
 
 # Install nginx as the ingress controller. It uses [helm](https://helm.sh/)
 # to install nginx controller.
 module "nginx-controller" {
   depends_on = [
-    module.cert_manager, # Wait for cert manager to have the secret "cert-manager-private-key" ready.
+    # module.cert_manager, # Wait for cert manager to have the secret "cert-manager-private-key" ready.
     resource.kubernetes_namespace.ingress_nginx
   ]
 
