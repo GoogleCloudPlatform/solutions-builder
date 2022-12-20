@@ -84,6 +84,19 @@ module "gke" {
 #   machine_type       = "n1-standard-8"
 # }
 
+module "gke-ingress" {
+  depends_on = [module.gke]
+
+  source            = "../../modules/ingress"
+  project_id        = var.project_id
+  cert_issuer_email = var.admin_email
+
+  # Domains for API endpoint, excluding protocols.
+  domain            = var.api_domain
+  region            = var.region
+  cors_allow_origin = "http://localhost:4200,http://localhost:3000,http://${var.web_app_domain},https://${var.web_app_domain}"
+}
+
 # [Optional] Deploy sample-service to CloudRun
 # module "cloudrun-sample" {
 #   depends_on = [module.project_services, module.vpc_network]
@@ -96,15 +109,3 @@ module "gke" {
 #   allow_unauthenticated = true
 # }
 
-# module "gke-ingress" {
-#   depends_on = [module.gke]
-
-#   source            = "../../modules/ingress"
-#   project_id        = var.project_id
-#   cert_issuer_email = var.admin_email
-
-#   # Domains for API endpoint, excluding protocols.
-#   domain            = var.api_domain
-#   region            = var.region
-#   cors_allow_origin = "http://localhost:4200,http://localhost:3000,http://${var.web_app_domain},https://${var.web_app_domain}"
-# }
