@@ -24,6 +24,8 @@ manifests:
   kustomize:
     paths:
     - ./kustomize/minikube
+deploy:
+  kubectl: {}
 portForward:
 - resourceType: service
   resourceName: sample-service
