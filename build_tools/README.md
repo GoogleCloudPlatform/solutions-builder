@@ -100,13 +100,14 @@ bash setup/setup_terraform.sh
 Run Terraform apply
 
 ```
+# Init Terraform
 cd terraform/environments/dev
 terraform init -backend-config=bucket=$TF_BUCKET_NAME
 
 # Enabling GCP services.
 terraform apply -target=module.project_services -target=module.service_accounts -auto-approve
 
-# If using GKE, create GKE cluster first.
+# If using GKE, create GKE cluster first. (This will take around 10 mins averagely)
 terraform apply -target=module.vpc_network -target=module.gke -auto-approve
 
 # Run the rest of Terraform
@@ -140,7 +141,7 @@ Build all microservices (including web app) and deploy to the cluster:
 cd $BASE_DIR
 export CLUSTER_NAME=main-cluster
 gcloud container clusters get-credentials $CLUSTER_NAME --region $REGION --project $PROJECT_ID
-skaffold run -p prod --default-repo=gcr.io/$PROJECT_ID
+skaffold run -p dev --default-repo=gcr.io/$PROJECT_ID
 ```
 
 Test with API endpoint:

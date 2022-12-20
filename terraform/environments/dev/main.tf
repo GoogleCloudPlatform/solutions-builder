@@ -37,6 +37,13 @@ module "service_accounts" {
   project_number = data.google_project.project.number
 }
 
+module "firebase" {
+  depends_on       = [module.project_services]
+  source           = "../../modules/firebase"
+  project_id       = var.project_id
+  firestore_region = var.firestore_region
+}
+
 module "vpc_network" {
   source      = "../../modules/vpc_network"
   project_id  = var.project_id
@@ -62,14 +69,10 @@ module "gke" {
 }
 
 # # [Optional] Use standard/customize GKE cluster.
-# #   Comment out the module "gke-autopilot" block out and use the following block to customize GKE cluster with standard mode.
-#
+# # Comment out the module "gke-autopilot" block out and use the following block to customize GKE cluster with standard mode.
+
 # module "gke" {
 #   depends_on = [module.project_services, module.vpc_network]
-
-#   # Only execute this module when feature_flags contains the keyword.
-#   count = (contains(regexall("[\\w\\d\\-_\\+\\.]+", var.feature_flags), "gke") ? 1 : 0)
-
 #   source             = "../../modules/gke"
 #   project_id         = var.project_id
 #   cluster_name       = "main-cluster"
@@ -81,11 +84,20 @@ module "gke" {
 #   machine_type       = "n1-standard-8"
 # }
 
+# [Optional] Deploy sample-service to CloudRun
+# module "cloudrun-sample" {
+#   depends_on = [module.project_services, module.vpc_network]
+#   source                = "../../modules/cloudrun"
+#   project_id            = var.project_id
+#   region                = var.region
+#   source_dir            = "../../../microservices/sample_service"
+#   service_name          = "cloudrun-sample"
+#   repository_id         = "cloudrun"
+#   allow_unauthenticated = true
+# }
+
 # module "gke-ingress" {
 #   depends_on = [module.gke]
-
-#   # Only execute this module when feature_flags contains the keyword.
-#   count = (contains(regexall("[\\w\\d\\-_\\+\\.]+", var.feature_flags), "gke-ingress") ? 1 : 0)
 
 #   source            = "../../modules/ingress"
 #   project_id        = var.project_id
@@ -95,25 +107,4 @@ module "gke" {
 #   domain            = var.api_domain
 #   region            = var.region
 #   cors_allow_origin = "http://localhost:4200,http://localhost:3000,http://${var.web_app_domain},https://${var.web_app_domain}"
-# }
-
-module "firebase" {
-  depends_on       = [module.project_services]
-  source           = "../../modules/firebase"
-  project_id       = var.project_id
-  firestore_region = var.firestore_region
-}
-
-# module "cloudrun-sample" {
-#   depends_on = [module.project_services, module.vpc_network]
-#   # Only execute this module when feature_flags contains the keyword.
-#   count = (contains(regexall("[\\w\\d\\-_\\+\\.]+", var.feature_flags), "cloudrun") ? 1 : 0)
-
-#   source                = "../../modules/cloudrun"
-#   project_id            = var.project_id
-#   region                = var.region
-#   source_dir            = "../../../microservices/sample_service"
-#   service_name          = "cloudrun-sample"
-#   repository_id         = "cloudrun"
-#   allow_unauthenticated = true
 # }
