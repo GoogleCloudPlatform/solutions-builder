@@ -67,3 +67,9 @@ variable "web_app_domain" {
   description = "Web app domain, excluding protocol"
   default     = "localhost:8080"
 }
+
+variable "firebase_init" {
+  type        = bool
+  description = "Whether to initialize Firebase/Firestore."
+  default     = false
+}

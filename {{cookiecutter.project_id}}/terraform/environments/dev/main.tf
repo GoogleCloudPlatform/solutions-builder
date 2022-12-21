@@ -37,6 +37,14 @@ module "service_accounts" {
   project_number = data.google_project.project.number
 }
 
+module "firebase" {
+  depends_on       = [module.project_services]
+  source           = "../../modules/firebase"
+  project_id       = var.project_id
+  firestore_region = var.firestore_region
+  firebase_init    = var.firebase_init
+}
+
 module "vpc_network" {
   source      = "../../modules/vpc_network"
   project_id  = var.project_id
@@ -47,53 +55,48 @@ module "vpc_network" {
 module "gke" {
   depends_on = [module.project_services, module.vpc_network]
 
-  # Only execute this module when feature_flags contains the keyword.
-  count = (contains(regexall("[\\w\\d\\-_\\+\\.]+", var.feature_flags), "gke") ? 1 : 0)
+  source         = "../../modules/gke"
+  project_id     = var.project_id
+  cluster_name   = "main-cluster"
+  namespace      = "default"
+  vpc_network    = "default-vpc"
+  region         = var.region
+  min_node_count = 1
+  max_node_count = 10
+  machine_type   = "n1-standard-8"
 
-  source             = "../../modules/gke"
-  project_id         = var.project_id
-  cluster_name       = "main-cluster"
-  kubernetes_version = "1.22.12-gke.2300"
-  vpc_network        = "default-vpc"
-  region             = var.region
-  min_node_count     = 1
-  max_node_count     = 1
-  machine_type       = "n1-standard-8"
+  # This service account will be created in both GCP and GKE, and will be
+  # used for workload federation in all microservices.
+  # See microservices/sample_service/kustomize/base/deployment.yaml for example.
+  service_account_name = "gke-sa"
+
+  # See latest stable version at https://cloud.google.com/kubernetes-engine/docs/release-notes-stable
+  kubernetes_version = "1.23.13-gke.900"
 }
 
 module "ingress" {
   depends_on = [module.gke]
 
-  # Only execute this module when feature_flags contains the keyword.
-  count = (contains(regexall("[\\w\\d\\-_\\+\\.]+", var.feature_flags), "gke-ingress") ? 1 : 0)
-
   source            = "../../modules/ingress"
   project_id        = var.project_id
   cert_issuer_email = var.admin_email
-
-  # Domains for API endpoint, excluding protocols.
-  domain            = var.api_domain
   region            = var.region
+
+  # API domain, excluding protocols. E.g. example.com.
+  api_domain        = var.api_domain
   cors_allow_origin = "http://localhost:4200,http://localhost:3000,http://${var.web_app_domain},https://${var.web_app_domain}"
 }
 
-module "firebase" {
-  depends_on       = [module.project_services]
-  source           = "../../modules/firebase"
-  project_id       = var.project_id
-  firestore_region = var.firestore_region
-}
+# # [Optional] Deploy sample-service to CloudRun
+# # Uncomment below to enable deploying microservices with CloudRun.
+# module "cloudrun-sample" {
+#   depends_on = [module.project_services, module.vpc_network]
 
-module "cloudrun-sample" {
-  depends_on            = [module.project_services, module.vpc_network]
-  # Only execute this module when feature_flags contains the keyword.
-  count = (contains(regexall("[\\w\\d\\-_\\+\\.]+", var.feature_flags), "cloudrun") ? 1 : 0)
-
-  source                = "../../modules/cloudrun"
-  project_id            = var.project_id
-  region                = var.region
-  source_dir            = "../../../microservices/sample_service"
-  service_name          = "cloudrun-sample"
-  repository_id         = "cloudrun"
-  allow_unauthenticated = true
-}
+#   source                = "../../modules/cloudrun"
+#   project_id            = var.project_id
+#   region                = var.region
+#   source_dir            = "../../../microservices/sample_service"
+#   service_name          = "cloudrun-sample"
+#   repository_id         = "cloudrun"
+#   allow_unauthenticated = true
+# }
