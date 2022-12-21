@@ -18,3 +18,11 @@
 output "gke_cluster" {
   value = module.gke
 }
+
+output "endpoint" {
+  value = module.gke.endpoint
+}
+
+output "ca_certificate" {
+  value = module.gke.master_auth.0.cluster_ca_certificate
+}

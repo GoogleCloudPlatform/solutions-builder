@@ -34,6 +34,16 @@ resource "google_container_cluster" "gke_autopilot" {
 
   # Enabling Autopilot for this cluster
   enable_autopilot = true
+  # cluster_autoscaling {
+  #   resource_limits {
+  #     resource_type = "cpu"
+  #     minimum       = 4
+  #   }
+  #   resource_limits {
+  #     resource_type = "memory"
+  #     minimum       = 16
+  #   }
+  # }
 }
 
 resource "time_sleep" "wait_for_gke" {
@@ -62,28 +72,3 @@ module "gke-workload-identity" {
     "roles/storage.admin",
   ]
 }
-
-
-# # Creating a Kubernetes Service account for Workload Identity
-# resource "kubernetes_service_account" "ksa" {
-#   depends_on = [google_container_cluster.gke_autopilot, time_sleep.wait_for_gke]
-
-#   metadata {
-#     name = "ksa"
-#     annotations = {
-#       "iam.gke.io/gcp-service-account" = local.gke_pod_sa_email
-#     }
-#   }
-# }
-
-# # Enable the IAM binding between YOUR-GSA-NAME and YOUR-KSA-NAME:
-# resource "google_service_account_iam_binding" "gsa-ksa-binding" {
-#   depends_on = [google_container_cluster.gke_autopilot, kubernetes_service_account.ksa]
-
-#   service_account_id = "projects/${var.project_id}/serviceAccounts/${local.gke_pod_sa_email}"
-#   role               = "roles/iam.workloadIdentityUser"
-
-#   members = [
-#     "serviceAccount:${var.project_id}.svc.id.goog[default/ksa]"
-#   ]
-# }

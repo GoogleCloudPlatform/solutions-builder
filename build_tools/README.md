@@ -1,18 +1,17 @@
 # {{cookiecutter.project_name}}
 <!-- vscode-markdown-toc -->
-* 1. [Project Requirements](#ProjectRequirements)
-* 2. [Getting Started](#GettingStarted)
-	* 2.1. [Prerequisites](#Prerequisites)
-	* 2.2. [GCP Organizational policies](#GCPOrganizationalpolicies)
-	* 2.3. [GCP Foundation Setup - Terraform](#GCPFoundationSetup-Terraform)
-	* 2.4. [Deploying Kubernetes Microservices to GKE](#DeployingKubernetesMicroservicestoGKE)
-	* 2.5. [Deploying Microservices to CloudRun](#DeployingMicroservicestoCloudRun)
-* 3. [Development](#Development)
-* 4. [End-to-End API tests](#End-to-EndAPItests)
-* 5. [CI/CD and Test Automation](#CICDandTestAutomation)
-	* 5.1. [Github Actions](#GithubActions)
-	* 5.2. [Test Github Action workflows locally](#TestGithubActionworkflowslocally)
-* 6. [CloudBuild](#CloudBuild)
+* 1. [Setting up Google Cloud project](#SettingupGoogleCloudproject)
+	* 1.1. [Prerequisites](#Prerequisites)
+	* 1.2. [GCP Organizational policies](#GCPOrganizationalpolicies)
+	* 1.3. [GCP Foundation Setup - Terraform](#GCPFoundationSetup-Terraform)
+	* 1.4. [Deploying Kubernetes Microservices to GKE](#DeployingKubernetesMicroservicestoGKE)
+	* 1.5. [Deploying Microservices to CloudRun](#DeployingMicroservicestoCloudRun)
+* 2. [Development](#Development)
+* 3. [End-to-End API tests](#End-to-EndAPItests)
+* 4. [CI/CD and Test Automation](#CICDandTestAutomation)
+	* 4.1. [Github Actions](#GithubActions)
+	* 4.2. [Test Github Action workflows locally](#TestGithubActionworkflowslocally)
+* 5. [CloudBuild](#CloudBuild)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -26,9 +25,11 @@ Please contact {{cookiecutter.admin_email}} for any questions.
 
 > **_New Developers:_** Consult the [development guide](./DEVELOPMENT.md) for setup and contribution instructions
 
+##  1. <a name='SettingupGoogleCloudproject'></a>Setting up Google Cloud project
 
+This guide will detail how to set up your new solutions template project. See the [development guide](./DEVELOPMENT.md) for how to contribute to the project.
 
-##  1. <a name='ProjectRequirements'></a>Project Requirements
+Project Requirements:
 
 | Tool  | Current Version  | Documentation site |
 |---|---|---|
@@ -36,11 +37,7 @@ Please contact {{cookiecutter.admin_email}} for any questions.
 | Kustomize  | v4.3.1  | https://kustomize.io/ |
 | gcloud CLI | Latest  | https://cloud.google.com/sdk/docs/install |
 
-##  2. <a name='GettingStarted'></a>Getting Started
-
-This guide will detail how to set up your new solutions template project. See the [development guide](./DEVELOPMENT.md) for how to contribute to the project.
-
-###  2.1. <a name='Prerequisites'></a>Prerequisites
+###  1.1. <a name='Prerequisites'></a>Prerequisites
 
 Set up environmental variables
 ```
@@ -59,7 +56,7 @@ gcloud config set project $PROJECT_ID
 ```
 - NOTE: you will need to run ```gcloud auth application-default login``` instead of ```gcloud auth login``` if you have multiple projects in the gcloud config.
 
-###  2.2. <a name='GCPOrganizationalpolicies'></a>GCP Organizational policies
+###  1.2. <a name='GCPOrganizationalpolicies'></a>GCP Organizational policies
 
 Optionally, you may need to update Organization policies for CI/CD test automation.
 
@@ -75,7 +72,7 @@ Or, change the following Organization policy constraints in [GCP Console](https:
 - constraints/compute.requireOsLogin - Enforced Off
 - constraints/compute.vmExternalIpAccess - Allow All
 
-###  2.3. <a name='GCPFoundationSetup-Terraform'></a>GCP Foundation Setup - Terraform
+###  1.3. <a name='GCPFoundationSetup-Terraform'></a>GCP Foundation Setup - Terraform
 
 Set up Terraform environment variables and GCS bucket for state file.
 If the new project is just created recently, you may need to wait for 1-2 minutes
@@ -114,7 +111,7 @@ terraform apply -target=module.vpc_network -target=module.gke -auto-approve
 terraform apply -auto-approve
 ```
 
-###  2.4. <a name='DeployingKubernetesMicroservicestoGKE'></a>Deploying Kubernetes Microservices to GKE
+###  1.4. <a name='DeployingKubernetesMicroservicestoGKE'></a>Deploying Kubernetes Microservices to GKE
 
 Install required packages:
 
@@ -150,7 +147,7 @@ export API_DOMAIN=$(kubectl describe ingress | grep Address | awk '{print $2}')
 echo "http://${API_DOMAIN}/sample_service/docs"
 ```
 
-###  2.5. <a name='DeployingMicroservicestoCloudRun'></a>Deploying Microservices to CloudRun
+###  1.5. <a name='DeployingMicroservicestoCloudRun'></a>Deploying Microservices to CloudRun
 
 Build common image
 ```
@@ -191,18 +188,18 @@ gcloud run services add-iam-policy-binding $SERVICE_NAME \
 --role="roles/run.invoker"
 ```
 
-##  3. <a name='Development'></a>Development
+##  2. <a name='Development'></a>Development
 
 
-##  4. <a name='End-to-EndAPItests'></a>End-to-End API tests
+##  3. <a name='End-to-EndAPItests'></a>End-to-End API tests
 
 TBD
 
-##  5. <a name='CICDandTestAutomation'></a>CI/CD and Test Automation
+##  4. <a name='CICDandTestAutomation'></a>CI/CD and Test Automation
 
-###  5.1. <a name='GithubActions'></a>Github Actions
+###  4.1. <a name='GithubActions'></a>Github Actions
 
-###  5.2. <a name='TestGithubActionworkflowslocally'></a>Test Github Action workflows locally
+###  4.2. <a name='TestGithubActionworkflowslocally'></a>Test Github Action workflows locally
 
 - Install Docker desktop: https://www.docker.com/products/docker-desktop/
 - Install [Act](https://github.com/nektos/act)
@@ -219,7 +216,7 @@ TBD
   act --workflows .github/workflows/e2e_gke_api_test.yaml
   ```
 
-##  6. <a name='CloudBuild'></a>CloudBuild
+##  5. <a name='CloudBuild'></a>CloudBuild
 
 TBD
 
