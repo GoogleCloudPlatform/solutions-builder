@@ -30,9 +30,9 @@ variable "cert_issuer_email" {
   description = "email of the cert issuer"
 }
 
-variable "domain" {
+variable "api_domain" {
   type        = string
-  description = "Ingress base domain, excluding protocol. E.g. api.example.com"
+  description = "API domain, excluding protocol. E.g. api.example.com"
 }
 
 variable "cors_allow_origin" {

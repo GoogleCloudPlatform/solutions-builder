@@ -6,7 +6,7 @@ spec:
   replicas: 3
   template:
     spec:
-      serviceAccountName: ksa
+      serviceAccountName: gke-sa
       containers:
       - name: sample-service
         image: sample-service
@@ -17,8 +17,8 @@ spec:
             configMapKeyRef:
               name: env-vars
               key: PROJECT_ID
-        - name: EXTERNAL_DATA_PROJECT_ID
+        - name: DATABASE_PREFIX
           valueFrom:
             configMapKeyRef:
               name: env-vars
-              key: EXTERNAL_DATA_PROJECT_ID
+              key: DATABASE_PREFIX

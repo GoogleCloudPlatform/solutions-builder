@@ -65,7 +65,7 @@ build_template() {
   echo "Creating build folder at ${build_folder}"
   mkdir -p $build_folder
   cp {.,}* $build_folder
-  cp build_tools/*.md $build_folder
+  cp build_tools/template_docs/*.md $build_folder
 
   # Remove Cookiecutter file in the root.
   rm $build_folder/cookiecutter.json
