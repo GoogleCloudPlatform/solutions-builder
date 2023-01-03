@@ -100,7 +100,11 @@ resource "kubernetes_ingress_v1" "default_ingress" {
     }
 
     tls {
-      secret_name = "tls-secret"
+      hosts = [
+        var.api_domain,
+        google_compute_address.ingress_ip_address.address,
+      ]
+      secret_name = "cert-manager-private-key"
     }
   }
 }

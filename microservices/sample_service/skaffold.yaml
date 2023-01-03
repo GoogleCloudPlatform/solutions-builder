@@ -29,19 +29,9 @@ portForward:
   resourceName: sample-service
   port: 80
   localPort: 8888
+deploy:
+  kubectl: {}
 profiles:
-- name: custom
-  build:
-    artifacts:
-    - image: sample-service
-      requires:
-      - image: common
-        alias: BASE_IMG
-    googleCloudBuild: {}
-  manifests:
-    kustomize:
-      paths:
-      - ./kustomize/custom
 - name: prod_non_cloudbuild
   manifests:
     kustomize:

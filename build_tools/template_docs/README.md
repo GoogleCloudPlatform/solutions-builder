@@ -119,11 +119,16 @@ bash setup/setup_terraform.sh
 Run Terraform apply
 
 ```
+# Init Terraform
 cd terraform/environments/dev
 terraform init -backend-config=bucket=$TF_BUCKET_NAME
 
 # Enabling GCP services first.
 terraform apply -target=module.project_services -target=module.service_accounts -auto-approve
+
+# Initializing Firebase (if using Firestore)
+# NOTE: the Firebase can only be initialized once (via App Engine).
+terraform apply -target=module.firebase -var="firebase_init=true" -auto-approve
 
 # Run the rest of Terraform
 terraform apply -auto-approve
@@ -131,21 +136,19 @@ terraform apply -auto-approve
 
 ###  2.4. <a name='DeployingKubernetesMicroservicestoGKE'></a>Deploying Kubernetes Microservices to GKE
 
-Connect to the `default-cluster`:
-```
-gcloud container clusters get-credentials main-cluster --region $REGION --project $PROJECT_ID
-```
-
 Build all microservices (including web app) and deploy to the cluster:
 ```
 cd $BASE_DIR
+export CLUSTER_NAME=main-cluster
+gcloud container clusters get-credentials $CLUSTER_NAME --region $REGION --project $PROJECT_ID
 skaffold run -p prod --default-repo=gcr.io/$PROJECT_ID
 ```
 
 Test with API endpoint:
 ```
 export API_DOMAIN=$(kubectl describe ingress | grep Address | awk '{print $2}')
-echo "http://${API_DOMAIN}/sample_service/docs"
+export URL="http://${API_DOMAIN}/sample_service/docs"
+echo "Open this URL in a browser: ${URL}"
 ```
 
 ###  2.5. <a name='DeployingMicroservicestoCloudRun'></a>Deploying Microservices to CloudRun
