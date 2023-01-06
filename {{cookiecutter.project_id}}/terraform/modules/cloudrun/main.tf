@@ -16,6 +16,11 @@ resource "google_cloud_run_service_iam_member" "member" {
   service  = var.service_name
   role     = "roles/run.invoker"
   member   = "allUsers"
+  
+  # adding iam member for service requires the service be running, otherwise
+  # returns an error "Resource 'cloudrun-sample' of kind 'SERVICE' does not exist"
+  # adding this dependency resolves the error.
+  depends_on = [null_resource.deploy-cloudrun-image]
 }
 
 # Creating a custom service account for cloud run
