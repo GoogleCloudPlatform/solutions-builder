@@ -193,10 +193,16 @@ export TF_BUCKET_NAME="${PROJECT_ID}-tfstate"
 export TF_BUCKET_LOCATION="us"
 
 # Grant Storage admin to the current user IAM.
-export CURRENT_USER=$(gcloud config list account --format "value(core.account)")
+export CURRENT_USER=$(gcloud config list account --format "value(core.account)" | head -n 1)
 gcloud projects add-iam-policy-binding $PROJECT_ID --member="user:$CURRENT_USER" --role='roles/storage.admin'
 
-# Create Terraform Statefile in GCS bucket.
+# (Optional) Link billing account to the current project.
+export BILLING_ACCOUNT=$(gcloud beta billing accounts list --format "value(name)" | head -n 1)
+gcloud beta billing projects link $PROJECT_ID --billing-account $BILLING_ACCOUNT
+```
+
+Create Terraform Statefile in GCS bucket.
+```
 bash setup/setup_terraform.sh
 ```
 
@@ -220,10 +226,13 @@ terraform apply -target=module.firebase -var="firebase_init=true" -auto-approve
 terraform apply -auto-approve
 ```
 
-### Deploying Kubernetes Microservices to GKE
+## Deploying Microservices to GKE
 
-> You can skip this section if you plan to deploy microservices with CloudRun.
+### Init GKE cluster
 
+
+
+### Build and deploy Kubernetes microservices
 Install required packages:
 
 - For Google CloudShell or Linux/Ubuntu:
@@ -258,9 +267,9 @@ export URL="http://${API_DOMAIN}/sample_service/docs"
 echo "Open this URL in a browser: ${URL}"
 ```
 
-### (Optional) Deploying Microservices to CloudRun
+## Deploying Microservices to CloudRun
 
-Open `terraform/environments/dev/main.tf`, and uncomment the CloudRun section like below:
+Open `terraform/environments/dev/main.tf` and uncomment the CloudRun section like below:
 
 ```
 # [Optional] Deploy sample-service to CloudRun
