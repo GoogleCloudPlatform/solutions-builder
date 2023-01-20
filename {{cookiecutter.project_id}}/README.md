@@ -1,4 +1,6 @@
 # {{cookiecutter.project_name}}
+Table of Content
+
 <!-- vscode-markdown-toc -->
 * 1. [Project Requirements](#ProjectRequirements)
 * 2. [Getting Started](#GettingStarted)
@@ -30,11 +32,11 @@ Please contact {{cookiecutter.admin_email}} for any questions.
 
 ##  1. <a name='ProjectRequirements'></a>Project Requirements
 
-| Tool  | Current Version  | Documentation site |
+| Tool  | Required Version  | Documentation site |
 |---|---|---|
-| Skaffold   | v2.x    | https://skaffold.dev/ |
-| Kustomize  | v4.3.1  | https://kustomize.io/ |
-| gcloud CLI | Latest  | https://cloud.google.com/sdk/docs/install |
+| Skaffold   | >= v2.0.4  | https://skaffold.dev/ |
+| Kustomize  | >= v4.3.1  | https://kustomize.io/ |
+| gcloud CLI | Latest     | https://cloud.google.com/sdk/docs/install |
 
 ##  2. <a name='GettingStarted'></a>Getting Started
 
@@ -50,41 +52,17 @@ export REGION={{cookiecutter.gcp_region}}
 export API_DOMAIN={{cookiecutter.api_domain}}
 export BASE_DIR=$(pwd)
 
-# Login to Google Cloud
+# Login to Google Cloud (if not on Cloud Shell)
 gcloud auth application-default login
 gcloud auth application-default set-quota-project $PROJECT_ID
 gcloud config set project $PROJECT_ID
 ```
 
-For development with Kubernetes on GKE:
-
-Install required packages:
-
-- For MacOS:
-  ```
-  brew install --cask skaffold kustomize google-cloud-sdk
-  ```
-
-- For Windows:
-  ```
-  choco install -y skaffold kustomize gcloudsdk
-  ```
-
-- For Linux/Ubuntu:
-  ```
-  curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && \
-  sudo install skaffold /usr/local/bin/
-  ```
-
-* Make sure to use __skaffold 1.24.1__ or later for development.
-
 ###  2.2. <a name='GCPOrganizationalpolicies'></a>GCP Organizational policies
-
-Optionally, you may need to update Organization policies for CI/CD test automation.
 
 Run the following commands to update Organization policies:
 ```
-export ORGANIZATION_ID=$(gcloud organizations list --format="value(name)")
+export ORGANIZATION_ID="$(gcloud projects get-ancestors $PROJECT_ID | grep organization | cut -f1 -d' ')"
 gcloud resource-manager org-policies disable-enforce constraints/compute.requireOsLogin --organization=$ORGANIZATION_ID
 gcloud resource-manager org-policies delete constraints/compute.vmExternalIpAccess --organization=$ORGANIZATION_ID
 gcloud resource-manager org-policies delete constraints/iam.allowedPolicyMemberDomains --organization=$ORGANIZATION_ID
@@ -126,7 +104,7 @@ terraform init -backend-config=bucket=$TF_BUCKET_NAME
 # Enabling GCP services first.
 terraform apply -target=module.project_services -target=module.service_accounts -auto-approve
 
-# Initializing Firebase (if using Firestore)
+# Initializing Firebase (Only need this for the first time.)
 # NOTE: the Firebase can only be initialized once (via App Engine).
 terraform apply -target=module.firebase -var="firebase_init=true" -auto-approve
 
@@ -135,6 +113,26 @@ terraform apply -auto-approve
 ```
 
 ###  2.4. <a name='DeployingKubernetesMicroservicestoGKE'></a>Deploying Kubernetes Microservices to GKE
+
+Install required packages:
+
+- For MacOS:
+  ```
+  brew install --cask skaffold kustomize google-cloud-sdk
+  ```
+
+- For Windows:
+  ```
+  choco install -y skaffold kustomize gcloudsdk
+  ```
+
+- For Linux/Ubuntu:
+  ```
+  export SKAFFOLD_VERSION=v2.0.4
+  curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/$SKAFFOLD_VERSION/skaffold-linux-amd64 && \
+  sudo install skaffold /usr/local/bin/
+  ```
+  > Make sure to use __skaffold 2.0.4__ or later for development.
 
 Build all microservices (including web app) and deploy to the cluster:
 ```

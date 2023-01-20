@@ -62,7 +62,7 @@ gcloud config set project $PROJECT_ID
 
 Run the following commands to update Organization policies:
 ```
-export ORGANIZATION_ID=$(gcloud organizations list --format="value(name)")
+export ORGANIZATION_ID="$(gcloud projects get-ancestors $PROJECT_ID | grep organization | cut -f1 -d' ')"
 gcloud resource-manager org-policies disable-enforce constraints/compute.requireOsLogin --organization=$ORGANIZATION_ID
 gcloud resource-manager org-policies delete constraints/compute.vmExternalIpAccess --organization=$ORGANIZATION_ID
 gcloud resource-manager org-policies delete constraints/iam.allowedPolicyMemberDomains --organization=$ORGANIZATION_ID
