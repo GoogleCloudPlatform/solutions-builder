@@ -1,0 +1,112 @@
+#!/bin/bash
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# This script automates all the setup steps after creating code skeleton using
+# the Solutions template and set up all components to a brand-new Google Cloud
+# project.
+
+# Setting up gcloud CLI
+setup_gcloud() {
+  gcloud config set project $PROJECT_ID --quiet
+}
+
+# Updating GCP Organizational policies
+update_gcp_org_policies() {
+  export ORGANIZATION_ID="$(gcloud organizations list --format='value(name)' | head -n 1)"
+  gcloud resource-manager org-policies disable-enforce constraints/compute.requireOsLogin --organization=$ORGANIZATION_ID
+  gcloud resource-manager org-policies delete constraints/compute.vmExternalIpAccess --organization=$ORGANIZATION_ID
+  gcloud resource-manager org-policies delete constraints/iam.allowedPolicyMemberDomains --organization=$ORGANIZATION_ID
+}
+
+# Setting up GCP foundation - Terraform
+setup_terraform_env_vars() {
+  export TF_VAR_project_id=$PROJECT_ID
+  export TF_VAR_api_domain=$API_DOMAIN
+  export TF_VAR_web_app_domain=$API_DOMAIN
+  export TF_VAR_admin_email=$ADMIN_EMAIL
+  export TF_BUCKET_NAME="${PROJECT_ID}-tfstate"
+  export TF_BUCKET_LOCATION="us"
+}
+
+# Grant Storage admin to the current user IAM.
+grant_storage_iam() {
+  export CURRENT_USER=$(gcloud config list account --format "value(core.account)" | head -n 1)
+  gcloud config set project $PROJECT_ID --quiet
+  gcloud projects add-iam-policy-binding $PROJECT_ID --member="user:$CURRENT_USER" --role='roles/storage.admin' --quiet
+  sleep 3s
+}
+
+# Link billing account to the current project.
+link_billing_account() {
+  export BILLING_ACCOUNT=$(gcloud beta billing accounts list --format "value(name)" | head -n 1)
+  gcloud beta billing projects link $PROJECT_ID --billing-account $BILLING_ACCOUNT --quiet
+}
+
+# Create Terraform Statefile in GCS bucket.
+create_terraform_gcs_bucket() {
+  bash setup/setup_terraform.sh
+  
+  # List all buckets.
+  gcloud alpha storage ls
+  echo "TF_BUCKET_NAME = ${TF_BUCKET_NAME}"
+  echo
+}
+
+# Run terraform to set up all GCP resources. (Setting up GKE by default)
+init_terraform() {
+  # Init Terraform
+  cd terraform/environments/dev
+  terraform init -reconfigure -backend-config=bucket=$TF_BUCKET_NAME
+  
+  # Enabling GCP services first.
+  terraform apply -target=module.project_services -target=module.service_accounts -auto-approve
+  
+  # Initializing Firebase (Only need this for the first time.)
+  # NOTE: the Firebase can only be initialized once (via App Engine).
+  terraform apply -target=module.firebase -var="firebase_init=true" -auto-approve
+  
+  # Run the rest of Terraform
+  terraform apply -auto-approve
+}
+
+# Build all microservices (including web app) and deploy to the cluster:
+deploy_microservices_to_gke() {
+  cd $BASE_DIR
+  export CLUSTER_NAME=main-cluster
+  gcloud container clusters get-credentials $CLUSTER_NAME --region $REGION --project $PROJECT_ID
+  skaffold run -p prod --default-repo=gcr.io/$PROJECT_ID
+}
+
+# Test with API endpoint:
+test_api_endpoints() {
+  export API_DOMAIN=$(kubectl describe ingress | grep Address | awk '{print $2}')
+  export URL="http://${API_DOMAIN}/sample_service/docs"
+  echo "Open this URL in a browser: ${URL}"
+  
+  # Run API e2e tests
+  python e2e/utils/port_forward.py --namespace default
+  PYTHONPATH=common/src python -m pytest e2e/gke_api_tests/
+  PYTEST_STATUS=${PIPESTATUS[0]}
+}
+
+setup_gcloud
+update_gcp_org_policies
+setup_terraform_env_vars
+grant_storage_iam
+link_billing_account
+create_terraform_gcs_bucket
+init_terraform
+deploy_microservices_to_gke
+test_api_endpoints

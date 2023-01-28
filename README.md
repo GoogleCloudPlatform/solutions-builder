@@ -38,33 +38,11 @@ We recommend the following resources to get familiar with Google Cloud and micro
 
 | Tool  | Required Version  | Documentation site |
 |---|---|---|
-| gcloud CLI | Latest     | https://cloud.google.com/sdk/docs/install |
-| Terraform  | >= v1.3.7  | https://developer.hashicorp.com/terraform/downloads |
-| Skaffold   | >= v2.0.4  | https://skaffold.dev/ |
-| Kustomize  | >= v4.3.1  | https://kustomize.io/ |
-| Cookiecutter  | >=2.1.1  | https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter |
-
-### Apple M1 Chip Support for Terraform (Optional)
-
-If you are running commands on an Apple M1 chip Macbook, make sure run the following to add M1 support for Terraform:
-```
-brew install kreuzwerker/taps/m1-terraform-provider-helper
-m1-terraform-provider-helper activate
-m1-terraform-provider-helper install hashicorp/template -v v2.2.0
-```
-
-## Getting Started - Creating Solution Skeleton
-
-### (Optional) Create a new Google Cloud project:
-
-> It is recommeneded to start with a brand new Google Cloud project to have a clean start.
-
-Run the following to create a new Google Cloud project, or you can log in to Google Cloud Console to [create a new project](https://console.cloud.google.com/projectcreate).
-```
-export PROJECT_ID=<my-gcp-project-id>
-gcloud projects create $PROJECT_ID
-gcloud config set project $PROJECT_ID
-```
+| gcloud CLI          | Latest     | https://cloud.google.com/sdk/docs/install |
+| Terraform           | >= v1.3.7  | https://developer.hashicorp.com/terraform/downloads |
+| Skaffold (for GKE)  | >= v2.0.4  | https://skaffold.dev/ |
+| Kustomize (for GKE) | >= v4.3.1  | https://kustomize.io/ |
+| Cookiecutter        | >=2.1.1    | https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter |
 
 ### Install Cookiecutter ([Github](https://github.com/cookiecutter/cookiecutter)):
 - For Google CloudShell or Linux/Ubuntu:
@@ -77,9 +55,51 @@ gcloud config set project $PROJECT_ID
   ```
 - For Windows, refer this [installation guide](https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter)
 
+### Required packages for deploying to GKE cluster:
+> You can skip this section if you choose to deploy microservices to CloudRun only.
+
+Install **skaffold (2.0.4 or later)** and kustomize:
+
+- For Google CloudShell or Linux/Ubuntu:
+  ```
+  export SKAFFOLD_VERSION=v2.0.4
+  curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/$SKAFFOLD_VERSION/skaffold-linux-amd64 && \
+  sudo install skaffold /usr/local/bin/
+  ```
+- For MacOS:
+  ```
+  brew install skaffold kustomize
+  ```
+- For Windows:
+  ```
+  choco install -y skaffold kustomize gcloudsdk
+  ```
+
+### Apple M1 Chip Support for Terraform (Optional)
+
+If you are running commands on an Apple M1 chip Macbook, make sure run the following to add M1 support for Terraform:
+```
+brew install kreuzwerker/taps/m1-terraform-provider-helper
+m1-terraform-provider-helper activate
+m1-terraform-provider-helper install hashicorp/template -v v2.2.0
+```
+
+## Getting Started - Creating Solution Skeleton
+
+### Create a new Google Cloud project (Optional):
+
+> It is recommeneded to start with a brand new Google Cloud project to have a clean start.
+
+Run the following to create a new Google Cloud project, or you can log in to Google Cloud Console to [create a new project](https://console.cloud.google.com/projectcreate).
+```
+export PROJECT_ID=<my-gcp-project-id>
+gcloud projects create $PROJECT_ID
+gcloud config set project $PROJECT_ID
+```
+
 ### Create skeleton code in a new folder with Cookiecutter
 
-Run the following to generate skeleton code in a new folder (project id will be chosen later):
+Run the following to generate skeleton code in a new folder:
 ```
 cookiecutter https://github.com/GoogleCloudPlatform/solutions-template.git
 ```
@@ -133,33 +153,69 @@ You will see the file structure like below:
 ### File structure details
 
 - **README.md** - This contains steps and deployment details to get started with the generated code.
-- **DEVELOPMENT.md** - This contains guidance for developers including development best practices, code submission flow, and troubleshootings.
+- **DEVELOPMENT.md** - This contains guidance for developers including development best practices, code submission flow, and other guidances.
 - **skaffold.yaml** - This is the master Skaffold YAML file that defines how everything is built and deployed, depending on different profiles.
 - **microservices** - The main directory for all microservices, can be broken down into individual folder for each microservie, e.g. `sample_service`.
   - [**microservice subfolder**] - Each microservice folder is a Docker container with [Skaffold](https://skaffold.dev/) + [Kustomize](https://kustomize.io/) to build images in different environments.
 - **common** - The common image contains shared data models and util libraries used by all other microservices.
 
+Once the solution skeleton code generated in **your-project-folder** folder, you have two options to set up your Google Cloud project:
+- Setting up with setup_all script.
+- Or, Setting up with Manual Steps.
 
-## Getting Started - Setting up Google Cloud project
+## Getting Started - Setting up with setup_all script (Recommended)
 
-Once the solution skeleton code generated in **your-project-folder** folder, the next step is to set up the Google Cloud project.
-You will also find the same steps in the `README.md` inside **your-project-folder**.
+Please make sure you are in the generated folder: **your-project-folder**
 
-This guide will detail how to set up your new solutions template project. See the [development guide](./DEVELOPMENT.md) for how to contribute to the project.
-
-### Set up working environment:
 ```
 # Set up environmental variables
 export PROJECT_ID=<my-gcp-project-id>
 export ADMIN_EMAIL=<my-email>
 export REGION=us-central1
 export API_DOMAIN=localhost
-
-cd $PROJECT_ID
 export BASE_DIR=$(pwd)
+```
 
+Log in to Google Cloud.
+```
 # Login to Google Cloud (if not on Cloud Shell)
-gcloud auth application-default login
+gcloud auth login
+gcloud auth application-default set-quota-project $PROJECT_ID
+gcloud config set project $PROJECT_ID
+```
+
+Run setup_all.sh to run all steps:
+```
+sh setup/setup_all.sh
+```
+
+It will then run the following steps:
+- Updating GCP Organizational policies and required IAM roles.
+- Run terraform to set up foundation and GKE cluster.
+- Build and deploy microservices to GKE cluster.
+- Test API endpoints (pytest).
+
+## Getting Started - Setting up with Manual Steps
+
+> The section covers manual setup steps, as same as in the `README.md` generated inside **your-project-folder**.
+
+### Set up working environment:
+
+Please make sure you are in the generated folder: **your-project-folder**
+
+```
+# Set up environmental variables
+export PROJECT_ID=<my-gcp-project-id>
+export ADMIN_EMAIL=<my-email>
+export REGION=us-central1
+export API_DOMAIN=localhost
+export BASE_DIR=$(pwd)
+```
+
+Log in to Google Cloud.
+```
+# Login to Google Cloud (if not on Cloud Shell)
+gcloud auth login
 gcloud auth application-default set-quota-project $PROJECT_ID
 gcloud config set project $PROJECT_ID
 ```
@@ -174,7 +230,7 @@ gcloud resource-manager org-policies delete constraints/compute.vmExternalIpAcce
 gcloud resource-manager org-policies delete constraints/iam.allowedPolicyMemberDomains --organization=$ORGANIZATION_ID
 ```
 
-Or, change the following Organization policy constraints in [GCP Console](https://console.cloud.google.com/iam-admin/orgpolicies)
+Or, go to [GCP Console](https://console.cloud.google.com/iam-admin/orgpolicies) and change the following Organization policy constraints:
 - constraints/compute.requireOsLogin - `Enforced Off`
 - constraints/compute.vmExternalIpAccess - `Allow All`
 
@@ -226,31 +282,7 @@ terraform apply -target=module.firebase -var="firebase_init=true" -auto-approve
 terraform apply -auto-approve
 ```
 
-## Deploying Microservices to GKE
-
-### Init GKE cluster
-
-
-
-### Build and deploy Kubernetes microservices
-Install required packages:
-
-- For Google CloudShell or Linux/Ubuntu:
-  ```
-  export SKAFFOLD_VERSION=v2.0.4
-  curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/$SKAFFOLD_VERSION/skaffold-linux-amd64 && \
-  sudo install skaffold /usr/local/bin/
-  ```
-- For MacOS:
-  ```
-  brew install --cask skaffold kustomize google-cloud-sdk
-  ```
-- For Windows:
-  ```
-  choco install -y skaffold kustomize gcloudsdk
-  ```
-
-> Make sure to use __skaffold 2.0.4__ or later for development.
+### Deploying Microservices to GKE
 
 Build all microservices (including web app) and deploy to the cluster:
 ```
@@ -267,7 +299,7 @@ export URL="http://${API_DOMAIN}/sample_service/docs"
 echo "Open this URL in a browser: ${URL}"
 ```
 
-## Deploying Microservices to CloudRun
+### Deploying Microservices to CloudRun
 
 Open `terraform/environments/dev/main.tf` and uncomment the CloudRun section like below:
 
