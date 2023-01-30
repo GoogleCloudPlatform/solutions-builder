@@ -352,11 +352,21 @@ export SERVICE_LIST_JSON=.test_output/cloudrun_service_list.json
 PYTHONPATH=common/src python -m pytest e2e/cloudrun_api_tests/
 ```
 
-### Cleaning up deployments
+### Cleaning up all deployment and resources
 
 Run the following to destory all deployment and resources.
 > Note: there are some GCP resoureces that are not deletable, e.g. Firebase initialization.
 
+```
+cd $BASE_DIR/terraform/stages/gke
+terraform destroy -auto-approve
+
+cd $BASE_DIR/terraform/stages/cloudrun
+terraform destroy -auto-approve
+
+cd $BASE_DIR/terraform/stages/foundation
+terraform destroy -auto-approve
+```
 
 ## FAQ
 - Who are the target audience/users for this Solutions template?

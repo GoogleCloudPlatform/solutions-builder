@@ -65,9 +65,9 @@ create_terraform_gcs_bucket() {
 }
 
 # Run terraform to set up all GCP resources. (Setting up GKE by default)
-init_terraform() {
+init_foundation() {
   # Init Terraform
-  cd terraform/environments/dev
+  cd terraform/stages/foundation
   terraform init -reconfigure -backend-config=bucket=$TF_BUCKET_NAME
   
   # Enabling GCP services first.
@@ -81,16 +81,27 @@ init_terraform() {
   terraform apply -auto-approve
 }
 
-# Build all microservices (including web app) and deploy to the cluster:
+# Build all microservices and deploy to the cluster:
 deploy_microservices_to_gke() {
+  cd $BASE_DIR/terraform/stages/gke
+  terraform init -backend-config=bucket=$TF_BUCKET_NAME
+  terraform apply -auto-approve
+  
   cd $BASE_DIR
   export CLUSTER_NAME=main-cluster
   gcloud container clusters get-credentials $CLUSTER_NAME --region $REGION --project $PROJECT_ID
   skaffold run -p prod --default-repo=gcr.io/$PROJECT_ID
 }
 
-# Test with API endpoint:
-test_api_endpoints() {
+# Build all microservices and deploy to CloudRun:
+deploy_microservices_to_cloudrun() {
+  cd $BASE_DIR/terraform/stages/cloudrun
+  terraform init -backend-config=bucket=$TF_BUCKET_NAME
+  terraform apply -auto-approve
+}
+
+# Test with API endpoint (GKE):
+test_api_endpoints_gke() {
   export API_DOMAIN=$(kubectl describe ingress | grep Address | awk '{print $2}')
   export URL="http://${API_DOMAIN}/sample_service/docs"
   echo "Open this URL in a browser: ${URL}"
@@ -101,12 +112,36 @@ test_api_endpoints() {
   PYTEST_STATUS=${PIPESTATUS[0]}
 }
 
+# Test with API endpoint (CloudRun):
+test_api_endpoints_cloudrun() {
+  cd $BASE_DIR
+  export SERVICE_URL=$(gcloud run services describe "cloudrun-sample" --region={{cookiecutter.gcp_region}} --format="value(status.url)")
+  export URL="${SERVICE_URL}/sample_service/docs"
+  echo "Open this URL in a browser: ${URL}"
+  
+  # Run API e2e tests
+  mkdir -p .test_output
+  gcloud run services list --format=json > .test_output/cloudrun_service_list.json
+  export SERVICE_LIST_JSON=.test_output/cloudrun_service_list.json
+  PYTHONPATH=common/src python -m pytest e2e/cloudrun_api_tests/
+}
+
 setup_gcloud
 update_gcp_org_policies
 setup_terraform_env_vars
 grant_storage_iam
 link_billing_account
 create_terraform_gcs_bucket
-init_terraform
-deploy_microservices_to_gke
-test_api_endpoints
+init_foundation
+
+if [[ "$MICROSERVICE_DEPLOYMENT_OPTION" ==  "gke" ]]; then
+  printf "Deploying microservices to GKE...\n"
+  deploy_microservices_to_gke
+  test_api_endpoints_gke
+fi
+
+if [[ "$MICROSERVICE_DEPLOYMENT_OPTION" ==  "cloudrun" ]]; then
+  printf "Deploying microservices to CloudRun...\n"
+  deploy_microservices_to_cloudrun
+  test_api_endpoints_cloudrun
+fi
