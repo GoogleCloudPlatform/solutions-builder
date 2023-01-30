@@ -163,7 +163,7 @@ Once the solution skeleton code generated in **your-project-folder** folder, you
 - Setting up with setup_all script.
 - Or, Setting up with Manual Steps.
 
-## Getting Started - Setting up with setup_all script (Recommended)
+## Quick Start - Setting up with setup_all script (Recommended)
 
 Please make sure you are in the generated folder: **your-project-folder**
 
@@ -199,7 +199,12 @@ It will then run the following steps:
 - Build and deploy microservices to GKE cluster.
 - Test API endpoints (pytest).
 
-## Getting Started - Setting up with Manual Steps
+Once microservice deployed successfully, you will see the message below:
+```
+The API endpoints are ready. See the auto-generated API docs at this URL: https://<your-sample-domain>/sample_service/docs
+```
+
+## (Optional) Setting up with Manual Steps
 
 > The section covers manual setup steps, as same as in the `README.md` generated inside **your-project-folder**.
 
@@ -309,7 +314,7 @@ gcloud container clusters get-credentials $CLUSTER_NAME --region $REGION --proje
 skaffold run -p prod --default-repo=gcr.io/$PROJECT_ID
 ```
 
-Test with API endpoint:
+Verify API endpoint:
 ```
 export API_DOMAIN=$(kubectl describe ingress | grep Address | awk '{print $2}')
 export URL="http://${API_DOMAIN}/sample_service/docs"

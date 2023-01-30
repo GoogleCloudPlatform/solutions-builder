@@ -102,28 +102,29 @@ deploy_microservices_to_cloudrun() {
 
 # Test with API endpoint (GKE):
 test_api_endpoints_gke() {
-  export API_DOMAIN=$(kubectl describe ingress | grep Address | awk '{print $2}')
-  export URL="http://${API_DOMAIN}/sample_service/docs"
-  echo "Open this URL in a browser: ${URL}"
-  
   # Run API e2e tests
   python e2e/utils/port_forward.py --namespace default
   PYTHONPATH=common/src python -m pytest e2e/gke_api_tests/
   PYTEST_STATUS=${PIPESTATUS[0]}
+  
+  export API_DOMAIN=$(kubectl describe ingress | grep Address | awk '{print $2}')
+  export URL="http://${API_DOMAIN}/sample_service/docs"
+  echo "The API endpoints are ready. See the auto-generated API docs at this URL: ${URL}"
 }
 
 # Test with API endpoint (CloudRun):
 test_api_endpoints_cloudrun() {
   cd $BASE_DIR
-  export SERVICE_URL=$(gcloud run services describe "cloudrun-sample" --region=us-central1 --format="value(status.url)")
-  export URL="${SERVICE_URL}/sample_service/docs"
-  echo "Open this URL in a browser: ${URL}"
   
   # Run API e2e tests
   mkdir -p .test_output
   gcloud run services list --format=json > .test_output/cloudrun_service_list.json
   export SERVICE_LIST_JSON=.test_output/cloudrun_service_list.json
   PYTHONPATH=common/src python -m pytest e2e/cloudrun_api_tests/
+  
+  export SERVICE_URL=$(gcloud run services describe "cloudrun-sample" --region=us-central1 --format="value(status.url)")
+  export URL="${SERVICE_URL}/sample_service/docs"
+  echo "The API endpoints are ready. See the auto-generated API docs at this URL: ${URL}"
 }
 
 setup_gcloud
