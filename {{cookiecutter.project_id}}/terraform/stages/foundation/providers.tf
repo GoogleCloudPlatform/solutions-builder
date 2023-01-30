@@ -15,12 +15,15 @@
  *
  */
 
-variable "project_id" {
-  type        = string
-  description = "project ID"
+# Terraform Block
+terraform {
+  required_version = ">= 0.13"
+  required_providers {
+  }
 }
 
-variable "services" {
-  type        = list(any)
-  description = "List of services to enable"
+provider "google" {
+  project = var.project_id
 }
+
+data "google_client_config" "default" {}

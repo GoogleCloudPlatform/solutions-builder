@@ -15,12 +15,18 @@
  *
  */
 
-variable "project_id" {
-  type        = string
-  description = "project ID"
-}
+# project-specific locals
+locals {}
 
-variable "services" {
-  type        = list(any)
-  description = "List of services to enable"
+data "google_project" "project" {}
+
+# Deploy sample-service to CloudRun
+module "cloudrun-sample" {
+  source                = "../../modules/cloudrun"
+  project_id            = var.project_id
+  region                = var.region
+  source_dir            = "../../../microservices/sample_service"
+  service_name          = "cloudrun-sample"
+  repository_id         = "cloudrun"
+  allow_unauthenticated = true
 }

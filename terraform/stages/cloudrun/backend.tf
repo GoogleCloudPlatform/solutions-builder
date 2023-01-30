@@ -15,12 +15,10 @@
  *
  */
 
-variable "project_id" {
-  type        = string
-  description = "project ID"
-}
-
-variable "services" {
-  type        = list(any)
-  description = "List of services to enable"
+terraform {
+  backend "gcs" {
+    # Uncomment below and specify a GCS bucket for TF state.
+    # bucket = "PROJECT_ID-tfstate"
+    prefix = "stage/cloudrun"
+  }
 }

@@ -186,6 +186,10 @@ gcloud config set project $PROJECT_ID
 
 Run setup_all.sh to run all steps:
 ```
+# Choose the microservice deployment option: "gke" or "cloudrun"
+export MICROSERVICE_DEPLOYMENT_OPTION="gke"
+
+# Run all setup steps.
 sh setup/setup_all.sh
 ```
 
@@ -224,7 +228,7 @@ gcloud config set project $PROJECT_ID
 
 Run the following commands to update Organization policies:
 ```
-export ORGANIZATION_ID="$(gcloud organizations list --format="value(name)" | head -n 1)"
+export ORGANIZATION_ID=$(gcloud organizations list --format="value(name)" | head -n 1)
 gcloud resource-manager org-policies disable-enforce constraints/compute.requireOsLogin --organization=$ORGANIZATION_ID
 gcloud resource-manager org-policies delete constraints/compute.vmExternalIpAccess --organization=$ORGANIZATION_ID
 gcloud resource-manager org-policies delete constraints/iam.allowedPolicyMemberDomains --organization=$ORGANIZATION_ID
@@ -264,17 +268,20 @@ bash setup/setup_terraform.sh
 
 > NOTE: If you run into errors with unlinked billing account. Please go to https://console.cloud.google.com/billing/linkedaccount to set up the billing account of the current Google Cloud project.
 
-Init and run Terraform apply
+Init and run Terraform apply. This will create the follow resources:
+- A default VPC network.
+- Initialize Firestore project.
+- A default service account for deployment.
 
 ```
 # Init Terraform
-cd terraform/environments/dev
+cd $BASE_DIR/terraform/stages/foundation
 terraform init -backend-config=bucket=$TF_BUCKET_NAME
 
 # Enabling GCP services first.
 terraform apply -target=module.project_services -target=module.service_accounts -auto-approve
 
-# Initializing Firebase (Only need this for the first time.)
+# Initializing Firebase (Only for the first time.)
 # NOTE: the Firebase can only be initialized once (via App Engine).
 terraform apply -target=module.firebase -var="firebase_init=true" -auto-approve
 
@@ -282,7 +289,17 @@ terraform apply -target=module.firebase -var="firebase_init=true" -auto-approve
 terraform apply -auto-approve
 ```
 
-### Deploying Microservices to GKE
+### Deploying Microservices to GKE (Optional)
+
+Init GKE cluster (via Terraform). This will create the follow resources:
+- A GKE cluster
+- Service account for GKE
+
+```
+cd $BASE_DIR/terraform/stages/gke
+terraform init -backend-config=bucket=$TF_BUCKET_NAME
+terraform apply -auto-approve
+```
 
 Build all microservices (including web app) and deploy to the cluster:
 ```
@@ -298,26 +315,48 @@ export API_DOMAIN=$(kubectl describe ingress | grep Address | awk '{print $2}')
 export URL="http://${API_DOMAIN}/sample_service/docs"
 echo "Open this URL in a browser: ${URL}"
 ```
+- When opening up the URL, you will see the Swagger frontend page with available API endpoint description.
 
-### Deploying Microservices to CloudRun
-
-Open `terraform/environments/dev/main.tf` and uncomment the CloudRun section like below:
-
+Run API tests (Optional):
 ```
-# [Optional] Deploy sample-service to CloudRun
-# Uncomment below to enable deploying microservices with CloudRun.
-module "cloudrun-sample" {
-  depends_on = [module.project_services, module.vpc_network]
-
-  source                = "../../modules/cloudrun"
-  project_id            = var.project_id
-  region                = var.region
-  source_dir            = "../../../microservices/sample_service"
-  service_name          = "cloudrun-sample"
-  repository_id         = "cloudrun"
-  allow_unauthenticated = true
-}
+# Run API tests
+python e2e/utils/port_forward.py --namespace default
+PYTHONPATH=common/src python -m pytest e2e/gke_api_tests/
 ```
+
+### Deploying Microservices to CloudRun (Optional)
+
+Run the following to build and deploy microservices to CloudRun.
+```
+cd $BASE_DIR/terraform/stages/cloudrun
+terraform init -backend-config=bucket=$TF_BUCKET_NAME
+terraform apply -auto-approve
+```
+
+Test with API endpoint:
+```
+cd $BASE_DIR
+export SERVICE_URL=$(gcloud run services describe "cloudrun-sample" --region=us-central1 --format="value(status.url)")
+export URL="${SERVICE_URL}/sample_service/docs"
+echo "Open this URL in a browser: ${URL}"
+```
+- When opening up the URL, you will see the Swagger frontend page with available API endpoint description.
+
+Run API tests (Optional):
+```
+# Run API tests
+cd $BASE_DIR
+mkdir -p .test_output
+gcloud run services list --format=json > .test_output/cloudrun_service_list.json
+export SERVICE_LIST_JSON=.test_output/cloudrun_service_list.json
+PYTHONPATH=common/src python -m pytest e2e/cloudrun_api_tests/
+```
+
+### Cleaning up deployments
+
+Run the following to destory all deployment and resources.
+> Note: there are some GCP resoureces that are not deletable, e.g. Firebase initialization.
+
 
 ## FAQ
 - Who are the target audience/users for this Solutions template?
