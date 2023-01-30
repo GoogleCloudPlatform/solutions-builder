@@ -7,14 +7,14 @@
 
 Solutions Template is a boilerplate template for building repeatable
 solutions with the best practices in architecture on Google Cloud, including GKE
-clusters, CloudRun, Test Automation, CI/CD, as well as development process.
+clusters, Cloud Run, Test Automation, CI/CD, as well as development process.
 
 This template provides built-in and ready-to-ship sample features including:
-* Container-based microservices, can be deployed to a Kubernetes cluster or CloudRun.
+* Container-based microservices, can be deployed to a Kubernetes cluster or Cloud Run.
 * Simplified deployment using Skaffold and Kustomize
 * Google Cloud foundation setup using Terraform
 * CI/CD deployment (with Github Actions)
-* CloudRun templates
+* Cloud Run templates
 
 ## Roadmap
 
@@ -31,8 +31,8 @@ We recommend the following resources to get familiar with Google Cloud and micro
   - Learn about the basics of Kubernetes: https://kubernetes.io/docs/concepts/overview/
   - Google Kubernetes Engine (GKE) overview: https://cloud.google.com/kubernetes-engine/docs/concepts/kubernetes-engine-overview
   - Skaffold, a command line tool that facilitates continuous development for container based & Kubernetes applications: https://skaffold.dev/docs/
-- CloudRun:
-  - Serverless container deployment and execution with CloudRun: https://cloud.google.com/run/docs/overview/what-is-cloud-run
+- Cloud Run:
+  - Serverless container deployment and execution with Cloud Run: https://cloud.google.com/run/docs/overview/what-is-cloud-run
 
 ### Tool requirements:
 
@@ -56,7 +56,7 @@ We recommend the following resources to get familiar with Google Cloud and micro
 - For Windows, refer this [installation guide](https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter)
 
 ### Required packages for deploying to GKE cluster:
-> You can skip this section if you choose to deploy microservices to CloudRun only.
+> You can skip this section if you choose to deploy microservices to Cloud Run only.
 
 Install **skaffold (2.0.4 or later)** and kustomize:
 
@@ -324,9 +324,9 @@ python e2e/utils/port_forward.py --namespace default
 PYTHONPATH=common/src python -m pytest e2e/gke_api_tests/
 ```
 
-### Deploying Microservices to CloudRun (Optional)
+### Deploying Microservices to Cloud Run (Optional)
 
-Run the following to build and deploy microservices to CloudRun.
+Run the following to build and deploy microservices to Cloud Run.
 ```
 cd $BASE_DIR/terraform/stages/cloudrun
 terraform init -backend-config=bucket=$TF_BUCKET_NAME
@@ -371,8 +371,8 @@ terraform destroy -auto-approve
 ## FAQ
 - Who are the target audience/users for this Solutions template?
   - A: Any engineering team to start a new solution development project.
-- Can I choose to deploy microservice just to CloudRun?
-  - A: Yes, please follow steps in the README.md in **your-project-folder** generated from cookiecutter.
+- Can I choose to deploy microservice just to Cloud Run?
+  - A: Yes, please refer to `Getting Started - Setting up with setup_all script` in the README.md to choose where to deploy microservices.
 
 ## Troubleshoots
 
