@@ -26,13 +26,13 @@ Please see [Feature Requests in the Github issue list](https://github.com/Google
 
 We recommend the following resources to get familiar with Google Cloud and microservices.
 
-- What is Microservice Architecture: https://cloud.google.com/learn/what-is-microservices-architecture
+- What is [Microservice Architecture](https://cloud.google.com/learn/what-is-microservices-architecture)
 - Kubernetes:
-  - Learn about the basics of Kubernetes: https://kubernetes.io/docs/concepts/overview/
-  - Google Kubernetes Engine (GKE) overview: https://cloud.google.com/kubernetes-engine/docs/concepts/kubernetes-engine-overview
-  - Skaffold, a command line tool that facilitates continuous development for container based & Kubernetes applications: https://skaffold.dev/docs/
+  - Learn about the [basics of Kubernetes](https://kubernetes.io/docs/concepts/overview/)
+  - [Google Kubernetes Engine (GKE)](https://cloud.google.com/kubernetes-engine/docs/concepts/kubernetes-engine-overview) overview
+  - [Skaffold](https://skaffold.dev/docs/), a command line tool that facilitates continuous development for container based & Kubernetes applications:
 - Cloud Run:
-  - Serverless container deployment and execution with Cloud Run: https://cloud.google.com/run/docs/overview/what-is-cloud-run
+  - Serverless container deployment and execution with [Cloud Run](https://cloud.google.com/run/docs/overview/what-is-cloud-run)
 
 ### Tool requirements:
 
