@@ -49,9 +49,9 @@ init() {
   else
     printf "Project ${PROJECT_ID} found.\n"
   fi
-
+  
   gcloud config set project $PROJECT_ID
-
+  
   printf "\n${BLUE}Set up gcloud and kubectl context ...${NORMAL}\n"
   gcloud container clusters get-credentials ${CLUSTER_NAME} --zone ${REGION} --project ${PROJECT_ID}
 }
@@ -59,10 +59,10 @@ init() {
 setup_namespace() {
   printf "\n${BLUE}Creating namespace: ${SKAFFOLD_NAMESPACE} ...${NORMAL}\n"
   kubectl create ns $SKAFFOLD_NAMESPACE
-
+  
   printf "\n${BLUE}Using namespace ${SKAFFOLD_NAMESPACE} for all kubectl operations ...${NORMAL}\n"
   kubectl config set-context --current --namespace=$SKAFFOLD_NAMESPACE
-
+  
   printf "\n${BLUE}Verifying the kubectl context name ...${NORMAL}\n"
   CURRENT_CONTEXT=`kubectl config current-context`
   if [[ "$CURRENT_CONTEXT" = "$EXPECTED_CONTEXT" ]]; then

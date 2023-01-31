@@ -23,7 +23,7 @@ locals {
     "bigquery.googleapis.com",             # BigQuery
     "bigquerydatatransfer.googleapis.com", # BigQuery Data Transfer
     "cloudbuild.googleapis.com",           # Cloud Build
-    "compute.googleapis.com",              # Load Balancers, Cloud Armor
+    "compute.googleapis.com",              # Compute Engine
     "container.googleapis.com",            # Google Kubernetes Engine
     "containerregistry.googleapis.com",    # Google Container Registry
     "dataflow.googleapis.com",             # Cloud Dataflow
@@ -63,57 +63,9 @@ module "firebase" {
 }
 
 module "vpc_network" {
+  depends_on  = [module.project_services]
   source      = "../../modules/vpc_network"
   project_id  = var.project_id
   vpc_network = "default-vpc"
   region      = var.region
 }
-
-module "gke" {
-  depends_on = [module.project_services, module.vpc_network]
-
-  source         = "../../modules/gke"
-  project_id     = var.project_id
-  cluster_name   = "main-cluster"
-  namespace      = "default"
-  vpc_network    = "default-vpc"
-  region         = var.region
-  min_node_count = 1
-  max_node_count = 10
-  machine_type   = "n1-standard-8"
-
-  # This service account will be created in both GCP and GKE, and will be
-  # used for workload federation in all microservices.
-  # See microservices/sample_service/kustomize/base/deployment.yaml for example.
-  service_account_name = "gke-sa"
-
-  # See latest stable version at https://cloud.google.com/kubernetes-engine/docs/release-notes-stable
-  kubernetes_version = "1.23.13-gke.900"
-}
-
-module "ingress" {
-  depends_on = [module.gke]
-
-  source            = "../../modules/ingress"
-  project_id        = var.project_id
-  cert_issuer_email = var.admin_email
-  region            = var.region
-
-  # API domain, excluding protocols. E.g. example.com.
-  api_domain        = var.api_domain
-  cors_allow_origin = "http://localhost:4200,http://localhost:3000,http://${var.web_app_domain},https://${var.web_app_domain}"
-}
-
-# # [Optional] Deploy sample-service to CloudRun
-# # Uncomment below to enable deploying microservices with CloudRun.
-# module "cloudrun-sample" {
-#   depends_on = [module.project_services, module.vpc_network]
-
-#   source                = "../../modules/cloudrun"
-#   project_id            = var.project_id
-#   region                = var.region
-#   source_dir            = "../../../microservices/sample_service"
-#   service_name          = "cloudrun-sample"
-#   repository_id         = "cloudrun"
-#   allow_unauthenticated = true
-# }

@@ -26,3 +26,7 @@ ui-debug.log
 # tf lock files
 .terraform
 .terraform.lock.hcl
+
+# test artifacts
+.e2e_test_output
+.test_output

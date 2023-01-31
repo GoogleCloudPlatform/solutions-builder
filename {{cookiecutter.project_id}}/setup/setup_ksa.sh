@@ -43,13 +43,13 @@ fi
 
 printf "\nAdding Service Account IAM policy ...\n"
 gcloud iam service-accounts add-iam-policy-binding \
-  --role roles/iam.workloadIdentityUser \
-  --member "serviceAccount:${PROJECT_ID}.svc.id.goog[${NAMESPACE}/${KSA_NAME}]" \
-  ${GSA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com
+--role roles/iam.workloadIdentityUser \
+--member "serviceAccount:${PROJECT_ID}.svc.id.goog[${NAMESPACE}/${KSA_NAME}]" \
+${GSA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com
 
 printf "\nConnecting ksa with Service Account ...\n"
 kubectl annotate serviceaccount \
-  --overwrite \
-  --namespace ${NAMESPACE} \
-  ${KSA_NAME} \
-  iam.gke.io/gcp-service-account=${GSA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com
+--overwrite \
+--namespace ${NAMESPACE} \
+${KSA_NAME} \
+iam.gke.io/gcp-service-account=${GSA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com

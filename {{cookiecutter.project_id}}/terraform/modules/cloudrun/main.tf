@@ -26,20 +26,6 @@ resource "google_artifact_registry_repository" "cloudrun_repository" {
   format        = "DOCKER"
 }
 
-resource "google_cloud_run_service_iam_member" "member" {
-  count    = (var.allow_unauthenticated ? 1 : 0)
-  project  = var.project_id
-  location = var.region
-  service  = var.service_name
-  role     = "roles/run.invoker"
-  member   = "allUsers"
-  
-  # adding iam member for service requires the service be running, otherwise
-  # returns an error "Resource 'cloudrun-sample' of kind 'SERVICE' does not exist"
-  # adding this dependency resolves the error.
-  depends_on = [null_resource.deploy-cloudrun-image]
-}
-
 # Creating a custom service account for cloud run
 module "cloud-run-service-account" {
   source       = "github.com/terraform-google-modules/cloud-foundation-fabric/modules/iam-service-account/"
@@ -124,4 +110,16 @@ resource "null_resource" "deploy-cloudrun-image" {
       ])
     ])
   }
+}
+
+resource "google_cloud_run_service_iam_member" "member" {
+  depends_on = [
+    null_resource.deploy-cloudrun-image
+  ]
+  count    = (var.allow_unauthenticated ? 1 : 0)
+  project  = var.project_id
+  location = var.region
+  service  = var.service_name
+  role     = "roles/run.invoker"
+  member   = "allUsers"
 }

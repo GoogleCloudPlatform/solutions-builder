@@ -23,6 +23,7 @@
 	* 6.4. [Skaffold profiles](#Skaffoldprofiles)
 	* 6.5. [Switching from local (minikube) to GKE development](#SwitchingfromlocalminikubetoGKEdevelopment)
 * 7. [Development with CloudRun (serverless)](#DevelopmentwithCloudRunserverless)
+	* 7.1. [Mnaually Build and Deploy Microservices to CloudRun](#MnauallyBuildandDeployMicroservicestoCloudRun)
 * 8. [Unit tests - microservices](#Unittests-microservices)
 		* 8.1. [Run linter locally:](#Runlinterlocally:)
 		* 8.2. [Unit test file format:](#Unittestfileformat:)
@@ -438,10 +439,48 @@ skaffold dev
 ```
 
 
-
 ##  7. <a name='DevelopmentwithCloudRunserverless'></a>Development with CloudRun (serverless)
 
-TBD
+###  7.1. <a name='MnauallyBuildandDeployMicroservicestoCloudRun'></a>Mnaually Build and Deploy Microservices to CloudRun
+
+Build common image:
+```
+cd common
+gcloud builds submit --config=cloudbuild.yaml --substitutions=\
+_PROJECT_ID="$PROJECT_ID",\
+_REGION="$REGION",\
+_REPOSITORY="cloudrun",\
+_IMAGE="common"
+```
+
+Set up endpoint permission:
+```
+export SERVICE_NAME=sample-service
+gcloud run services add-iam-policy-binding $SERVICE_NAME \
+--region="$REGION" \
+--member="allUsers" \
+--role="roles/run.invoker"
+```
+
+Build service image
+```
+gcloud builds submit --config=cloudbuild.yaml --substitutions=\
+_CLOUD_RUN_SERVICE_NAME=$SERVICE_NAME,\
+_PROJECT_ID="$PROJECT_ID",\
+_REGION="$REGION",\
+_REPOSITORY="cloudrun",\
+_IMAGE="cloudrun-sample",\
+_SERVICE_ACCOUNT="deployment-dev@$PROJECT_ID.iam.gserviceaccount.com",\
+_ALLOW_UNAUTHENTICATED_FLAG="--allow-unauthenticated"
+```
+
+Manually deploy a microservice to CloudRun with public endpoint:
+```
+gcloud run services add-iam-policy-binding $SERVICE_NAME \
+--region="$REGION" \
+--member="allUsers" \
+--role="roles/run.invoker"
+```
 
 ##  8. <a name='Unittests-microservices'></a>Unit tests - microservices
 
