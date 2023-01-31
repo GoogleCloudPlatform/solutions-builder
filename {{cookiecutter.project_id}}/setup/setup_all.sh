@@ -17,9 +17,23 @@
 # the Solutions template and set up all components to a brand-new Google Cloud
 # project.
 
+# Setting up environment variables.
+setup_env_vars() {
+  export PROJECT_ID="{{cookiecutter.project_id}}"
+  export ADMIN_EMAIL="{{cookiecutter.admin_email}}"
+  export REGION="{{cookiecutter.gcp_region}}"
+  export TF_VAR_project_id=$PROJECT_ID
+  export TF_VAR_api_domain=$API_DOMAIN
+  export TF_VAR_web_app_domain=$API_DOMAIN
+  export TF_VAR_admin_email=$ADMIN_EMAIL
+  export TF_BUCKET_NAME="${PROJECT_ID}-tfstate"
+  export TF_BUCKET_LOCATION="us"
+}
+
 # Setting up gcloud CLI
 setup_gcloud() {
   gcloud config set project $PROJECT_ID --quiet
+  gcloud components install gke-gcloud-auth-plugin --quiet
 }
 
 # Updating GCP Organizational policies
@@ -28,16 +42,6 @@ update_gcp_org_policies() {
   gcloud resource-manager org-policies disable-enforce constraints/compute.requireOsLogin --organization=$ORGANIZATION_ID
   gcloud resource-manager org-policies delete constraints/compute.vmExternalIpAccess --organization=$ORGANIZATION_ID
   gcloud resource-manager org-policies delete constraints/iam.allowedPolicyMemberDomains --organization=$ORGANIZATION_ID
-}
-
-# Setting up GCP foundation - Terraform
-setup_terraform_env_vars() {
-  export TF_VAR_project_id=$PROJECT_ID
-  export TF_VAR_api_domain=$API_DOMAIN
-  export TF_VAR_web_app_domain=$API_DOMAIN
-  export TF_VAR_admin_email=$ADMIN_EMAIL
-  export TF_BUCKET_NAME="${PROJECT_ID}-tfstate"
-  export TF_BUCKET_LOCATION="us"
 }
 
 # Grant Storage admin to the current user IAM.
@@ -127,9 +131,9 @@ test_api_endpoints_cloudrun() {
   echo "The API endpoints are ready. See the auto-generated API docs at this URL: ${URL}"
 }
 
+setup_env_vars
 setup_gcloud
-update_gcp_org_policies
-setup_terraform_env_vars
+update_gcp_orenvironment variables.
 grant_storage_iam
 link_billing_account
 create_terraform_gcs_bucket

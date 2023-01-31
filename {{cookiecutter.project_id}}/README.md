@@ -125,12 +125,12 @@ m1-terraform-provider-helper install hashicorp/template -v v2.2.0
 
 ##  2. <a name='SettingupGoogleCloudProject'></a>Setting up Google Cloud Project
 
-> (Optional) check out the README.md in **your-project-folder** to check out the manual setup steps.
+> (Optional) check out the README.md in **my-project-folder** to check out the manual setup steps.
 
 ```
 # Set up environmental variables
-cd <my-gcp-project-id>
-export PROJECT_ID=<my-gcp-project-id>
+cd <my-project-folder>
+export PROJECT_ID=<my-project-folder>
 export ADMIN_EMAIL=<my-email>
 export REGION=us-central1
 export API_DOMAIN=localhost
@@ -169,15 +169,12 @@ The API endpoints are ready. See the auto-generated API docs at this URL: https:
 
 ###  3.1. <a name='Setupworkingenvironment:'></a>Set up working environment:
 
-Please make sure you are at the generated folder **your-project-folder**
-
+Please make sure you are at the generated folder **my-project-folder**
 ```
 # Set up environmental variables
-export PROJECT_ID=<my-gcp-project-id>
-export ADMIN_EMAIL=<my-email>
-export REGION=us-central1
+cd <my-project-folder>
+export PROJECT_ID=<my-project-folder>
 export API_DOMAIN=localhost
-export BASE_DIR=$(pwd)
 ```
 
 Log in to Google Cloud.

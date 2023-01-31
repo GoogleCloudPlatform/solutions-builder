@@ -92,7 +92,7 @@ m1-terraform-provider-helper install hashicorp/template -v v2.2.0
 
 Run the following to create a new Google Cloud project, or you can log in to Google Cloud Console to [create a new project](https://console.cloud.google.com/projectcreate).
 ```
-export PROJECT_ID=<my-gcp-project-id>
+export PROJECT_ID=<my-project-folder>
 gcloud projects create $PROJECT_ID
 gcloud config set project $PROJECT_ID
 ```
@@ -106,7 +106,7 @@ cookiecutter https://github.com/GoogleCloudPlatform/solutions-template.git
 
 Provide the required variables to Cookiecutter prompt, e.g.:
 ```
-project_id: my-gcp-project-id
+project_id: my-project-folder
 project_name [My Awesome Project]:
 project_short_description [My Awesome Project]:
 project_slug [my_project]:
@@ -161,16 +161,13 @@ In the newly created folder, you will see the file structure like below:
 
 ## Setting up Google Cloud Project
 
-> (Optional) check out the README.md in **your-project-folder** to check out the manual setup steps.
+> (Optional) check out the README.md in **my-project-folder** to check out the manual setup steps.
 
 ```
 # Set up environmental variables
-cd <my-gcp-project-id>
-export PROJECT_ID=<my-gcp-project-id>
-export ADMIN_EMAIL=<my-email>
-export REGION=us-central1
+cd <my-project-folder>
+export PROJECT_ID=<my-project-folder>
 export API_DOMAIN=localhost
-export BASE_DIR=$(pwd)
 ```
 
 Log in to Google Cloud.
