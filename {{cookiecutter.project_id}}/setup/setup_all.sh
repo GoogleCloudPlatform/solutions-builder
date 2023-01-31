@@ -28,6 +28,7 @@ setup_env_vars() {
   export TF_VAR_admin_email=$ADMIN_EMAIL
   export TF_BUCKET_NAME="${PROJECT_ID}-tfstate"
   export TF_BUCKET_LOCATION="us"
+  export BASE_DIR=$(pwd)
 }
 
 # Setting up gcloud CLI
@@ -107,6 +108,7 @@ deploy_microservices_to_cloudrun() {
 # Test with API endpoint (GKE):
 test_api_endpoints_gke() {
   # Run API e2e tests
+  cd $BASE_DIR
   python e2e/utils/port_forward.py --namespace default
   PYTHONPATH=common/src python -m pytest e2e/gke_api_tests/
   PYTEST_STATUS=${PIPESTATUS[0]}
