@@ -10,13 +10,14 @@ Table of Content
 	* 1.2. [Tool requirements:](#Toolrequirements:)
 	* 1.3. [Required packages for deploying to GKE cluster:](#RequiredpackagesfordeployingtoGKEcluster:)
 	* 1.4. [Apple M1 Chip Support for Terraform (Optional)](#AppleM1ChipSupportforTerraformOptional)
-* 2. [Getting Started - Setting up Google Cloud project](#GettingStarted-SettingupGoogleCloudproject)
-* 3. [Getting Started - Setting up with Manual Steps](#GettingStarted-SettingupwithManualSteps)
+	* 1.5. [File structure](#Filestructure)
+* 2. [Setting up Google Cloud Project](#SettingupGoogleCloudProject)
+* 3. [Setting up Google Cloud Project (Manual Steps)](#SettingupGoogleCloudProjectManualSteps)
 	* 3.1. [Set up working environment:](#Setupworkingenvironment:)
 	* 3.2. [Updating GCP Organizational policies](#UpdatingGCPOrganizationalpolicies)
 	* 3.3. [ Setting up GCP foundation - Terraform](#SettingupGCPfoundation-Terraform)
 	* 3.4. [Deploying Microservices to GKE (Optional)](#DeployingMicroservicestoGKEOptional)
-	* 3.5. [Deploying Microservices to CloudRun (Optional)](#DeployingMicroservicestoCloudRunOptional)
+	* 3.5. [Deploying Microservices to Cloud Run (Optional)](#DeployingMicroservicestoCloudRunOptional)
 	* 3.6. [(Optional) Manually Deploying Microservices to CloudRun](#OptionalManuallyDeployingMicroservicestoCloudRun)
 	* 3.7. [Cleaning up all deployment and resources](#Cleaningupalldeploymentandresources)
 * 4. [Development](#Development)
@@ -87,12 +88,48 @@ m1-terraform-provider-helper activate
 m1-terraform-provider-helper install hashicorp/template -v v2.2.0
 ```
 
-##  2. <a name='GettingStarted-SettingupGoogleCloudproject'></a>Getting Started - Setting up Google Cloud project
+###  1.5. <a name='Filestructure'></a>File structure
 
-Please make sure you are in the generated folder: **your-project-folder**
+```
+{{cookiecutter.project_name}}/
+│   README.md
+|   DEVELOPMENT.md
+│   skaffold.yaml
+│
+└───microservices/
+│   └───sample_service/
+│       └───kustomize/
+│       └───src/
+│       │   Dockerfile
+│       │   requirements.txt
+│       │   skaffold.yaml
+│       │   ...
+│
+└───common/
+│   └───src/
+│   │   Dockerfile
+│   │   requirements.txt
+│   │   skaffold.yaml
+│   │   ...
+│
+└───.github/
+```
+
+- **README.md** - General info and setup guide.
+- **DEVELOPMENT.md** - Development best practices, code submission flow, and other guidances.
+- **skaffold.yaml** - The master Skaffold YAML file that defines how everything is built and deployed, depending on different profiles.
+- **microservices** - The main directory for all microservices, can be broken down into individual folder for each microservie, e.g. `sample_service`.
+  - [**microservice subfolder**] - Each microservice folder is a Docker container with [Skaffold](https://skaffold.dev/) + [Kustomize](https://kustomize.io/) to build images in different environments.
+- **common** - The common image contains shared data models and util libraries used by all other microservices.
+- **.github** - Github workflows including tests and CI/CD.
+
+##  2. <a name='SettingupGoogleCloudProject'></a>Setting up Google Cloud Project
+
+> (Optional) check out the README.md in **your-project-folder** to check out the manual setup steps.
 
 ```
 # Set up environmental variables
+cd <my-gcp-project-id>
 export PROJECT_ID=<my-gcp-project-id>
 export ADMIN_EMAIL=<my-email>
 export REGION=us-central1
@@ -123,13 +160,16 @@ It will then run the following steps:
 - Build and deploy microservices to GKE cluster.
 - Test API endpoints (pytest).
 
-##  3. <a name='GettingStarted-SettingupwithManualSteps'></a>Getting Started - Setting up with Manual Steps
+Once microservice deployed successfully, you will see the message below:
+```
+The API endpoints are ready. See the auto-generated API docs at this URL: https://<your-sample-domain>/sample_service/docs
+```
 
-> The section covers manual setup steps, as same as in the `README.md` generated inside **your-project-folder**.
+##  3. <a name='SettingupGoogleCloudProjectManualSteps'></a>Setting up Google Cloud Project (Manual Steps)
 
 ###  3.1. <a name='Setupworkingenvironment:'></a>Set up working environment:
 
-Please make sure you are in the generated folder: **your-project-folder**
+Please make sure you are at the generated folder **your-project-folder**
 
 ```
 # Set up environmental variables
@@ -233,7 +273,7 @@ gcloud container clusters get-credentials $CLUSTER_NAME --region $REGION --proje
 skaffold run -p prod --default-repo=gcr.io/$PROJECT_ID
 ```
 
-Test with API endpoint:
+Verify API endpoint:
 ```
 export API_DOMAIN=$(kubectl describe ingress | grep Address | awk '{print $2}')
 export URL="http://${API_DOMAIN}/sample_service/docs"
@@ -248,9 +288,9 @@ python e2e/utils/port_forward.py --namespace default
 PYTHONPATH=common/src python -m pytest e2e/gke_api_tests/
 ```
 
-###  3.5. <a name='DeployingMicroservicestoCloudRunOptional'></a>Deploying Microservices to CloudRun (Optional)
+###  3.5. <a name='DeployingMicroservicestoCloudRunOptional'></a>Deploying Microservices to Cloud Run (Optional)
 
-Run the following to build and deploy microservices to CloudRun.
+Run the following to build and deploy microservices to Cloud Run.
 ```
 cd $BASE_DIR/terraform/stages/cloudrun
 terraform init -backend-config=bucket=$TF_BUCKET_NAME

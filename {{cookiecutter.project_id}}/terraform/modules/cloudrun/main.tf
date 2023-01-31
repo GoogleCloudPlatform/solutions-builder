@@ -113,15 +113,13 @@ resource "null_resource" "deploy-cloudrun-image" {
 }
 
 resource "google_cloud_run_service_iam_member" "member" {
+  depends_on = [
+    null_resource.deploy-cloudrun-image
+  ]
   count    = (var.allow_unauthenticated ? 1 : 0)
   project  = var.project_id
   location = var.region
   service  = var.service_name
   role     = "roles/run.invoker"
   member   = "allUsers"
-
-  # adding iam member for service requires the service be running, otherwise
-  # returns an error "Resource 'cloudrun-sample' of kind 'SERVICE' does not exist"
-  # adding this dependency resolves the error.
-  depends_on = [null_resource.deploy-cloudrun-image]
 }
