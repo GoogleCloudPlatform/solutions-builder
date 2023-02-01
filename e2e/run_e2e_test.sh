@@ -29,7 +29,7 @@ SECONDS=0
 
 # Hardcoded the project ID for all local development.
 declare -a EnvVars=(
-  "ORGANIZATION_ID"7
+  "ORGANIZATION_ID"
   "FOLDER_ID"
   "BILLING_ACCOUNT"
 )
