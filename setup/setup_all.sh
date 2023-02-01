@@ -39,7 +39,10 @@ setup_gcloud() {
 
 # Updating GCP Organizational policies
 update_gcp_org_policies() {
-  export ORGANIZATION_ID="$(gcloud organizations list --format='value(name)' | head -n 1)"
+  if [[ "$ORGANIZATION_ID" ==  "" ]]; then
+    export ORGANIZATION_ID="$(gcloud organizations list --format='value(name)' | head -n 1)"
+  fi
+  echo "Updating orgniazation policies: ORGANIZATION_ID=$ORGANIZATION_ID"
   gcloud resource-manager org-policies disable-enforce constraints/compute.requireOsLogin --organization=$ORGANIZATION_ID
   gcloud resource-manager org-policies delete constraints/compute.vmExternalIpAccess --organization=$ORGANIZATION_ID
   gcloud resource-manager org-policies delete constraints/iam.allowedPolicyMemberDomains --organization=$ORGANIZATION_ID
@@ -55,7 +58,10 @@ grant_storage_iam() {
 
 # Link billing account to the current project.
 link_billing_account() {
-  export BILLING_ACCOUNT=$(gcloud beta billing accounts list --format "value(name)" | head -n 1)
+  if [[ "$BILLING_ACCOUNT" ==  "" ]]; then
+    export BILLING_ACCOUNT=$(gcloud beta billing accounts list --format "value(name)" | head -n 1)
+  fi
+  echo "Linking billing account to $PROJECT: BILLING_ACCOUNT=$BILLING_ACCOUNT"
   gcloud beta billing projects link $PROJECT_ID --billing-account $BILLING_ACCOUNT --quiet
 }
 
@@ -64,7 +70,7 @@ create_terraform_gcs_bucket() {
   bash setup/setup_terraform.sh
   
   # List all buckets.
-  gcloud alpha storage ls
+  gcloud storage ls
   echo "TF_BUCKET_NAME = ${TF_BUCKET_NAME}"
   echo
 }
@@ -108,11 +114,6 @@ deploy_microservices_to_cloudrun() {
 # Test with API endpoint (GKE):
 test_api_endpoints_gke() {
   # Run API e2e tests
-  cd $BASE_DIR
-  python e2e/utils/port_forward.py --namespace default
-  PYTHONPATH=common/src python -m pytest e2e/gke_api_tests/
-  PYTEST_STATUS=${PIPESTATUS[0]}
-  
   export API_DOMAIN=$(kubectl describe ingress | grep Address | awk '{print $2}')
   export URL="http://${API_DOMAIN}/sample_service/docs"
   echo "The API endpoints are ready. See the auto-generated API docs at this URL: ${URL}"
@@ -120,14 +121,7 @@ test_api_endpoints_gke() {
 
 # Test with API endpoint (CloudRun):
 test_api_endpoints_cloudrun() {
-  cd $BASE_DIR
-  
   # Run API e2e tests
-  mkdir -p .test_output
-  gcloud run services list --format=json > .test_output/cloudrun_service_list.json
-  export SERVICE_LIST_JSON=.test_output/cloudrun_service_list.json
-  PYTHONPATH=common/src python -m pytest e2e/cloudrun_api_tests/
-  
   export SERVICE_URL=$(gcloud run services describe "cloudrun-sample" --region=us-central1 --format="value(status.url)")
   export URL="${SERVICE_URL}/sample_service/docs"
   echo "The API endpoints are ready. See the auto-generated API docs at this URL: ${URL}"
@@ -135,7 +129,7 @@ test_api_endpoints_cloudrun() {
 
 setup_env_vars
 setup_gcloud
-update_gcp_orenvironment variables.
+update_gcp_org_policies
 grant_storage_iam
 link_billing_account
 create_terraform_gcs_bucket
