@@ -161,19 +161,21 @@ In the newly created folder, you will see the file structure like below:
 
 ## Setting up Google Cloud Project
 
-> (Optional) check out the README.md in **my-project-folder** to check out the manual setup steps.
+> (Optional) Check out the README.md in **my-project-folder** to check out the manual setup steps.
 
 ```
 # Set up environmental variables
 cd <my-project-folder>
 export PROJECT_ID=<my-project-folder>
 export API_DOMAIN=localhost
+export BASE_DIR=$(pwd)
 ```
 
 Log in to Google Cloud.
 ```
 # Login to Google Cloud (if not on Cloud Shell)
 gcloud auth login
+gcloud auth application-default login
 gcloud auth application-default set-quota-project $PROJECT_ID
 gcloud config set project $PROJECT_ID
 ```
