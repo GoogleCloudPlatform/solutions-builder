@@ -28,7 +28,7 @@ resource "google_artifact_registry_repository" "cloudrun_repository" {
 
 # Creating a custom service account for cloud run
 module "cloud-run-service-account" {
-  source       = "github.com/terraform-google-modules/cloud-foundation-fabric/modules/iam-service-account/"
+  source       = "github.com/terraform-google-modules/cloud-foundation-fabric.git//modules/iam-service-account"
   project_id   = var.project_id
   name         = "cloudrun-sa"
   display_name = "This is service account for cloud run"
@@ -58,7 +58,7 @@ data "archive_file" "common-zip" {
 }
 resource "null_resource" "build-common-image" {
   triggers = {
-    src_hash = "${data.archive_file.cloudrun-zip.output_sha}"
+    src_hash = data.archive_file.cloudrun-zip.output_sha
   }
   provisioner "local-exec" {
     working_dir = "../../../common"
@@ -89,7 +89,7 @@ resource "null_resource" "deploy-cloudrun-image" {
     null_resource.build-common-image
   ]
   triggers = {
-    src_hash = "${data.archive_file.cloudrun-zip.output_sha}"
+    src_hash = data.archive_file.cloudrun-zip.output_sha
   }
   provisioner "local-exec" {
     working_dir = var.source_dir

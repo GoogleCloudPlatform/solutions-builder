@@ -16,7 +16,7 @@
  */
 
 module "cicd-terraform-account" {
-  source       = "github.com/terraform-google-modules/cloud-foundation-fabric/modules/iam-service-account/"
+  source       = "github.com/terraform-google-modules/cloud-foundation-fabric.git//modules/iam-service-account"
   project_id   = var.project_id
   name         = "tf-${var.project_id}"
   display_name = "The Terraform Service Account. Used by CICD processes."
