@@ -28,7 +28,7 @@ resource "google_artifact_registry_repository" "cloudrun_repository" {
 
 # Creating a custom service account for cloud run
 module "cloud-run-service-account" {
-  source       = "github.com/terraform-google-modules/cloud-foundation-fabric/modules/iam-service-account/"
+  source       = "github.com/terraform-google-modules/cloud-foundation-fabric.git//modules/iam-service-account"
   project_id   = var.project_id
   name         = "cloudrun-sa"
   display_name = "This is service account for cloud run"

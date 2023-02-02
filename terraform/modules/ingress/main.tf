@@ -58,7 +58,7 @@ module "nginx-controller" {
 
   # TODO: does this require cert_manager up and running or can they be completed in parallel
   depends_on = [
-    module.cert_manager, resource.kubernetes_namespace.ingress_nginx
+    module.cert_manager, kubernetes_namespace.ingress_nginx
   ]
 }
 

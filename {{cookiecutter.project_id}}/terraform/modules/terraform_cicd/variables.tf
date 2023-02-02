@@ -19,23 +19,3 @@ variable "project_id" {
   type        = string
   description = "project ID"
 }
-
-variable "region" {
-  type        = string
-  description = "GCP region"
-}
-
-variable "cert_issuer_email" {
-  type        = string
-  description = "email of the cert issuer"
-}
-
-variable "api_domain" {
-  type        = string
-  description = "API domain, excluding protocol. E.g. api.example.com"
-}
-
-variable "cors_allow_origin" {
-  type        = string
-  description = "CORS allow origins, comma-separated."
-}

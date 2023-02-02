@@ -37,5 +37,5 @@ variable "api_domain" {
 
 variable "cors_allow_origin" {
   type        = string
-  description = "CORS allow origins, comma-seperated."
+  description = "CORS allow origins, comma-separated."
 }
