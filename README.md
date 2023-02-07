@@ -183,7 +183,7 @@ gcloud config set project $PROJECT_ID
 Run setup_all.sh to run all steps:
 ```
 # Choose the microservice deployment option: "gke" or "cloudrun"
-export MICROSERVICE_DEPLOYMENT_OPTION="gke"
+export SOLUTIONS_TEMPLATE_FEATURES="gke"
 
 # Run all setup steps.
 sh setup/setup_all.sh

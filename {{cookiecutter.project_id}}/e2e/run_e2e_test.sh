@@ -29,7 +29,7 @@ SECONDS=0
 
 # Hardcoded the project ID for all local development.
 declare -a EnvVars=(
-  "ORGANIZATION_ID"7
+  "ORGANIZATION_ID"
   "FOLDER_ID"
   "BILLING_ACCOUNT"
 )
@@ -116,12 +116,12 @@ install_dependencies
 setup_working_folder
 
 # Run setup_all script to deploy to GKE.
-export MICROSERVICE_DEPLOYMENT_OPTION="gke"
+export SOLUTIONS_TEMPLATE_FEATURES="gke"
 sh ./setup/setup_all.sh
 # test_api_endpoints_gke
 
 # Run setup_all script to deploy to GKE.
-# export MICROSERVICE_DEPLOYMENT_OPTION="cloudrun"
+# export SOLUTIONS_TEMPLATE_FEATURES="cloudrun"
 # sh ./setup/setup_all.sh
 # test_api_endpoints_gcloud
 
