@@ -13,133 +13,136 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This script runs the e2e test with the following steps:
-# - Create a new GCP project.
-# - Init with env vars and other setup.
-# - Run terraform apply, which create GKE cluster and other resources.
-# - Run skaffold to deploy microservices.
-# - Test API endpoints.
+# This script automates all the setup steps after creating code skeleton using
+# the Solutions template and set up all components to a brand-new Google Cloud
+# project.
 
-# Log in to gcloud or with a service account.
-# Option 1) gcloud auth login && gcloud auth application-default login
-# Option 2) gcloud auth activate-service-account $SA_EMAIL --key-file=$PATH_TO_KEY_FILE
-
-# To calculate time elapsed.
-SECONDS=0
-
-# Hardcoded the project ID for all local development.
-declare -a EnvVars=(
-  "ORGANIZATION_ID"7
-  "FOLDER_ID"
-  "BILLING_ACCOUNT"
-)
-for variable in ${EnvVars[@]}; do
-  if [[ -z "${!variable}" ]]; then
-    printf "$variable is not set.\n"
-    exit -1
-  fi
-done
-
-# Parsing arguments
-nocleanup=""
-while getopts "n" flag
-do
-  case "${flag}" in
-    -n) nocleanup="nocleanup";;
-  esac
-done
-
-# Initializing E2E test environment vars
-export OUTPUT_FOLDER=".test_output"
-export PROJECT_ID=solutemp-e2e-$(uuidgen | head -c 8 | awk '{print tolower($0)}')
-export ADMIN_EMAIL=$(gcloud auth list --filter=status:ACTIVE --format='value(account)')
-pip3 install pytest --no-input
-
-### Create a new Google Cloud project:
-create_new_project() {
-  gcloud projects create $PROJECT_ID --folder $FOLDER_ID --quiet
-  gcloud config set project $PROJECT_ID --quiet
-}
-
-install_dependencies() {
-  ### Install Cookiecutter
-  python3 -m pip install cookiecutter
-  
-  ### Create skeleton code in a new folder with Cookiecutter
-  cookiecutter . --no-input -o $OUTPUT_FOLDER project_id=$PROJECT_ID admin_email=$ADMIN_EMAIL
-}
-
-setup_working_folder() {
-  mkdir -p $OUTPUT_FOLDER
-  echo "PROJECT_ID = $PROJECT_ID"
-  
-  ### Set up working environment:
-  cd $OUTPUT_FOLDER/$PROJECT_ID
-  export API_DOMAIN=localhost
+# Setting up environment variables.
+setup_env_vars() {
+  export PROJECT_ID="solutions-template-sandbox"
+  export ADMIN_EMAIL="your_email@example.com"
+  export REGION="us-central1"
+  export TF_VAR_project_id=$PROJECT_ID
+  export TF_VAR_api_domain=$API_DOMAIN
+  export TF_VAR_web_app_domain=$API_DOMAIN
+  export TF_VAR_admin_email=$ADMIN_EMAIL
+  export TF_BUCKET_NAME="${PROJECT_ID}-tfstate"
+  export TF_BUCKET_LOCATION="us"
   export BASE_DIR=$(pwd)
-  echo "Current directory: ${BASE_DIR}"
+}
+
+# Setting up gcloud CLI
+setup_gcloud() {
+  gcloud config set project $PROJECT_ID --quiet
+  gcloud components install gke-gcloud-auth-plugin --quiet
+}
+
+# Updating GCP Organizational policies
+update_gcp_org_policies() {
+  if [[ "$ORGANIZATION_ID" ==  "" ]]; then
+    export ORGANIZATION_ID="$(gcloud organizations list --format='value(name)' | head -n 1)"
+  fi
+  echo "Updating orgniazation policies: ORGANIZATION_ID=$ORGANIZATION_ID"
+  gcloud resource-manager org-policies disable-enforce constraints/compute.requireOsLogin --organization=$ORGANIZATION_ID
+  gcloud resource-manager org-policies delete constraints/compute.vmExternalIpAccess --organization=$ORGANIZATION_ID
+  gcloud resource-manager org-policies delete constraints/iam.allowedPolicyMemberDomains --organization=$ORGANIZATION_ID
+}
+
+# Grant Storage admin to the current user IAM.
+grant_storage_iam() {
+  export CURRENT_USER=$(gcloud config list account --format "value(core.account)" | head -n 1)
+  gcloud config set project $PROJECT_ID --quiet
+  gcloud projects add-iam-policy-binding $PROJECT_ID --member="user:$CURRENT_USER" --role='roles/storage.admin' --quiet
+  sleep 3s
+}
+
+# Link billing account to the current project.
+link_billing_account() {
+  if [[ "$BILLING_ACCOUNT" ==  "" ]]; then
+    export BILLING_ACCOUNT=$(gcloud beta billing accounts list --format "value(name)" | head -n 1)
+  fi
+  echo "Linking billing account to $PROJECT: BILLING_ACCOUNT=$BILLING_ACCOUNT"
+  gcloud beta billing projects link $PROJECT_ID --billing-account $BILLING_ACCOUNT --quiet
+}
+
+# Create Terraform Statefile in GCS bucket.
+create_terraform_gcs_bucket() {
+  bash setup/setup_terraform.sh
+  
+  # List all buckets.
+  gcloud storage ls
+  echo "TF_BUCKET_NAME = ${TF_BUCKET_NAME}"
   echo
+}
+
+# Run terraform to set up all GCP resources. (Setting up GKE by default)
+init_foundation() {
+  # Init Terraform
+  cd terraform/stages/foundation
+  terraform init -reconfigure -backend-config=bucket=$TF_BUCKET_NAME
+  
+  # Enabling GCP services first.
+  terraform apply -target=module.project_services -target=module.service_accounts -auto-approve
+  
+  # Initializing Firebase (Only need this for the first time.)
+  # NOTE: the Firebase can only be initialized once (via App Engine).
+  terraform apply -target=module.firebase -var="firebase_init=true" -auto-approve
+  
+  # Run the rest of Terraform
+  terraform apply -auto-approve
+}
+
+# Build all microservices and deploy to the cluster:
+deploy_microservices_to_gke() {
+  cd $BASE_DIR/terraform/stages/gke
+  terraform init -backend-config=bucket=$TF_BUCKET_NAME
+  terraform apply -auto-approve
+  
+  cd $BASE_DIR
+  export CLUSTER_NAME=main-cluster
+  gcloud container clusters get-credentials $CLUSTER_NAME --region $REGION --project $PROJECT_ID
+  skaffold run -p prod --default-repo=gcr.io/$PROJECT_ID
+}
+
+# Build all microservices and deploy to CloudRun:
+deploy_microservices_to_cloudrun() {
+  cd $BASE_DIR/terraform/stages/cloudrun
+  terraform init -backend-config=bucket=$TF_BUCKET_NAME
+  terraform apply -auto-approve
 }
 
 # Test with API endpoint (GKE):
 test_api_endpoints_gke() {
   # Run API e2e tests
-  cd $BASE_DIR
-  python3 e2e/utils/port_forward.py --namespace default
-  PYTHONPATH=common/src python3 -m pytest e2e/gke_api_tests/
-  GKE_PYTEST_STATUS=${PIPESTATUS[0]}
+  export API_DOMAIN=$(kubectl describe ingress | grep Address | awk '{print $2}')
+  export URL="http://${API_DOMAIN}/sample_service/docs"
+  echo "The API endpoints are ready. See the auto-generated API docs at this URL: ${URL}"
 }
 
 # Test with API endpoint (CloudRun):
 test_api_endpoints_cloudrun() {
-  cd $BASE_DIR
-  
   # Run API e2e tests
-  mkdir -p .test_output
-  gcloud run services list --format=json > .test_output/cloudrun_service_list.json
-  export SERVICE_LIST_JSON=.test_output/cloudrun_service_list.json
-  PYTHONPATH=common/src python3 -m pytest e2e/cloudrun_api_tests/
-  CLOUDRUN_PYTEST_STATUS=${PIPESTATUS[0]}
+  export SERVICE_URL=$(gcloud run services describe "cloudrun-sample" --region=us-central1 --format="value(status.url)")
+  export URL="${SERVICE_URL}/sample_service/docs"
+  echo "The API endpoints are ready. See the auto-generated API docs at this URL: ${URL}"
 }
 
-clean_up() {
-  # Deleting project.
-  echo "PROJECT_ID=${PROJECT_ID}"
-  echo "Clearning up project: ${PROJECT_ID}"
-  gcloud projects delete $PROJECT_ID --quiet
-  # rm -rf $OUTPUT_FOLDER/$PROJECT_ID
-}
+setup_env_vars
+setup_gcloud
+update_gcp_org_policies
+grant_storage_iam
+link_billing_account
+create_terraform_gcs_bucket
+init_foundation
 
-# Run all steps
-create_new_project
-install_dependencies
-setup_working_folder
-
-# Run setup_all script to deploy to GKE.
-export MICROSERVICE_DEPLOYMENT_OPTION="gke"
-sh ./setup/setup_all.sh
-# test_api_endpoints_gke
-
-# Run setup_all script to deploy to GKE.
-# export MICROSERVICE_DEPLOYMENT_OPTION="cloudrun"
-# sh ./setup/setup_all.sh
-# test_api_endpoints_gcloud
-
-# Cleaning up e2e test project.
-if [[ "$nocleanup" ==  "" ]]; then
-  printf "Cleaning up ${PROJECT_ID}...\n"
-  clean_up
-else
-  echo "Skipping clean up."
+if [[ "$SOLUTIONS_TEMPLATE_FEATURES" ==  "gke" ]]; then
+  printf "Deploying microservices to GKE...\n"
+  deploy_microservices_to_gke
+  test_api_endpoints_gke
 fi
 
-echo "PROJECT_ID=$PROJECT_ID"
-echo "Elapsed Time: $(expr $SECONDS / 60) minutes"
-echo "GKE_PYTEST_STATUS=$GKE_PYTEST_STATUS"
-echo "CLOUDRUN_PYTEST_STATUS=$CLOUDRUN_PYTEST_STATUS"
-
-# Check API tests result
-if [[ $GKE_PYTEST_STATUS -ne 0 -o $CLOUDRUN_PYTEST_STATUS -ne 0 ]]; then
-  echo "ERROR: pytest failed, exiting ..."
-  exit $PYTEST_STATUS
+if [[ "$SOLUTIONS_TEMPLATE_FEATURES" ==  "cloudrun" ]]; then
+  printf "Deploying microservices to CloudRun...\n"
+  deploy_microservices_to_cloudrun
+  test_api_endpoints_cloudrun
 fi
