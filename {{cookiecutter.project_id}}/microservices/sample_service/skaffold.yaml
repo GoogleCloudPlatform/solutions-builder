@@ -1,0 +1,77 @@
+apiVersion: skaffold/v4beta1
+kind: Config
+metadata:
+  name: sample-service
+requires:
+- configs:
+  - common
+  path: ../../common
+build:
+  artifacts:
+  - image: sample-service
+    requires:
+    - image: common
+      alias: BASE_IMG
+    sync:
+      infer:
+      - '**/*.py'
+      - '**/*.json'
+  tagPolicy:
+    gitCommit: {}
+  local:
+    concurrency: 0
+manifests:
+  kustomize:
+    paths:
+    - ./kustomize/minikube
+portForward:
+- resourceType: service
+  resourceName: sample-service
+  port: 80
+  localPort: 8888
+deploy:
+  kubectl: {}
+profiles:
+- name: prod_non_cloudbuild
+  manifests:
+    kustomize:
+      paths:
+      - ./kustomize/prod
+- name: prod
+  build:
+    artifacts:
+    - image: sample-service
+      requires:
+      - image: common
+        alias: BASE_IMG
+      docker:
+        cacheFrom:
+        - sample-service
+        - sample-service:latest
+    googleCloudBuild: {}
+  manifests:
+    kustomize:
+      paths:
+      - ./kustomize/prod
+- name: dev
+  activation:
+  - kubeContext: gke_{{cookiecutter.project_id}}_{{cookiecutter.gcp_region}}_default-cluster
+  build:
+    artifacts:
+    - image: gcr.io/{{cookiecutter.project_id}}/sample-service
+      sync:
+        infer:
+        - '**/*.py'
+        - '**/*.json'
+      docker:
+        cacheFrom:
+        - gcr.io/{{cookiecutter.project_id}}/sample-service
+        - gcr.io/{{cookiecutter.project_id}}/sample-service:latest
+      requires:
+      - image: gcr.io/{{cookiecutter.project_id}}/common
+        alias: BASE_IMG
+    googleCloudBuild: {}
+  manifests:
+    kustomize:
+      paths:
+      - ./kustomize/dev

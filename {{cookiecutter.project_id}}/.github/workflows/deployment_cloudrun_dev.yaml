@@ -1,0 +1,88 @@
+name: CloudRun - Deploy all services
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'cloudrun/**'
+      - 'common/**'
+      - 'e2e/**'
+      - 'utils/**'
+      - '.github/workflows/deployment_cloudrun_dev.yaml'
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: {{cookiecutter.project_id}}
+  REGION: {{cookiecutter.gcp_region}}
+  ENV: dev
+
+# cookiecutter:raw {% raw %}
+jobs:
+  build_common:
+    name: Build Common image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      # https://github.com/google-github-actions/auth
+      - id: 'auth'
+        name: Auth with Service Account
+        uses: 'google-github-actions/auth@v1'
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+          # FIXME: Use workload identity instead of service account key.
+          # workload_identity_provider: ''
+          # service_account: 'deployment-dev@${{ env.PROJECT_ID }}.iam.gserviceaccount.com'
+
+      - name: Set up Cloud SDK
+        uses: 'google-github-actions/setup-gcloud@v1'
+
+      - id: 'build'
+        name: Build common
+        run: |
+          cd common
+          gcloud builds submit --config=cloudbuild.yaml --substitutions=\
+          _PROJECT_ID="${{ env.PROJECT_ID }}",\
+          _REGION="${{ env.REGION }}",\
+          _REPOSITORY="cloudrun",\
+          _IMAGE="common"
+
+  deploy_cloudrun:
+    needs: build_common
+    name: Deploy CloudRun services to Dev
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.7]
+        target-folder: [
+          # TODO: Add all cloudrun folders below.
+          # Format: [folder_path, service-id]
+          [microservices/sample_service, "cloudrun-sample"],
+        ]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Install gcloud
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+          export_default_credentials: true
+
+      - id: 'build_and_deploy'
+        name: Build and deploy CloudRun services
+        run: |
+          cd ${{ matrix.target-folder[0] }}
+          gcloud builds submit --config=cloudbuild.yaml --substitutions=\
+          _CLOUD_RUN_SERVICE_NAME="${{ matrix.target-folder[1] }}",\
+          _PROJECT_ID="${{ env.PROJECT_ID }}",\
+          _REGION="${{ env.REGION }}",\
+          _REPOSITORY="cloudrun",\
+          _IMAGE="${{ matrix.target-folder[1] }}",\
+          _SERVICE_ACCOUNT="deployment-${{ env.ENV }}@${{ env.PROJECT_ID }}.iam.gserviceaccount.com"
+
+# cookiecutter:endraw {% endraw %}

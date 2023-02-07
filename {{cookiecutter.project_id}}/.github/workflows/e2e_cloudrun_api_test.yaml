@@ -1,0 +1,174 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: E2E API Tests on CloudRun services
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'microservices/**'
+      - 'common/**'
+      - 'e2e/cloudrun_api_tests/**'
+      - 'e2e/requirements.txt'
+      - 'e2e/utils/**'
+      - 'utils/**'
+      - '.github/workflows/e2e_cloudrun_api_test.yaml'
+  workflow_dispatch:
+env:
+  PROJECT_ID: {{cookiecutter.project_id}}
+  REGION: {{cookiecutter.gcp_region}}
+  ENV: dev
+
+# cookiecutter:raw {% raw %}
+jobs:
+  build_common:
+    name: Build Common image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      # https://github.com/google-github-actions/auth
+      - id: 'auth'
+        name: Auth with Service Account
+        uses: 'google-github-actions/auth@v1'
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+          # FIXME: Use workload identity instead of service account key.
+          # workload_identity_provider: ''
+          # service_account: 'deployment-dev@${{ env.PROJECT_ID }}.iam.gserviceaccount.com'
+
+      - name: Set up Cloud SDK
+        uses: 'google-github-actions/setup-gcloud@v1'
+
+      - id: 'build'
+        name: Build common
+        run: |
+          cd common
+          gcloud builds submit --config=cloudbuild.yaml --substitutions=\
+          _PROJECT_ID="${{ env.PROJECT_ID }}",\
+          _REGION="${{ env.REGION }}",\
+          _REPOSITORY="cloudrun",\
+          _IMAGE="common"
+
+  deploy:
+    needs: build_common
+    name: Deploy CloudRun services to Dev
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.7]
+        target-folder: [
+          # TODO: Add all cloudrun folders below.
+          # Format: [folder_path, service-id]
+          [microservices/sample_service, "cloudrun-sample"],
+        ]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Install gcloud
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+          export_default_credentials: true
+
+      - id: 'build_and_deploy'
+        name: Build and deploy CloudRun services
+        run: |
+          cd ${{ matrix.target-folder[0] }}
+          PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+          SERVICE_NAME="e2e-pr${PR_NUMBER}-${{ matrix.target-folder[1] }}"
+          gcloud builds submit --config=cloudbuild.yaml --substitutions=\
+          _CLOUD_RUN_SERVICE_NAME=${SERVICE_NAME},\
+          _PROJECT_ID="${{ env.PROJECT_ID }}",\
+          _REGION="${{ env.REGION }}",\
+          _REPOSITORY="cloudrun",\
+          _IMAGE="${{ matrix.target-folder[1] }}",\
+          _SERVICE_ACCOUNT="deployment-${{ env.ENV }}@${{ env.PROJECT_ID }}.iam.gserviceaccount.com",\
+          _ALLOW_UNAUTHENTICATED_FLAG="--allow-unauthenticated"
+
+      - id: 'add_invoker_permission'
+        name: Grant public access to the deployed service
+        run: |
+          PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+          SERVICE_NAME="e2e-pr${PR_NUMBER}-${{ matrix.target-folder[1] }}"
+          gcloud run services add-iam-policy-binding ${SERVICE_NAME} \
+          --region="${{ env.REGION }}" \
+          --member="allUsers" \
+          --role="roles/run.invoker"
+
+
+  e2e-api-test:
+    runs-on: ubuntu-latest
+    needs: deploy
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.7]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install gcloud
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        project_id: ${{env.PROJECT_ID}}
+        credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+        export_default_credentials: true
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install pytest pytest-custom_exit_code pytest-cov pylint pytest-mock mock
+        python -m pip install -r e2e/requirements.txt
+
+    - name: Get CloudRun Services list
+      run: |
+        gcloud run services list --format=json > cloudrun_service_list.json
+
+    - name: Run pytest
+      run: |
+        PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+        export SERVICE_NAME_PREFIX=e2e-pr${PR_NUMBER}-
+        export SERVICE_LIST_JSON=cloudrun_service_list.json
+        PYTHONPATH=common/src python -m pytest e2e/cloudrun_api_tests/
+
+  deployment-cleanup:
+    name: Clean up E2E test CloudRun deployment
+    needs: e2e-api-test
+    if: always()
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.7]
+        cloudrun-services: [
+          cloudrun-sample
+        ]
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v3
+    - name: Install gcloud
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        project_id: ${{env.PROJECT_ID}}
+        credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+        export_default_credentials: true
+
+    - name: Delete CloudRun service
+      run: |
+        PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+        SERVICE_NAME_PREFIX=e2e-pr${PR_NUMBER}-
+        gcloud run services delete ${SERVICE_NAME_PREFIX}${{ matrix.cloudrun-services }} --region=${{ env.REGION }} --quiet
+
+# cookiecutter:endraw {% endraw %}
