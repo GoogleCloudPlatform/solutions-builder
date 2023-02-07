@@ -115,15 +115,11 @@ create_new_project
 install_dependencies
 setup_working_folder
 
-# Run setup_all script to deploy to GKE.
-export SOLUTIONS_TEMPLATE_FEATURES="gke"
+# Run setup_all script to deploy to GKE and Cloud Run
+export TEMPLATE_FEATURES="gke|cloudrun"
 sh ./setup/setup_all.sh
-# test_api_endpoints_gke
-
-# Run setup_all script to deploy to GKE.
-# export SOLUTIONS_TEMPLATE_FEATURES="cloudrun"
-# sh ./setup/setup_all.sh
-# test_api_endpoints_gcloud
+test_api_endpoints_gke
+test_api_endpoints_gcloud
 
 # Cleaning up e2e test project.
 if [[ "$nocleanup" ==  "" ]]; then
