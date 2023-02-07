@@ -32,6 +32,12 @@ for variable in ${EnvVars[@]}; do
   fi
 done
 
+# List all files that will be skipped in the cookiecutter folder.
+declare -a files_to_skip=(
+  "cookiecutter.json"
+  ".github/workflows/template_e2e_test.yaml"
+)
+
 declare -a folders=(
   ".github"
   "common"
@@ -67,9 +73,6 @@ build_template() {
   cp {.,}* $build_folder
   cp build_tools/template_docs/*.md $build_folder
 
-  # Remove Cookiecutter file in the root.
-  rm $build_folder/cookiecutter.json
-
   echo "Replacing with cookiecutter vars with:"
   echo
   echo "project_id: ${PROJECT_ID} => {{cookiecutter.project_id}}"
@@ -94,6 +97,13 @@ build_template() {
 
   # Clean up backup files
   find . -name '.!*' -exec rm -rf {} \;
+
+  # Remove skipped files based on the list.
+  echo
+  for filename in ${files_to_skip[@]}; do
+    echo "Removing $build_folder/$filename"
+    rm "$build_folder/$filename"
+  done
 
   # Verify
   verify_result=""
@@ -159,7 +169,7 @@ read answer
 if [ "$answer" != "${answer#[Yy]}" ] ;then
   build_template $build_folder
   echo
-  echo "Complete."
+  echo "Template Built Complete."
   echo
 else
   echo "Aborted."

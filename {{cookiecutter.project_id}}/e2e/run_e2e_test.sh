@@ -24,6 +24,10 @@
 # Option 1) gcloud auth login && gcloud auth application-default login
 # Option 2) gcloud auth activate-service-account $SA_EMAIL --key-file=$PATH_TO_KEY_FILE
 
+# Usage:
+# sh run_e2e_test.sh
+# sh run_e2e_test.sh -n # Skip cleaning up project, for debug purpose.
+
 # To calculate time elapsed.
 SECONDS=0
 
@@ -32,6 +36,7 @@ declare -a EnvVars=(
   "ORGANIZATION_ID"
   "FOLDER_ID"
   "BILLING_ACCOUNT"
+  "GOOGLE_APPLICATION_CREDENTIALS"
 )
 for variable in ${EnvVars[@]}; do
   if [[ -z "${!variable}" ]]; then
@@ -40,20 +45,31 @@ for variable in ${EnvVars[@]}; do
   fi
 done
 
+# The following vars need to be set in the environment when runnin the e2e tests.
+# For example, set up env vars and action secrets in Github Action workflow.
+echo "ORGANIZATION_ID=$ORGANIZATION_ID"
+echo "FOLDER_ID=$FOLDER_ID"
+echo "BILLING_ACCOUNT=$BILLING_ACCOUNT"
+echo "GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS"
+
 # Parsing arguments
 nocleanup=""
 while getopts "n" flag
 do
   case "${flag}" in
-    -n) nocleanup="nocleanup";;
+    n) nocleanup="nocleanup";;
   esac
 done
+
+# Re-build template
+echo yes | sh ./build_tools/build_template.sh
 
 # Initializing E2E test environment vars
 export OUTPUT_FOLDER=".test_output"
 export PROJECT_ID=solutemp-e2e-$(uuidgen | head -c 8 | awk '{print tolower($0)}')
 export ADMIN_EMAIL=$(gcloud auth list --filter=status:ACTIVE --format='value(account)')
 pip3 install pytest --no-input
+echo "PROJECT_ID=$PROJECT_ID"
 
 ### Create a new Google Cloud project:
 create_new_project() {
@@ -71,7 +87,6 @@ install_dependencies() {
 
 setup_working_folder() {
   mkdir -p $OUTPUT_FOLDER
-  echo "PROJECT_ID = $PROJECT_ID"
   
   ### Set up working environment:
   cd $OUTPUT_FOLDER/$PROJECT_ID
@@ -126,16 +141,19 @@ if [[ "$nocleanup" ==  "" ]]; then
   printf "Cleaning up ${PROJECT_ID}...\n"
   clean_up
 else
-  echo "Skipping clean up."
+  echo "Skip project cleaning up..."
+  echo
 fi
 
 echo "PROJECT_ID=$PROJECT_ID"
 echo "Elapsed Time: $(expr $SECONDS / 60) minutes"
-echo "GKE_PYTEST_STATUS=$GKE_PYTEST_STATUS"
-echo "CLOUDRUN_PYTEST_STATUS=$CLOUDRUN_PYTEST_STATUS"
 
 # Check API tests result
-if [[ $GKE_PYTEST_STATUS -ne 0 -o $CLOUDRUN_PYTEST_STATUS -ne 0 ]]; then
-  echo "ERROR: pytest failed, exiting ..."
-  exit $PYTEST_STATUS
+if [[ $GKE_PYTEST_STATUS == 0 && $CLOUDRUN_PYTEST_STATUS == 0 ]]; then
+  echo "API Tests passed."
+else
+  echo -e '\033[31m ERROR: API Tests failed \033[0m'
+  echo "GKE_PYTEST_STATUS=$GKE_PYTEST_STATUS"
+  echo "CLOUDRUN_PYTEST_STATUS=$CLOUDRUN_PYTEST_STATUS"
+  exit -1
 fi
