@@ -31,8 +31,6 @@ variable "env" {
 variable "project_id" {
   type        = string
   description = "GCP Project ID"
-  # TODO: Update below to your PROJECT_ID
-  default = "solutions-template-sandbox"
 
   validation {
     condition     = length(var.project_id) > 0

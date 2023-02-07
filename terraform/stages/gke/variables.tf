@@ -15,14 +15,6 @@
  *
  */
 
-variable "feature_flags" {
-  type        = string
-  description = "A comma-seperated string of feature flags to enable specific terraform blocks."
-
-  # TODO: Use Cookiecutter to replace this string.
-  default = "gke,gke-ingress"
-}
-
 variable "env" {
   type    = string
   default = "dev"
@@ -31,8 +23,6 @@ variable "env" {
 variable "project_id" {
   type        = string
   description = "GCP Project ID"
-  # TODO: Update below to your PROJECT_ID
-  default = "solutions-template-sandbox"
 
   validation {
     condition     = length(var.project_id) > 0

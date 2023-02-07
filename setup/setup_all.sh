@@ -35,6 +35,7 @@ setup_env_vars() {
 setup_gcloud() {
   gcloud config set project $PROJECT_ID --quiet
   gcloud components install gke-gcloud-auth-plugin --quiet
+  gcloud services enable cloudresourcemanager.googleapis.com --quiet
 }
 
 # Updating GCP Organizational policies
@@ -48,12 +49,38 @@ update_gcp_org_policies() {
   gcloud resource-manager org-policies delete constraints/iam.allowedPolicyMemberDomains --organization=$ORGANIZATION_ID
 }
 
-# Grant Storage admin to the current user IAM.
-grant_storage_iam() {
+# Create a Service Account for Terraform impersonating and grant Storage admin to the current user IAM.
+setup_service_accounts_and_iam() {
   export CURRENT_USER=$(gcloud config list account --format "value(core.account)" | head -n 1)
-  gcloud config set project $PROJECT_ID --quiet
-  gcloud projects add-iam-policy-binding $PROJECT_ID --member="user:$CURRENT_USER" --role='roles/storage.admin' --quiet
-  sleep 3s
+  # Check if the current user is a service account.
+  if [[ "$CURRENT_USER" == *"iam.gserviceaccount.com"* ]]; then
+    MEMBER_PREFIX="serviceAccount"
+  else
+    MEMBER_PREFIX="user"
+  fi
+  
+  # Create TF runner services account and use it for impersonate.
+  export TF_RUNNER_SA_EMAIL="terraform-runner@$PROJECT_ID.iam.gserviceaccount.com"
+  export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=$TF_RUNNER_SA_EMAIL
+  gcloud iam service-accounts create "terraform-runner"
+  
+  # Grant service account Token creator for current user.
+  declare -a runnerRoles=(
+    "roles/iam.serviceAccountTokenCreator"
+    "roles/iam.serviceAccountUser"
+  )
+  for role in ${runnerRoles[@]}; do
+    gcloud iam service-accounts add-iam-policy-binding $TF_RUNNER_SA_EMAIL --member="$MEMBER_PREFIX:$CURRENT_USER" --role="$role"
+  done
+  
+  # Bind the TF runner service account with required roles.
+  declare -a runnerRoles=(
+    "roles/owner"
+    "roles/storage.admin"
+  )
+  for role in ${runnerRoles[@]}; do
+    gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$TF_RUNNER_SA_EMAIL" --role="$role" --quiet
+  done
 }
 
 # Link billing account to the current project.
@@ -78,7 +105,7 @@ create_terraform_gcs_bucket() {
 # Run terraform to set up all GCP resources. (Setting up GKE by default)
 init_foundation() {
   # Init Terraform
-  cd terraform/stages/foundation
+  cd $BASE_DIR/terraform/stages/foundation
   terraform init -reconfigure -backend-config=bucket=$TF_BUCKET_NAME
   
   # Enabling GCP services first.
@@ -130,26 +157,22 @@ test_api_endpoints_cloudrun() {
 setup_env_vars
 setup_gcloud
 update_gcp_org_policies
-grant_storage_iam
 link_billing_account
+setup_service_accounts_and_iam
 create_terraform_gcs_bucket
+
+echo "Wait 15 seconds for IAM updates..."
+sleep 15
 init_foundation
 
-# Checking all Template features, using "|: as delimiter.
-IFS='|' read -a strarr <<< "$TEMPLATE_FEATURES"
-for feature in "${strarr[@]}";
-do
-  echo "feature=$feature"
-  case $feature in
-    "gke")
-      printf "Deploying microservices to GKE...\n"
-      deploy_microservices_to_gke
-      test_api_endpoints_gke
-      ;;
-    "cloudrun")
-      printf "Deploying microservices to CloudRun...\n"
-      deploy_microservices_to_cloudrun
-      test_api_endpoints_cloudrun
-      ;;
-  esac
-done
+if [[ "$TEMPLATE_FEATURE_TAGS" == *"gke"* ]]; then
+  printf "Deploying microservices to GKE...\n"
+  deploy_microservices_to_gke
+  test_api_endpoints_gke
+fi
+
+if [[ "$TEMPLATE_FEATURE_TAGS" == *"cloudrun"* ]]; then
+  printf "Deploying microservices to CloudRun...\n"
+  deploy_microservices_to_cloudrun
+  test_api_endpoints_cloudrun
+fi

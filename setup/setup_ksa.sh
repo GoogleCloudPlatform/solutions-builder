@@ -19,7 +19,6 @@ declare -a EnvVars=(
   "NAMESPACE"
   "PROJECT_ID"
 )
-
 for variable in ${EnvVars[@]}; do
   if [[ -z "${!variable}" ]]; then
     printf "$variable is not set.\n"
