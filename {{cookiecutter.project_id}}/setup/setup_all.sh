@@ -135,17 +135,14 @@ link_billing_account
 create_terraform_gcs_bucket
 init_foundation
 
-if [[ "$TEMPLATE_FEATURES" ==  "gke" ]]; then
+if [[ "$TEMPLATE_FEATURES" ==  *"gke"* ]]; then
   printf "Deploying microservices to GKE...\n"
   deploy_microservices_to_gke
   test_api_endpoints_gke
 fi
 
-if [[ "$TEMPLATE_FEATURES" ==  "cloudrun" ]]; then
+if [[ "$TEMPLATE_FEATURES" ==  *"cloudrun"* ]]; then
   printf "Deploying microservices to CloudRun...\n"
-  deploy_microservices_to_cloudrun
-  test_api_endpoints_cloudrun
-fi
   deploy_microservices_to_cloudrun
   test_api_endpoints_cloudrun
 fi
