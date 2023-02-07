@@ -41,10 +41,13 @@ declare -a files_to_skip=(
 declare -a folders=(
   ".github"
   "common"
-  "cicd"
-  "e2e"
   "microservices"
   "setup"
+)
+
+declare -a symlink_folders=(
+  "cicd"
+  "e2e"
   "terraform"
 )
 
@@ -80,6 +83,7 @@ build_template() {
   echo "admin_email: ${ADMIN_EMAIL} => {{cookiecutter.admin_email}}"
   echo
 
+  # Copy folders
   for folder in ${folders[@]}; do
     rsync -rv $folder "$build_folder/" \
     --exclude=.venv \
@@ -103,6 +107,11 @@ build_template() {
   for filename in ${files_to_skip[@]}; do
     echo "Removing $build_folder/$filename"
     rm "$build_folder/$filename"
+  done
+
+  # Copy symlink folders
+  for folder in ${symlink_folders[@]}; do
+    ln -s "../$folder" "$build_folder/$folder"
   done
 
   # Verify

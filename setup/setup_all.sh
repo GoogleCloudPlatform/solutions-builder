@@ -165,21 +165,14 @@ echo "Wait 15 seconds for IAM updates..."
 sleep 15
 init_foundation
 
-# Checking all Template features, using "|: as delimiter.
-IFS='|' read -a strarr <<< "$TEMPLATE_FEATURES"
-for feature in "${strarr[@]}";
-do
-  echo "feature=$feature"
-  case $feature in
-    "gke")
-      printf "Deploying microservices to GKE...\n"
-      deploy_microservices_to_gke
-      test_api_endpoints_gke
-      ;;
-    "cloudrun")
-      printf "Deploying microservices to CloudRun...\n"
-      deploy_microservices_to_cloudrun
-      test_api_endpoints_cloudrun
-      ;;
-  esac
-done
+if [[ "$TEMPLATE_FEATURE_TAGS" == *"gke"* ]]; then
+  printf "Deploying microservices to GKE...\n"
+  deploy_microservices_to_gke
+  test_api_endpoints_gke
+fi
+
+if [[ "$TEMPLATE_FEATURE_TAGS" == *"cloudrun"* ]]; then
+  printf "Deploying microservices to CloudRun...\n"
+  deploy_microservices_to_cloudrun
+  test_api_endpoints_cloudrun
+fi
