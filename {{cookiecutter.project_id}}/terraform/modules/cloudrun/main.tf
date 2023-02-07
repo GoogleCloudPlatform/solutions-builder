@@ -58,7 +58,7 @@ data "archive_file" "common-zip" {
 }
 resource "null_resource" "build-common-image" {
   triggers = {
-    src_hash = "${data.archive_file.cloudrun-zip.output_sha}"
+    src_hash = data.archive_file.cloudrun-zip.output_sha
   }
   provisioner "local-exec" {
     working_dir = "../../../common"
@@ -89,7 +89,7 @@ resource "null_resource" "deploy-cloudrun-image" {
     null_resource.build-common-image
   ]
   triggers = {
-    src_hash = "${data.archive_file.cloudrun-zip.output_sha}"
+    src_hash = data.archive_file.cloudrun-zip.output_sha
   }
   provisioner "local-exec" {
     working_dir = var.source_dir

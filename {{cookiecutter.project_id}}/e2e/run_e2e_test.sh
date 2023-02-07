@@ -29,7 +29,7 @@ SECONDS=0
 
 # Hardcoded the project ID for all local development.
 declare -a EnvVars=(
-  "ORGANIZATION_ID"7
+  "ORGANIZATION_ID"
   "FOLDER_ID"
   "BILLING_ACCOUNT"
 )
@@ -115,15 +115,11 @@ create_new_project
 install_dependencies
 setup_working_folder
 
-# Run setup_all script to deploy to GKE.
-export MICROSERVICE_DEPLOYMENT_OPTION="gke"
+# Run setup_all script to deploy to GKE and Cloud Run
+export TEMPLATE_FEATURES="gke|cloudrun"
 sh ./setup/setup_all.sh
-# test_api_endpoints_gke
-
-# Run setup_all script to deploy to GKE.
-# export MICROSERVICE_DEPLOYMENT_OPTION="cloudrun"
-# sh ./setup/setup_all.sh
-# test_api_endpoints_gcloud
+test_api_endpoints_gke
+test_api_endpoints_gcloud
 
 # Cleaning up e2e test project.
 if [[ "$nocleanup" ==  "" ]]; then
