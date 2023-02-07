@@ -135,14 +135,21 @@ link_billing_account
 create_terraform_gcs_bucket
 init_foundation
 
-if [[ "$TEMPLATE_FEATURES" ==  *"gke"* ]]; then
-  printf "Deploying microservices to GKE...\n"
-  deploy_microservices_to_gke
-  test_api_endpoints_gke
-fi
-
-if [[ "$TEMPLATE_FEATURES" ==  *"cloudrun"* ]]; then
-  printf "Deploying microservices to CloudRun...\n"
-  deploy_microservices_to_cloudrun
-  test_api_endpoints_cloudrun
-fi
+# Checking all Template features, using "|: as delimiter.
+IFS='|' read -a strarr <<< "$TEMPLATE_FEATURES"
+for feature in "${strarr[@]}";
+do
+  echo "feature=$feature"
+  case $feature in
+    "gke")
+      printf "Deploying microservices to GKE...\n"
+      deploy_microservices_to_gke
+      test_api_endpoints_gke
+      ;;
+    "cloudrun")
+      printf "Deploying microservices to CloudRun...\n"
+      deploy_microservices_to_cloudrun
+      test_api_endpoints_cloudrun
+      ;;
+  esac
+done
