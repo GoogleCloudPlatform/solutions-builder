@@ -11,10 +11,11 @@ clusters, Cloud Run, Test Automation, CI/CD, as well as development process.
 
 This template provides built-in and ready-to-ship sample features including:
 * Container-based microservices, can be deployed to a Kubernetes cluster or Cloud Run.
-* Simplified deployment using Skaffold and Kustomize
-* Google Cloud foundation setup using Terraform
-* CI/CD deployment (with Github Actions)
-* Cloud Run templates
+* Simplified deployment using Skaffold and Kustomize ([Blog](https://cloud.google.com/blog/topics/developers-practitioners/simplify-your-devops-using-skaffold)).
+* Google Cloud foundation automation using [Terraform](https://www.terraform.io/).
+* Automatically generated API documentation (via [FastAPI](https://fastapi.tiangolo.com/)).
+* CI/CD deployment (with Github Actions).
+* Cloud Run templates.
 
 ## Roadmap
 
@@ -75,14 +76,15 @@ Install **skaffold (2.0.4 or later)** and kustomize:
   choco install -y skaffold kustomize gcloudsdk
   ```
 
-### Apple M1 Chip Support for Terraform (Optional)
+### Other dependencies (Optional)
+- Apple M1 Chip Support for Terraform
 
-If you are running commands on an Apple M1 chip Macbook, make sure run the following to add M1 support for Terraform:
-```
-brew install kreuzwerker/taps/m1-terraform-provider-helper
-m1-terraform-provider-helper activate
-m1-terraform-provider-helper install hashicorp/template -v v2.2.0
-```
+  If you are running commands on an Apple M1 chip Macbook, make sure run the following to add M1 support for Terraform:
+  ```
+  brew install kreuzwerker/taps/m1-terraform-provider-helper
+  m1-terraform-provider-helper activate
+  m1-terraform-provider-helper install hashicorp/template -v v2.2.0
+  ```
 
 ## Getting Started - Creating Solution Skeleton
 
@@ -92,7 +94,7 @@ m1-terraform-provider-helper install hashicorp/template -v v2.2.0
 
 Run the following to create a new Google Cloud project, or you can log in to Google Cloud Console to [create a new project](https://console.cloud.google.com/projectcreate).
 ```
-export PROJECT_ID=<my-project-folder>
+export PROJECT_ID=<my-project-id>
 gcloud projects create $PROJECT_ID
 gcloud config set project $PROJECT_ID
 ```
@@ -106,7 +108,7 @@ cookiecutter https://github.com/GoogleCloudPlatform/solutions-template.git
 
 Provide the required variables to Cookiecutter prompt, e.g.:
 ```
-project_id: my-project-folder
+project_id: my-project-id
 project_name [My Awesome Project]:
 project_short_description [My Awesome Project]:
 project_slug [my_project]:
@@ -119,55 +121,45 @@ admin_email [admin@example.com]:
 - Notes: If you run into any issues with `cookiecutter`, please add `--verbose` at
 the end of the command to show detailed errors.
 
-Once `cookiecutter` completes, you will see the folder `<project_id>` created in
+Once `cookiecutter` completes, you will see `<my-project-id>` folder created in
 the path where you ran `cookiecutter` command.
 
 ### File structure
 
 In the newly created folder, you will see the file structure like below:
 ```
-<project_id>/
+<my-project-id>/
 │   README.md
-|   DEVELOPMENT.md
 │   skaffold.yaml
+├── docs
+├── e2e
+├── microservices
+│   └── sample_service
+│       ├── Dockerfile
+│       ├── skaffold.yaml
+│       ├── src
+│       └   ...
 │
-└───microservices/
-│   └───sample_service/
-│       └───kustomize/
-│       └───src/
-│       │   Dockerfile
-│       │   requirements.txt
-│       │   skaffold.yaml
-│       │   ...
-│
-└───common/
-│   └───src/
+└── common/
+│   └── src/
 │   │   Dockerfile
-│   │   requirements.txt
 │   │   skaffold.yaml
 │   │   ...
 │
-└───.github/
-
+└── .github/
 ```
 
-- **README.md** - General info and setup guide.
-- **DEVELOPMENT.md** - Development best practices, code submission flow, and other guidances.
-- **skaffold.yaml** - The master Skaffold YAML file that defines how everything is built and deployed, depending on different profiles.
-- **microservices** - The main directory for all microservices, can be broken down into individual folder for each microservie, e.g. `sample_service`.
-  - [**microservice subfolder**] - Each microservice folder is a Docker container with [Skaffold](https://skaffold.dev/) + [Kustomize](https://kustomize.io/) to build images in different environments.
-- **common** - The common image contains shared data models and util libraries used by all other microservices.
-- **.github** - Github workflows including tests and CI/CD.
 
 ## Setting up Google Cloud Project
 
-> (Optional) Check out the README.md in **my-project-folder** to check out the manual setup steps.
-
 ```
 # Set up environmental variables
-cd <my-project-folder>
-export PROJECT_ID=<my-project-folder>
+export PROJECT_ID=<my-project-id>
+export ADMIN_EMAIL=<my-email>
+export REGION=us-central1
 export API_DOMAIN=localhost
+
+cd <my-project-id>
 export BASE_DIR=$(pwd)
 ```
 
@@ -175,8 +167,6 @@ Log in to Google Cloud.
 ```
 # Login to Google Cloud (if not on Cloud Shell)
 gcloud auth login
-gcloud auth application-default login
-gcloud auth application-default set-quota-project $PROJECT_ID
 gcloud config set project $PROJECT_ID
 ```
 
@@ -190,54 +180,32 @@ export TEMPLATE_FEATURES="gke" # "gke|cloudrun"
 sh setup/setup_all.sh
 ```
 
-It will then run the following steps:
-- Updating GCP Organizational policies and required IAM roles.
-- Run terraform to set up foundation and GKE cluster.
-- Build and deploy microservices to GKE cluster.
-- Test API endpoints (pytest).
-
 Once microservice deployed successfully, you will see the message below:
 ```
 The API endpoints are ready. See the auto-generated API docs at this URL: https://<your-sample-domain>/sample_service/docs
 ```
 
-### Cleaning up all deployment and resources
+## Additional Documentations
 
-Run the following to destory all deployment and resources.
-> Note: there are some GCP resoureces that are not deletable, e.g. Firebase initialization.
+You can find more documentations in [docs](docs) folder. In a nutshell, it covers the following:
+- [INSTALLATION.md](docs/INSTALLATION.md) - The overall installation guide.
+- [DEVELOPMENT.md](docs/DEVELOPMENT.md) - Development guide and code submission process.
+- [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) - Development guide and code submission process.
 
-```
-cd $BASE_DIR/terraform/stages/gke
-terraform destroy -auto-approve
-
-cd $BASE_DIR/terraform/stages/cloudrun
-terraform destroy -auto-approve
-
-cd $BASE_DIR/terraform/stages/foundation
-terraform destroy -auto-approve
-```
+In the [docs/components](docs/components/) folder, it contains a few more guidance based on each component/feature available in this template.
+- [gke.md](gke.md) covers the overall developmeng guidance on Google Kubernetes Engine.
+- [cloudrun.md](cloudrun.md) covers the guidance if you want to deploy microservice to Cloud Run.
 
 ## FAQ
 - Who are the target audience/users for this Solutions template?
   - A: Any engineering team to start a new solution development project.
+
 - Can I choose to deploy microservice just to Cloud Run?
-  - A: Yes, please refer to `Getting Started - Setting up with setup_all script` in the README.md to choose where to deploy microservices.
+  - A: Yes, please refer to [Setting up Google Cloud Project](README.md#setting-up-google-cloud-project) in this README.md to choose where to deploy microservices. Or you can refer to [INSTALLATION.md](docs/INSTALLATION.md) for more details.
 
-## Troubleshoots
+- Can I use this template for non-Google or multi-Cloud environments?
+  - A: We design this Solutions Template to work 100% out of the box with Google Cloud products. However you could customize the solution to meet your needs on multi-Cloud environment. See [Why Google Cloud](https://cloud.google.com/why-google-cloud) for details.
 
-- I use a Apple M1 Mac and got errors like below when I ran `terraform init`:
-  ```
-  │ Error: Incompatible provider version
-  │
-  │ Provider registry.terraform.io/hashicorp/template v2.2.0 does not have a package available for your current platform,
-  │ darwin_arm64.
-  │
-  │ Provider releases are separate from Terraform CLI releases, so not all providers are available for all platforms. Other
-  │ versions of this provider may have different platforms supported.
-  ```
-  - A: Run the following to add support of M1 chip ([reference](https://kreuzwerker.de/en/post/use-m1-terraform-provider-helper-to-compile-terraform-providers-for-mac-m1))
-    ```
-    brew install kreuzwerker/taps/m1-terraform-provider-helper
-    m1-terraform-provider-helper activate
-    m1-terraform-provider-helper install hashicorp/template -v v2.2.0
-    ```
+## Troubleshoot
+
+See [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) for details.
