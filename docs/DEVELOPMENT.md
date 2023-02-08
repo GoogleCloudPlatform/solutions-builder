@@ -1,6 +1,7 @@
 # Development
 <!-- vscode-markdown-toc -->
 * 1. [Project Requirements](#ProjectRequirements)
+	* 1.1. [Tool requirements:](#Toolrequirements:)
 * 2. [Code Submission Process](#CodeSubmissionProcess)
 	* 2.1. [For the first-time setup:](#Forthefirst-timesetup:)
 	* 2.2. [When making code changes](#Whenmakingcodechanges)
@@ -40,7 +41,7 @@ This doc explains the development and code submission process.
 
 ##  1. <a name='ProjectRequirements'></a>Project Requirements
 
-### Tool requirements:
+###  1.1. <a name='Toolrequirements:'></a>Tool requirements:
 
 Install the following:
 
