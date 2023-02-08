@@ -36,6 +36,7 @@ done
 declare -a files_to_skip=(
   "cookiecutter.json"
   ".github/workflows/template_e2e_test.yaml"
+  "CONTRIBUTING"
 )
 
 declare -a folders=(
@@ -47,6 +48,7 @@ declare -a folders=(
 
 declare -a symlink_folders=(
   "cicd"
+  "docs"
   "e2e"
   "terraform"
 )

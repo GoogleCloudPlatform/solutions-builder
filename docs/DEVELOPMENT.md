@@ -35,14 +35,24 @@
 <!-- /vscode-markdown-toc -->
 
 
-This doc explains the development workflow so you can get started contributing code to {{cookiecutter.project_name}}
+This doc explains the development and code submission process.
 
 
 ##  1. <a name='ProjectRequirements'></a>Project Requirements
 
+### Tool requirements:
+
 Install the following based on [the versions for this project](./README.md#ProjectRequirements)
-* skaffold
-* kustomize
+
+| Tool  | Required Version  | Documentation site |
+|---|---|---|
+| gcloud CLI          | Latest     | https://cloud.google.com/sdk/docs/install |
+| Terraform           | >= v1.3.7  | https://developer.hashicorp.com/terraform/downloads |
+| Skaffold (for GKE)  | >= v2.0.4  | https://skaffold.dev/ |
+| Kustomize (for GKE) | >= v4.3.1  | https://kustomize.io/ |
+| Cookiecutter        | >=2.1.1    | https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter |
+
+Additonal useful tools:
 * helm
 * kubectx
 * kubens
