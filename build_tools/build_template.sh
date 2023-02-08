@@ -36,7 +36,7 @@ done
 declare -a files_to_skip=(
   "cookiecutter.json"
   ".github/workflows/template_e2e_test.yaml"
-  "CONTRIBUTING"
+  "CONTRIBUTING.md"
 )
 
 declare -a folders=(
