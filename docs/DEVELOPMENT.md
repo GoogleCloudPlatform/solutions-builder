@@ -42,7 +42,7 @@ This doc explains the development and code submission process.
 
 ### Tool requirements:
 
-Install the following based on [the versions for this project](./README.md#ProjectRequirements)
+Install the following:
 
 | Tool  | Required Version  | Documentation site |
 |---|---|---|
