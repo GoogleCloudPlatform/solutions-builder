@@ -44,13 +44,17 @@ declare -a folders=(
   "common"
   "microservices"
   "setup"
-)
-
-declare -a symlink_folders=(
+  # FIXME: The symblink doesn't work with cookiecutter. Need to find a
+  # solution to reduce the duplication between root folder vs. cookiecutter.
+  # See: https://github.com/cookiecutter/cookiecutter/issues/865
   "cicd"
   "docs"
   "e2e"
   "terraform"
+)
+
+# Currently avoid adding symlink in template folder.
+declare -a symlink_folders=(
 )
 
 get_machine_type() {
