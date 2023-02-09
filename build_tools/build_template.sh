@@ -37,6 +37,7 @@ declare -a files_to_skip=(
   "cookiecutter.json"
   ".github/workflows/template_e2e_test.yaml"
   "CONTRIBUTING.md"
+  "e2e/template_e2e_tests"
 )
 
 declare -a folders=(
@@ -112,7 +113,7 @@ build_template() {
   echo
   for filename in ${files_to_skip[@]}; do
     echo "Removing $build_folder/$filename"
-    rm "$build_folder/$filename"
+    rm -rf "$build_folder/$filename"
   done
 
   # Copy symlink folders
