@@ -61,3 +61,10 @@
     ```
     gcloud auth application-default login
     ```
+
+    Lastly, check if you have set GOOGLE_APPLICATION_CREDENTIALS. If yes, make sure it points
+    to the correct credential JSON file.
+    ```
+    echo $GOOGLE_APPLICATION_CREDENTIALS
+    export GOOGLE_APPLICATION_CREDENTIALS=<credential-json>
+    ```
