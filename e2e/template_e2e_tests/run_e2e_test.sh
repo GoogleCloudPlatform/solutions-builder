@@ -14,19 +14,32 @@
 # limitations under the License.
 
 # This script runs the e2e test with the following steps:
-# - Create a new GCP project.
+# - Create a new GCP project (Optional)
 # - Init with env vars and other setup.
 # - Run terraform apply, which create GKE cluster and other resources.
 # - Run skaffold to deploy microservices.
 # - Test API endpoints.
 
-# Log in to gcloud or with a service account.
+# Usage:
+#
+# 1. Log in to gcloud or with a service account. Two options:
 # Option 1) gcloud auth login && gcloud auth application-default login
 # Option 2) gcloud auth activate-service-account $SA_EMAIL --key-file=$PATH_TO_KEY_FILE
-
-# Usage:
-# sh run_e2e_test.sh
-# sh run_e2e_test.sh -n # Skip cleaning up project, for debug purpose.
+#
+# 2. Set up environment variables. If you don't set these values, the script will try to fetch from gcloud config.
+# export ORGANIZATION_ID=<your-org-id>
+# export FOLDER_ID=<your-folder-id>
+# export BILLING_ACCOUNT=<your-billing-id>
+#
+# 3. Run the script with optional flags:
+# Regular e2e test with clean up.
+# > sh run_e2e_test.sh
+#
+# Create new project ID with random UUID and run e2e tests.
+# > sh run_e2e_test.sh -n
+#
+# Run e2e test but skip cleaning up project, for debug purpose.
+# > sh run_e2e_test.sh -s #
 
 # To calculate time elapsed.
 SECONDS=0
@@ -36,7 +49,7 @@ declare -a EnvVars=(
   "ORGANIZATION_ID"
   "FOLDER_ID"
   "BILLING_ACCOUNT"
-  "GOOGLE_APPLICATION_CREDENTIALS"
+  # "GOOGLE_APPLICATION_CREDENTIALS"
 )
 for variable in ${EnvVars[@]}; do
   if [[ -z "${!variable}" ]]; then
@@ -53,11 +66,12 @@ echo "BILLING_ACCOUNT=$BILLING_ACCOUNT"
 echo "GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS"
 
 # Parsing arguments
-nocleanup=""
+skip_cleanup="" is_create_new_project=""
 while getopts "n" flag
 do
   case "${flag}" in
-    n) nocleanup="nocleanup";;
+    s) skip_cleanup="skip_cleanup";;
+    g) is_create_new_project="is_create_new_project";;
   esac
 done
 
@@ -66,29 +80,31 @@ echo yes | sh ./build_tools/build_template.sh
 
 # Initializing E2E test environment vars
 export OUTPUT_FOLDER=".test_output"
-export PROJECT_ID=solutemp-e2e-$(uuidgen | head -c 8 | awk '{print tolower($0)}')
 export ADMIN_EMAIL=$(gcloud auth list --filter=status:ACTIVE --format='value(account)')
 pip3 install pytest --no-input
-echo "PROJECT_ID=$PROJECT_ID"
 
-### Create a new Google Cloud project:
+# Create a new Google Cloud project
 create_new_project() {
+  export PROJECT_ID=solutemp-e2e-$(uuidgen | head -c 8 | awk '{print tolower($0)}')
   gcloud projects create $PROJECT_ID --folder $FOLDER_ID --quiet
   gcloud config set project $PROJECT_ID --quiet
 }
 
 install_dependencies() {
-  ### Install Cookiecutter
+  # Install Cookiecutter
   python3 -m pip install cookiecutter
-  
-  ### Create skeleton code in a new folder with Cookiecutter
-  cookiecutter . --no-input -o $OUTPUT_FOLDER project_id=$PROJECT_ID admin_email=$ADMIN_EMAIL
 }
 
 setup_working_folder() {
   mkdir -p $OUTPUT_FOLDER
   
-  ### Set up working environment:
+  # Clean up previously created folder (if exist)
+  rm -rf $OUTPUT_FOLDER/$PROJECT_ID
+  
+  # Create skeleton code in a new folder with Cookiecutter
+  cookiecutter . --no-input -o $OUTPUT_FOLDER project_id=$PROJECT_ID admin_email=$ADMIN_EMAIL
+  
+  # Set up working environment:
   cd $OUTPUT_FOLDER/$PROJECT_ID
   export API_DOMAIN=localhost
   export BASE_DIR=$(pwd)
@@ -117,27 +133,47 @@ test_api_endpoints_cloudrun() {
   CLOUDRUN_PYTEST_STATUS=${PIPESTATUS[0]}
 }
 
+# Clean up GCP resources.
 clean_up() {
-  # Deleting project.
-  echo "PROJECT_ID=${PROJECT_ID}"
-  echo "Clearning up project: ${PROJECT_ID}"
-  gcloud projects delete $PROJECT_ID --quiet
-  # rm -rf $OUTPUT_FOLDER/$PROJECT_ID
+  cd $BASE_DIR/terraform/stages/gke
+  terraform destroy -auto-approve
+  
+  cd $BASE_DIR/terraform/stages/cloudrun
+  terraform destroy -auto-approve
+  
+  cd $BASE_DIR/terraform/stages/foundation
+  terraform destroy -auto-approve
 }
 
+# # Deleting project.
+# # FIXME: This is disabled for now until we find a way to create new project
+# # for every e2e test.
+# delete_project() {
+#   echo "PROJECT_ID=${PROJECT_ID}"
+#   gcloud projects delete $PROJECT_ID --quiet
+#   rm -rf $OUTPUT_FOLDER/$PROJECT_ID
+# }
+
 # Run all steps
-create_new_project
+if [[ "$is_create_new_project" ==  "" ]]; then
+  echo "PROJECT_ID=$PROJECT_ID"
+else
+  echo "Creating new project..."
+  # create_new_project
+fi
+
 install_dependencies
 setup_working_folder
 
 # Run setup_all script to deploy to GKE and Cloud Run
-export TEMPLATE_FEATURES="gke|cloudrun"
-sh ./setup/setup_all.sh
+# export TEMPLATE_FEATURES="gke|cloudrun"
+export TEMPLATE_FEATURES="gke"
+sh setup/setup_all.sh
 test_api_endpoints_gke
 test_api_endpoints_gcloud
 
 # Cleaning up e2e test project.
-if [[ "$nocleanup" ==  "" ]]; then
+if [[ "$skip_cleanup" ==  "" ]]; then
   printf "Cleaning up ${PROJECT_ID}...\n"
   clean_up
 else

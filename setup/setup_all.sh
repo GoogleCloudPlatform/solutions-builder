@@ -141,17 +141,17 @@ deploy_microservices_to_cloudrun() {
 # Test with API endpoint (GKE):
 test_api_endpoints_gke() {
   # Run API e2e tests
-  export API_DOMAIN=$(kubectl describe ingress | grep Address | awk '{print $2}')
-  export URL="http://${API_DOMAIN}/sample_service/docs"
-  echo "The API endpoints are ready. See the auto-generated API docs at this URL: ${URL}"
+  API_DOMAIN=$(kubectl describe ingress | grep Address | awk '{print $2}')
+  URL="http://${API_DOMAIN}/sample_service/docs"
+  GKE_OUTPUT="The API endpoints are ready. See the auto-generated API docs at this URL: ${URL}"
 }
 
 # Test with API endpoint (CloudRun):
 test_api_endpoints_cloudrun() {
   # Run API e2e tests
-  export SERVICE_URL=$(gcloud run services describe "cloudrun-sample" --region=us-central1 --format="value(status.url)")
-  export URL="${SERVICE_URL}/sample_service/docs"
-  echo "The API endpoints are ready. See the auto-generated API docs at this URL: ${URL}"
+  SERVICE_URL=$(gcloud run services describe "cloudrun-sample" --region=us-central1 --format="value(status.url)")
+  URL="${SERVICE_URL}/sample_service/docs"
+  CLOUDRUN_OUTPUT="The API endpoints are ready. See the auto-generated API docs at this URL: ${URL}"
 }
 
 setup_env_vars
@@ -161,18 +161,32 @@ link_billing_account
 setup_service_accounts_and_iam
 create_terraform_gcs_bucket
 
-echo "Wait 15 seconds for IAM updates..."
-sleep 15
+echo "Wait 10 seconds for IAM updates..."
+sleep 10
 init_foundation
 
-if [[ "$TEMPLATE_FEATURE_TAGS" == *"gke"* ]]; then
-  printf "Deploying microservices to GKE...\n"
-  deploy_microservices_to_gke
-  test_api_endpoints_gke
-fi
+final_message=""
 
-if [[ "$TEMPLATE_FEATURE_TAGS" == *"cloudrun"* ]]; then
-  printf "Deploying microservices to CloudRun...\n"
-  deploy_microservices_to_cloudrun
-  test_api_endpoints_cloudrun
-fi
+# Checking all Template features, using "|: as delimiter.
+IFS='|' read -a strarr <<< "$TEMPLATE_FEATURES"
+for feature in "${strarr[@]}";
+do
+  echo "feature=$feature"
+  case $feature in
+    "gke")
+      printf "Deploying microservices to GKE...\n"
+      deploy_microservices_to_gke
+      test_api_endpoints_gke
+      final_message+=$GKE_OUTPUT$'\n\n'
+      ;;
+    "cloudrun")
+      printf "Deploying microservices to CloudRun...\n"
+      deploy_microservices_to_cloudrun
+      test_api_endpoints_cloudrun
+      final_message+=$CLOUDRUN_OUTPUT$'\n\n'
+      ;;
+  esac
+done
+
+echo $'Setup complete, see the deployment info below:\n\n'
+echo "$final_message"

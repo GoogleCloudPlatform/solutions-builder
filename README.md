@@ -97,6 +97,7 @@ Run the following to create a new Google Cloud project, or you can log in to Goo
 export PROJECT_ID=<my-project-id>
 gcloud projects create $PROJECT_ID
 gcloud config set project $PROJECT_ID
+gcloud auth application-default set-quota-project $PROJECT_ID
 ```
 
 ### Create skeleton code in a new folder with Cookiecutter
