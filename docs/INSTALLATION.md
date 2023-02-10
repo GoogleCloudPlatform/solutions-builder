@@ -30,7 +30,7 @@ Table of Content
 	/vscode-markdown-toc-config -->
 <!-- /vscode-markdown-toc -->
 
-> **_New Developers:_** Consult the [development guide](./DEVELOPMENT.md) for development flow and guidance
+> **_New Developers:_** Please consult [Development Guide](./DEVELOPMENT.md) for workflow and guidance
 
 ##  1. <a name='Prerequisites'></a>Prerequisites
 
@@ -38,33 +38,31 @@ Table of Content
 
 We recommend the following resources to get familiar with Google Cloud and microservices.
 
-- What is Microservice Architecture: https://cloud.google.com/learn/what-is-microservices-architecture
+- What is [Microservice Architecture](https://cloud.google.com/learn/what-is-microservices-architecture)
 - Kubernetes:
-  - Learn about the basics of Kubernetes: https://kubernetes.io/docs/concepts/overview/
-  - Google Kubernetes Engine (GKE) overview: https://cloud.google.com/kubernetes-engine/docs/concepts/kubernetes-engine-overview
-  - Skaffold, a command line tool that facilitates continuous development for container based & Kubernetes applications: https://skaffold.dev/docs/
-- CloudRun:
-  - Serverless container deployment and execution with CloudRun: https://cloud.google.com/run/docs/overview/what-is-cloud-run
+  - Learn about the [basics of Kubernetes](https://kubernetes.io/docs/concepts/overview/)
+  - [Google Kubernetes Engine (GKE)](https://cloud.google.com/kubernetes-engine/docs/concepts/kubernetes-engine-overview) overview
+  - [Skaffold](https://skaffold.dev/docs/), a command line tool that facilitates continuous development for container based & Kubernetes applications:
+- Cloud Run:
+  - Serverless container deployment and execution with [Cloud Run](https://cloud.google.com/run/docs/overview/what-is-cloud-run)
 
 ###  1.2. <a name='Toolrequirements:'></a>Tool requirements:
-
-| Tool  | Required Version  | Documentation site |
-|---|---|---|
-| gcloud CLI          | Latest     | https://cloud.google.com/sdk/docs/install |
-| Terraform           | >= v1.3.7  | https://developer.hashicorp.com/terraform/downloads |
-| Skaffold (for GKE)  | >= v2.0.4  | https://skaffold.dev/ |
-| Kustomize (for GKE) | >= v4.3.1  | https://kustomize.io/ |
-| Cookiecutter        | >=2.1.1    | https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter |
+| Tool  | Required Version | Documentation site |
+|---|---------------|---|
+| gcloud CLI          | Latest        | https://cloud.google.com/sdk/docs/install |
+| Terraform           | &gt;= v1.3.7  | https://developer.hashicorp.com/terraform/downloads |
+| Skaffold (for GKE)  | &gt;= v2.1.0  | https://skaffold.dev/ |
+| Kustomize (for GKE) | &gt;= v4.3.1  | https://kustomize.io/ |
+| Cookiecutter        | &gt;= v2.1.1  | https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter |
 
 ###  1.3. <a name='RequiredpackagesfordeployingtoGKEcluster:'></a>Required packages for deploying to GKE cluster:
 > You can skip this section if you choose to deploy microservices to CloudRun only.
 
-Install **skaffold (2.0.4 or later)** and kustomize:
+Install **skaffold** and **kustomize**:
 
 - For Google CloudShell or Linux/Ubuntu:
   ```
-  export SKAFFOLD_VERSION=v2.0.4
-  curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/$SKAFFOLD_VERSION/skaffold-linux-amd64 && \
+  curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/LATEST/skaffold-linux-amd64 && \
   sudo install skaffold /usr/local/bin/
   ```
 - For MacOS:
@@ -158,7 +156,7 @@ It will then run the following steps:
 - Build and deploy microservices to GKE cluster. (If choosing "gke" in TEMPLATE_FEATURES)
 - Generate Swagger UI for API documentation.
 
-Once microservice deployed successfully, you will see the message below:
+Once the microservice has been deployed successfully, you will see the message below:
 ```
 The API endpoints are ready. See the auto-generated API docs at this URL: https://<your-sample-domain>/sample_service/docs
 ```
@@ -353,10 +351,8 @@ gcloud run services add-iam-policy-binding $SERVICE_NAME \
 ```
 
 ###  3.7. <a name='Cleaningupalldeploymentandresources'></a>Cleaning up all deployment and resources
-
-Run the following to destory all deployment and resources.
-> Note: there are some GCP resoureces that are not deletable, e.g. Firebase initialization.
-
+Run the following to destroy all deployment and resources.
+> Note: there are some GCP resources that are not deletable, e.g. Firebase initialization.
 ```
 cd $BASE_DIR/terraform/stages/gke
 terraform destroy -auto-approve
@@ -377,8 +373,7 @@ terraform destroy -auto-approve
 ###  6.1. <a name='GithubActions'></a>Github Actions
 
 ###  6.2. <a name='TestGithubActionworkflowslocally'></a>Test Github Action workflows locally
-
-- Install Docker desktop: https://www.docker.com/products/docker-desktop/
+- Install [Docker desktop](https://www.docker.com/products/docker-desktop/)
 - Install [Act](https://github.com/nektos/act)
   ```
   # Mac
