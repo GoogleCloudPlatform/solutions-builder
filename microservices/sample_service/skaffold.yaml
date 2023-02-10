@@ -55,20 +55,20 @@ profiles:
       - ./kustomize/prod
 - name: dev
   activation:
-  - kubeContext: gke_solutions-template-sandbox_us-central1_default-cluster
+  - kubeContext: gke_solutions-template-e2etest_us-central1_default-cluster
   build:
     artifacts:
-    - image: gcr.io/solutions-template-sandbox/sample-service
+    - image: gcr.io/solutions-template-e2etest/sample-service
       sync:
         infer:
         - '**/*.py'
         - '**/*.json'
       docker:
         cacheFrom:
-        - gcr.io/solutions-template-sandbox/sample-service
-        - gcr.io/solutions-template-sandbox/sample-service:latest
+        - gcr.io/solutions-template-e2etest/sample-service
+        - gcr.io/solutions-template-e2etest/sample-service:latest
       requires:
-      - image: gcr.io/solutions-template-sandbox/common
+      - image: gcr.io/solutions-template-e2etest/common
         alias: BASE_IMG
     googleCloudBuild: {}
   manifests:

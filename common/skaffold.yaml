@@ -36,16 +36,16 @@ profiles:
     googleCloudBuild: {}
 - name: dev
   activation:
-  - kubeContext: gke_solutions-template-sandbox_us-central1_main-cluster
+  - kubeContext: gke_solutions-template-e2etest_us-central1_main-cluster
   build:
     artifacts:
-    - image: gcr.io/solutions-template-sandbox/common
+    - image: gcr.io/solutions-template-e2etest/common
       sync:
         infer:
         - '**/*.py'
         - '**/*.json'
       docker:
         cacheFrom:
-        - gcr.io/solutions-template-sandbox/common
-        - gcr.io/solutions-template-sandbox/common:latest
+        - gcr.io/solutions-template-e2etest/common
+        - gcr.io/solutions-template-e2etest/common:latest
     googleCloudBuild: {}

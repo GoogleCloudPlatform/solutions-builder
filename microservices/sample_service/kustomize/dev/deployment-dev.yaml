@@ -9,7 +9,7 @@ spec:
       serviceAccountName: gke-sa
       containers:
       - name: sample-service
-        image: gcr.io/solutions-template-sandbox/sample-service
+        image: gcr.io/solutions-template-e2etest/sample-service
         imagePullPolicy: Always
         env:
         - name: PROJECT_ID

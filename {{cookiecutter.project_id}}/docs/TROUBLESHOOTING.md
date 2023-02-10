@@ -27,9 +27,24 @@
     ```
 
 - I ran terraform and other `gcloud` commands, it's stuck with old project ID.
-  - A: First, check if gcloud is set to the correct project:
+  - A: First, check if gcloud is authorized correctly.
     ```
     gcloud auth list
+
+    # This will show the config details below:
+                        Credentialed Accounts
+    ACTIVE  ACCOUNT
+    *    jonchen@google.com
+    ```
+
+    If not, relogin to gcloud.
+    ```
+    gcloud auth login
+    ```
+
+    In addition, check if gcloud is set to the correct project:
+    ```
+    gcloud config list
 
     # This will show the config details below:
     [core]
@@ -60,11 +75,41 @@
     If not correct, re-login with application-default:
     ```
     gcloud auth application-default login
+
+    # Alternatively, login with a service account:
+    gcloud auth activate-service-account $SA_EMAIL --key-file=$GOOGLE_APPLICATION_CREDENTIALS
     ```
 
-    Lastly, check if you have set GOOGLE_APPLICATION_CREDENTIALS. If yes, make sure it points
-    to the correct credential JSON file.
+    Lastly, if you use Service account key, check if you have set GOOGLE_APPLICATION_CREDENTIALS.
+    If yes, make sure it points to the correct credential JSON file.
     ```
     echo $GOOGLE_APPLICATION_CREDENTIALS
     export GOOGLE_APPLICATION_CREDENTIALS=<credential-json>
     ```
+
+- I ran into the Terraform error for acquiring the state lock:
+  ```
+  │ Error: Error acquiring the state lock
+  │
+  │ Error message: writing "gs://<my-test-project>/stage/foundation/default.tflock" failed: googleapi: Error 412: At least one of the pre-conditions you specified did not hold., conditionNotMet
+  │ Lock Info:
+  │   ID:        <terraform-lock-id>
+  │   Path:      gs://<my-test-project>/stage/foundation/default.tflock
+  │   Operation: OperationTypeApply
+  │   Who:       <my-user-name>
+  │   Version:   1.3.7
+  │   Created:   2023-02-09 23:41:22.565918 +0000 UTC
+  │   Info:
+  │
+  │ Terraform acquires a state lock to protect the state from being written
+  │ by multiple users at the same time. Please resolve the issue above and try
+  │ again. For most commands, you can disable locking with the "-lock=false"
+  │ flag, but this is not recommended.
+  ╵
+  ```
+
+  In each terraform `stage` folder, run the folllowing:
+  ```
+  cd terraform/stages/foundation # foundation, gke or cloudrun.
+  terraform force-unlock <terraform-lock-id>
+  ```

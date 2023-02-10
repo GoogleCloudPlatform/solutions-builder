@@ -67,6 +67,7 @@ variable "admin_email" {
 variable "api_domain" {
   type        = string
   description = "API endpoint domain, excluding protocol"
+  default     = "localhost"
 }
 
 variable "web_app_domain" {

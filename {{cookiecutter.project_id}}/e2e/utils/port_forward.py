@@ -16,7 +16,7 @@ if __name__ == "__main__":
   print("Setting up port-forward in namespace '%s'" % args.namespace)
 
   port_config_data = []
-  with open("setup/port_config.yaml", "r", encoding="utf-8") as stream:
+  with open("e2e/utils/port_config.yaml", "r", encoding="utf-8") as stream:
     port_config = yaml.safe_load(stream)
     port_config_data = port_config.get("data", [])
 

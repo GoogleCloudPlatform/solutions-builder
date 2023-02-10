@@ -1,0 +1,43 @@
+# This workflow will run Terraform init, validate, and plan on Pull Request=
+name: Template E2E test
+on:
+  issue_comment:
+    types: [created, edited]
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: solutions-template-e2etest
+  ORGANIZATION_ID: ${{ secrets.ORGANIZATION_ID }}
+  BILLING_ACCOUNT: ${{ secrets.BILLING_ACCOUNT }}
+
+jobs:
+  run_template_e2e_test:
+    if: contains(github.event.comment.body, '/e2e-test')
+    runs-on: ubuntu-latest
+    environment: e2e
+    name: Template E2E tests
+    steps:
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v3
+
+    - name: Install gcloud
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        project_id: ${{env.PROJECT_ID}}
+        credentials_json: ${{ secrets.E2E_TEST_SA_KEY }}
+        export_default_credentials: true
+
+    - uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 1.3.7
+
+    # https://github.com/google-github-actions/auth
+    - name: Auth with Service Account
+      uses: 'google-github-actions/auth@v1'
+      with:
+        credentials_json: '${{ secrets.E2E_TEST_SA_KEY }}'
+
+    - name: Run e2e test script
+      run: |
+        bash e2e/template_e2e_tests/run_e2e_test.sh
