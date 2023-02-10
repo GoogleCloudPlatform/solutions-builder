@@ -1,33 +1,33 @@
 # Development
 <!-- vscode-markdown-toc -->
-* 1. [Project Requirements](#ProjectRequirements)
+1. [Project Requirements](#ProjectRequirements)
 	* 1.1. [Tool requirements:](#Toolrequirements:)
-* 2. [Code Submission Process](#CodeSubmissionProcess)
+2. [Code Submission Process](#CodeSubmissionProcess)
 	* 2.1. [For the first-time setup:](#Forthefirst-timesetup:)
 	* 2.2. [When making code changes](#Whenmakingcodechanges)
 	* 2.3. [(For Repo Admins) Reviewing a Pull Request](#ForRepoAdminsReviewingaPullRequest)
-* 3. [Local IDE Development (VS Code)](#LocalIDEDevelopmentVSCode)
+3. [Local IDE Development (VS Code)](#LocalIDEDevelopmentVSCode)
 	* 3.1. ["Common" container setup](#Commoncontainersetup)
 	* 3.2. [Developing just "Common" container (VSCode)](#DevelopingjustCommoncontainerVSCode)
 	* 3.3. [Microservice container setup](#Microservicecontainersetup)
 	* 3.4. [Other IDE Setup](#OtherIDESetup)
-* 4. [Local Development (minikube)](#LocalDevelopmentminikube)
+4. [Local Development (minikube)](#LocalDevelopmentminikube)
 	* 4.1. [ADVANCED: Run on minikube with your GCP credentials](#ADVANCED:RunonminikubewithyourGCPcredentials)
-* 5. [Development with Kubernetes (GKE)](#DevelopmentwithKubernetesGKE)
+5. [Development with Kubernetes (GKE)](#DevelopmentwithKubernetesGKE)
 	* 5.1. [ Initial setup for GKE development](#InitialsetupforGKEdevelopment)
 	* 5.2. [Build and run all microservices in the default GKE cluster with live reload](#BuildandrunallmicroservicesinthedefaultGKEclusterwithlivereload)
 	* 5.3. [Deploy to a specific GKE cluster](#DeploytoaspecificGKEcluster)
-* 6. [Advanced Skaffold features (minikube or GKE)](#AdvancedSkaffoldfeaturesminikubeorGKE)
+6. [Advanced Skaffold features (minikube or GKE)](#AdvancedSkaffoldfeaturesminikubeorGKE)
 	* 6.1. [Build and run with specific microservice(s)](#Buildandrunwithspecificmicroservices)
 	* 6.2. [Build and run microservices with a custom Source Repository path](#BuildandrunmicroserviceswithacustomSourceRepositorypath)
 	* 6.3. [Build and run microservices with a different Skaffold profile](#BuildandrunmicroserviceswithadifferentSkaffoldprofile)
 	* 6.4. [Skaffold profiles](#Skaffoldprofiles)
 	* 6.5. [Switching from local (minikube) to GKE development](#SwitchingfromlocalminikubetoGKEdevelopment)
-* 7. [Development with CloudRun (serverless)](#DevelopmentwithCloudRunserverless)
+7. [Development with CloudRun (serverless)](#DevelopmentwithCloudRunserverless)
 	* 7.1. [Mnaually Build and Deploy Microservices to CloudRun](#MnauallyBuildandDeployMicroservicestoCloudRun)
-* 8. [Unit tests - microservices](#Unittests-microservices)
-		* 8.1. [Run linter locally:](#Runlinterlocally:)
-		* 8.2. [Unit test file format:](#Unittestfileformat:)
+8. [Unit tests - microservices](#Unittests-microservices)
+    * 8.1. [Run linter locally:](#Runlinterlocally:)
+	* 8.2. [Unit test file format:](#Unittestfileformat:)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -45,15 +45,15 @@ This doc explains the development and code submission process.
 
 Install the following:
 
-| Tool  | Required Version  | Documentation site |
-|---|---|---|
-| gcloud CLI          | Latest     | https://cloud.google.com/sdk/docs/install |
-| Terraform           | >= v1.3.7  | https://developer.hashicorp.com/terraform/downloads |
-| Skaffold (for GKE)  | >= v2.0.4  | https://skaffold.dev/ |
-| Kustomize (for GKE) | >= v4.3.1  | https://kustomize.io/ |
-| Cookiecutter        | >=2.1.1    | https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter |
+| Tool  | Required Version | Documentation site |
+|---|------------------|---|
+| gcloud CLI          | Latest           | https://cloud.google.com/sdk/docs/install |
+| Terraform           | &gt;= v1.3.7     | https://developer.hashicorp.com/terraform/downloads |
+| Skaffold (for GKE)  | &gt;= v2.1.0     | https://skaffold.dev/ |
+| Kustomize (for GKE) | &gt;= v4.3.1     | https://kustomize.io/ |
+| Cookiecutter        | &gt;= v2.1.1     | https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter |
 
-Additonal useful tools:
+Additional useful tools:
 * helm
 * kubectx
 * kubens
@@ -116,8 +116,7 @@ Additonal useful tools:
   git push --set-upstream origin $YOUR_BRANCH_NAME
   ```
   - This will submit the changes to your fork repo on Github.
-
-* Go to the your Github fork repo web page, click the “Compare & Pull Request” in the notification. In the Pull Request form, make sure that:
+* Go to your Github fork repo web page, click the “Compare & Pull Request” in the notification. In the Pull Request form, make sure that:
   - The upstream repo name is correct
   - The destination branch is set to master.
   - The source branch is your custom branch. (e.g. feature_xyz in the example above.)
@@ -526,5 +525,6 @@ python -m pylint $(git ls-files '*.py') --rcfile=$BASE_DIR/.pylintrc
 All unit test files follow the filename format:
 
 - Python:
-  ```
+```
   <original_filename>_test.py
+```

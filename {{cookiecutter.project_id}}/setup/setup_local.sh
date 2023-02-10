@@ -62,7 +62,7 @@ setup_namespace() {
   
   printf "\n${BLUE}Using namespace ${SKAFFOLD_NAMESPACE} for all kubectl operations ...${NORMAL}\n"
   kubectl config set-context --current --namespace="$SKAFFOLD_NAMESPACE"
-  
+
   printf "\n%sVerifying the kubectl context name ...%s\n" "${BLUE}" "${NORMAL}"
   CURRENT_CONTEXT=$(kubectl config current-context)
   if [[ "$CURRENT_CONTEXT" == "$EXPECTED_CONTEXT" ]]; then

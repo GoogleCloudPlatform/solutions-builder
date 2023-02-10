@@ -22,7 +22,6 @@ setup_env_vars() {
   export PROJECT_ID="solutions-template-e2etest"
   export ADMIN_EMAIL="your_email@example.com"
   export REGION="us-central1"
-  export API_DOMAIN="localhost"
   export TF_VAR_project_id=${PROJECT_ID}
   export TF_VAR_api_domain=${API_DOMAIN}
   export TF_VAR_web_app_domain=${API_DOMAIN}
