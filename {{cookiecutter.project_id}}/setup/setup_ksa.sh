@@ -19,10 +19,11 @@ declare -a EnvVars=(
   "NAMESPACE"
   "PROJECT_ID"
 )
-for variable in ${EnvVars[@]}; do
+
+for variable in "${EnvVars[@]}"; do
   if [[ -z "${!variable}" ]]; then
-    printf "$variable is not set.\n"
-    exit -1
+    printf "%s is not set.\n" "$variable"
+    exit 1
   fi
 done
 
@@ -34,10 +35,10 @@ echo "NAMESPACE=${NAMESPACE}"
 echo "PROJECT_ID=${PROJECT_ID}"
 echo
 
-declare EXISTING_KSA=`kubectl get sa -n ${NAMESPACE} | egrep -i "^${KSA_NAME} "`
+declare EXISTING_KSA=$(kubectl get sa -n "${NAMESPACE}" | egrep -i "^${KSA_NAME} ")
 printf "\nCreating kubernetes service account on the cluster ...\n"
 if [[ "$EXISTING_KSA" = "" ]]; then
-  kubectl create serviceaccount -n ${NAMESPACE} ${KSA_NAME}
+  kubectl create serviceaccount -n "${NAMESPACE}" ${KSA_NAME}
 fi
 
 printf "\nAdding Service Account IAM policy ...\n"

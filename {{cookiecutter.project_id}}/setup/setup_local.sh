@@ -19,10 +19,11 @@ declare -a EnvVars=(
   "SKAFFOLD_NAMESPACE"
   "REGION"
 )
-for variable in ${EnvVars[@]}; do
+
+for variable in "${EnvVars[@]}"; do
   if [[ -z "${!variable}" ]]; then
-    printf "$variable is not set.\n"
-    exit -1
+    printf "%s is not set.\n" "$variable"
+    exit 1
   fi
 done
 
@@ -38,7 +39,6 @@ echo "SKAFFOLD_NAMESPACE=${SKAFFOLD_NAMESPACE}"
 echo "REGION=${REGION}"
 echo
 
-
 init() {
   printf "\n${BLUE}Switch gcloud config to project ${PROJECT_ID} ${NORMAL}\n"
   EXISTING_PROJECT_ID=`gcloud projects list --filter ${PROJECT_ID} | grep ${PROJECT_ID}`
@@ -47,10 +47,10 @@ init() {
     printf "Terminated.\n"
     exit 0
   else
-    printf "Project ${PROJECT_ID} found.\n"
+    printf "Project %s found.\n" "${PROJECT_ID}"
   fi
   
-  gcloud config set project $PROJECT_ID
+  gcloud config set project "$PROJECT_ID"
   
   printf "\n${BLUE}Set up gcloud and kubectl context ...${NORMAL}\n"
   gcloud container clusters get-credentials ${CLUSTER_NAME} --zone ${REGION} --project ${PROJECT_ID}
@@ -58,14 +58,14 @@ init() {
 
 setup_namespace() {
   printf "\n${BLUE}Creating namespace: ${SKAFFOLD_NAMESPACE} ...${NORMAL}\n"
-  kubectl create ns $SKAFFOLD_NAMESPACE
+  kubectl create ns "$SKAFFOLD_NAMESPACE"
   
   printf "\n${BLUE}Using namespace ${SKAFFOLD_NAMESPACE} for all kubectl operations ...${NORMAL}\n"
-  kubectl config set-context --current --namespace=$SKAFFOLD_NAMESPACE
+  kubectl config set-context --current --namespace="$SKAFFOLD_NAMESPACE"
   
-  printf "\n${BLUE}Verifying the kubectl context name ...${NORMAL}\n"
-  CURRENT_CONTEXT=`kubectl config current-context`
-  if [[ "$CURRENT_CONTEXT" = "$EXPECTED_CONTEXT" ]]; then
+  printf "\n%sVerifying the kubectl context name ...%s\n" "${BLUE}" "${NORMAL}"
+  CURRENT_CONTEXT=$(kubectl config current-context)
+  if [[ "$CURRENT_CONTEXT" == "$EXPECTED_CONTEXT" ]]; then
     printf "OK.\n"
   else
     printf "${RED}Expecting kubectl context as "${EXPECTED_CONTEXT}" but got "${CURRENT_CONTEXT}". ${NORMAL}\n"
