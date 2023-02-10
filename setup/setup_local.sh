@@ -40,10 +40,10 @@ echo "REGION=${REGION}"
 echo
 
 init() {
-  printf "\n${BLUE}Switch gcloud config to project ${PROJECT_ID} ${NORMAL}\n"
-  EXISTING_PROJECT_ID=`gcloud projects list --filter ${PROJECT_ID} | grep ${PROJECT_ID}`
+  printf "\n%sSwitch gcloud config to project %s %s\n" "${BLUE}" "${PROJECT_ID}" "${NORMAL}"
+  EXISTING_PROJECT_ID=$(gcloud projects list --filter "${PROJECT_ID}" | grep "${PROJECT_ID}")
   if [[ "$EXISTING_PROJECT_ID" == "" ]]; then
-    printf "Project ${PROJECT_ID} doesn't exist or you don't have access.\n"
+    printf "Project %s doesn't exist or you don't have access.\n" "${PROJECT_ID}"
     printf "Terminated.\n"
     exit 0
   else
@@ -52,15 +52,15 @@ init() {
   
   gcloud config set project "$PROJECT_ID"
   
-  printf "\n${BLUE}Set up gcloud and kubectl context ...${NORMAL}\n"
-  gcloud container clusters get-credentials ${CLUSTER_NAME} --zone ${REGION} --project ${PROJECT_ID}
+  printf "\n%sSet up gcloud and kubectl context ...%s\n" "${BLUE}" "${NORMAL}"
+  gcloud container clusters get-credentials ${CLUSTER_NAME} --zone "${REGION}" --project "${PROJECT_ID}"
 }
 
 setup_namespace() {
-  printf "\n${BLUE}Creating namespace: ${SKAFFOLD_NAMESPACE} ...${NORMAL}\n"
+  printf "\n%sCreating namespace: %s ...%s\n" "${BLUE}" "${SKAFFOLD_NAMESPACE}" "${NORMAL}"
   kubectl create ns "$SKAFFOLD_NAMESPACE"
   
-  printf "\n${BLUE}Using namespace ${SKAFFOLD_NAMESPACE} for all kubectl operations ...${NORMAL}\n"
+  printf "\n%sUsing namespace %s for all kubectl operations ...%s\n" "${BLUE}" "${SKAFFOLD_NAMESPACE}" "${NORMAL}"
   kubectl config set-context --current --namespace="$SKAFFOLD_NAMESPACE"
 
   printf "\n%sVerifying the kubectl context name ...%s\n" "${BLUE}" "${NORMAL}"
@@ -68,7 +68,7 @@ setup_namespace() {
   if [[ "$CURRENT_CONTEXT" == "$EXPECTED_CONTEXT" ]]; then
     printf "OK.\n"
   else
-    printf "${RED}Expecting kubectl context as "${EXPECTED_CONTEXT}" but got "${CURRENT_CONTEXT}". ${NORMAL}\n"
+    printf "%sExpecting kubectl context as %s but got %s. %s\n" "${RED}" "${EXPECTED_CONTEXT}" "${CURRENT_CONTEXT}" "${NORMAL}"
   fi
 }
 
@@ -87,4 +87,4 @@ init
 add_service_account_keys
 setup_namespace
 
-printf "\n${BLUE}Done. ${NORMAL}\n"
+printf "\n%sDone. %s\n" "${BLUE}" "${NORMAL}"

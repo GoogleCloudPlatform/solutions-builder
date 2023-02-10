@@ -17,28 +17,19 @@
 # the Solutions template and set up all components to a brand-new Google Cloud
 # project.
 
-# Setting up environment variables.
+# Set up environment variables.
 setup_env_vars() {
-  export PROJECT_ID="solutions-template-e2etest"
-  export ADMIN_EMAIL="your_email@example.com"
-  export REGION="us-central1"
-  export TF_VAR_project_id=${PROJECT_ID}
-  export TF_VAR_api_domain=${API_DOMAIN}
-  export TF_VAR_web_app_domain=${API_DOMAIN}
-  export TF_VAR_admin_email=${ADMIN_EMAIL}
-  export TF_BUCKET_NAME="${PROJECT_ID}-tfstate"
-  export TF_BUCKET_LOCATION="us"
-  export BASE_DIR=$(pwd)
+  source init_env_vars.sh
 }
 
-# Setting up gcloud CLI
+# Set up gcloud CLI
 setup_gcloud() {
   gcloud config set project ${PROJECT_ID} --quiet
   gcloud components install gke-gcloud-auth-plugin --quiet
   gcloud services enable cloudresourcemanager.googleapis.com --quiet
 }
 
-# Updating GCP Organizational policies
+# Update GCP Organizational policies
 update_gcp_org_policies() {
   if [[ "${ORGANIZATION_ID}" == "" ]]; then
     export ORGANIZATION_ID="$(gcloud organizations list --format='value(name)' | head -n 1)"

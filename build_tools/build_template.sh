@@ -16,13 +16,16 @@
 PROJECT_ID="solutions-template-e2etest"
 REGION="us-central1"
 ADMIN_EMAIL="your_email@example.com"
+API_DOMAIN="localhost"
 
 declare -a EnvVars=(
   "PROJECT_ID"
   "REGION"
   "ADMIN_EMAIL"
+  "API_DOMAIN"
 )
-for variable in ${EnvVars[@]}; do
+
+for variable in "${EnvVars[@]}"; do
   if [[ -z "${!variable}" ]]; then
     input_value=""
     while [[ -z "$input_value" ]]; do
@@ -67,7 +70,7 @@ get_machine_type() {
     MINGW*)     machine=MinGw;;
     *)          machine="UNKNOWN:${unameOut}"
   esac
-  echo $machine
+  echo "$machine"
 }
 MACHINE_TYPE=$(get_machine_type)
 TEMPLATE_FOLDER_NAME='{{cookiecutter.project_id}}'
@@ -76,23 +79,24 @@ build_template() {
   build_folder=$1
 
   echo "Deleting the existing build folder ${build_folder}"
-  rm -rf ${build_folder}
+  rm -rf "${build_folder}"
 
   echo "Creating build folder at ${build_folder}"
-  mkdir -p $build_folder
-  cp {.,}* $build_folder
-  cp build_tools/template_docs/*.md $build_folder
+  mkdir -p "$build_folder"
+  cp {.,}* "$build_folder"
+  cp build_tools/template_docs/*.md "$build_folder"
 
   echo "Replacing with cookiecutter vars with:"
   echo
   echo "project_id: ${PROJECT_ID} => {{cookiecutter.project_id}}"
   echo "gcp_region: ${REGION} => {{cookiecutter.gcp_region}}"
   echo "admin_email: ${ADMIN_EMAIL} => {{cookiecutter.admin_email}}"
+  echo "api_domain: ${API_DOMAIN} => {{cookiecutter.api_domain}}"
   echo
 
   # Copy folders
-  for folder in ${folders[@]}; do
-    rsync -rv $folder "$build_folder/" \
+  for folder in "${folders[@]}"; do
+    rsync -rv "$folder" "$build_folder/" \
     --exclude=.venv \
     --exclude=.pytest_cache \
     --exclude=.coverage \
@@ -111,19 +115,19 @@ build_template() {
 
   # Remove skipped files based on the list.
   echo
-  for filename in ${files_to_skip[@]}; do
+  for filename in "${files_to_skip[@]}"; do
     echo "Removing $build_folder/$filename"
     rm -rf "$build_folder/$filename"
   done
 
   # Copy symlink folders
-  for folder in ${symlink_folders[@]}; do
+  for folder in "${symlink_folders[@]}"; do
     ln -s "../$folder" "$build_folder/$folder"
   done
 
   # Verify
   verify_result=""
-  for folder in ${folders[@]}; do
+  for folder in "${folders[@]}"; do
     verify_result+=$(verify "$build_folder/$folder")
   done
 
@@ -153,24 +157,26 @@ replace_cookiecutter_vars() {
     -name 'Dockerfile' \
   "
 
-  for fname in $(eval $find_cmd); do
+  for fname in $(eval "$find_cmd"); do
     echo "$fname"
     if [ "${MACHINE_TYPE}" == "Mac" ]; then
-      sed -i '' "s/${PROJECT_ID}/{{cookiecutter.project_id}}/g" $fname
-      sed -i '' "s/${REGION}/{{cookiecutter.gcp_region}}/g" $fname
-      sed -i '' "s/${ADMIN_EMAIL}/{{cookiecutter.admin_email}}/g" $fname
+      sed -i '' "s/${PROJECT_ID}/{{cookiecutter.project_id}}/g" "$fname"
+      sed -i '' "s/${REGION}/{{cookiecutter.gcp_region}}/g" "$fname"
+      sed -i '' "s/${ADMIN_EMAIL}/{{cookiecutter.admin_email}}/g" "$fname"
+      sed -i '' "s/${API_DOMAIN}/{{cookiecutter.api_domain}}/g" "$fname"
     else
-      sed -i "s/${PROJECT_ID}/{{cookiecutter.project_id}}/g" $fname
-      sed -i "s/${REGION}/{{cookiecutter.gcp_region}}/g" $fname
-      sed -i "s/${ADMIN_EMAIL}/{{cookiecutter.admin_email}}/g" $fname
+      sed -i "s/${PROJECT_ID}/{{cookiecutter.project_id}}/g" "$fname"
+      sed -i "s/${REGION}/{{cookiecutter.gcp_region}}/g" "$fname"
+      sed -i "s/${ADMIN_EMAIL}/{{cookiecutter.admin_email}}/g" "$fname"
+      sed -i "s/${API_DOMAIN}/{{cookiecutter.api_domain}}/g" "$fname"
     fi
   done
 }
 
 verify() {
-  grep -rnw $1 -e "${PROJECT_ID}"
-  grep -rnw $1 -e "${REGION}"
-  grep -rnw $1 -e "${ADMIN_EMAIL}"
+  grep -rnw "$1" -e "${PROJECT_ID}"
+  grep -rnw "$1" -e "${REGION}"
+  grep -rnw "$1" -e "${ADMIN_EMAIL}"
 }
 
 build_path=$1

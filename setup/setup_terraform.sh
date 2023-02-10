@@ -51,10 +51,10 @@ enable_apis () {
 }
 
 print_highlight () {
-  printf "${BLUE}$1${NORMAL}\n"
+  printf "%s%s%s\n" "${BLUE}" "$1" "${NORMAL}"
 }
 
 enable_apis
 create_bucket
 
-print_highlight "Terraform state bucket: ${TF_BUCKET_NAME}\n"
+print_highlight "Terraform state bucket: ${TF_BUCKET_NAME}"

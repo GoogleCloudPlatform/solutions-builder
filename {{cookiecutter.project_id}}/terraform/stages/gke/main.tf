@@ -50,5 +50,5 @@ module "ingress" {
 
   # API domain, excluding protocols. E.g. example.com.
   api_domain        = var.api_domain
-  cors_allow_origin = "http://localhost:4200,http://localhost:3000,http://${var.web_app_domain},https://${var.web_app_domain}"
+  cors_allow_origin = "http://{{cookiecutter.api_domain}}:4200,http://{{cookiecutter.api_domain}}:3000,http://${var.web_app_domain},https://${var.web_app_domain}"
 }

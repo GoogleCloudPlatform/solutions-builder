@@ -3,14 +3,14 @@
 Table of Content
 
 <!-- vscode-markdown-toc -->
-* 1. [Prerequisites](#Prerequisites)
+1. [Prerequisites](#Prerequisites)
 	* 1.1. [Understanding Google Cloud](#UnderstandingGoogleCloud)
 	* 1.2. [Tool requirements:](#Toolrequirements:)
 	* 1.3. [Required packages for deploying to GKE cluster:](#RequiredpackagesfordeployingtoGKEcluster:)
 	* 1.4. [Apple M1 Chip Support for Terraform (Optional)](#AppleM1ChipSupportforTerraformOptional)
 	* 1.5. [File structure](#Filestructure)
-* 2. [Setting up Google Cloud Project](#SettingupGoogleCloudProject)
-* 3. [Setting up Google Cloud Project (Manual Steps)](#SettingupGoogleCloudProjectManualSteps)
+2. [Setting up Google Cloud Project](#SettingupGoogleCloudProject)
+3. [Setting up Google Cloud Project (Manual Steps)](#SettingupGoogleCloudProjectManualSteps)
 	* 3.1. [Set up working environment:](#Setupworkingenvironment:)
 	* 3.2. [Updating GCP Organizational policies](#UpdatingGCPOrganizationalpolicies)
 	* 3.3. [ Setting up GCP foundation - Terraform](#SettingupGCPfoundation-Terraform)
@@ -18,9 +18,9 @@ Table of Content
 	* 3.5. [Deploying Microservices to Cloud Run (Optional)](#DeployingMicroservicestoCloudRunOptional)
 	* 3.6. [(Optional) Manually Deploying Microservices to CloudRun](#OptionalManuallyDeployingMicroservicestoCloudRun)
 	* 3.7. [Cleaning up all deployment and resources](#Cleaningupalldeploymentandresources)
-* 4. [Development](#Development)
-* 5. [End-to-End API tests](#End-to-EndAPItests)
-* 6. [CI/CD and Test Automation](#CICDandTestAutomation)
+4. [Development](#Development)
+5. [End-to-End API tests](#End-to-EndAPItests)
+6. [CI/CD and Test Automation](#CICDandTestAutomation)
 	* 6.1. [Github Actions](#GithubActions)
 	* 6.2. [Test Github Action workflows locally](#TestGithubActionworkflowslocally)
 
@@ -202,20 +202,20 @@ If the new project is just created recently, you may need to wait for 1-2 minute
 before running the Terraform command.
 
 ```
-export TF_VAR_project_id=$PROJECT_ID
-export TF_VAR_api_domain=$API_DOMAIN
-export TF_VAR_web_app_domain=$API_DOMAIN
-export TF_VAR_admin_email=$ADMIN_EMAIL
+export TF_VAR_project_id=${PROJECT_ID}
+export TF_VAR_api_domain=${API_DOMAIN}
+export TF_VAR_web_app_domain=${API_DOMAIN}
+export TF_VAR_admin_email=${ADMIN_EMAIL}
 export TF_BUCKET_NAME="${PROJECT_ID}-tfstate"
 export TF_BUCKET_LOCATION="us"
 
 # Grant Storage admin to the current user IAM.
 export CURRENT_USER=$(gcloud config list account --format "value(core.account)" | head -n 1)
-gcloud projects add-iam-policy-binding $PROJECT_ID --member="user:$CURRENT_USER" --role='roles/storage.admin'
+gcloud projects add-iam-policy-binding ${PROJECT_ID} --member="user:${CURRENT_USER}" --role='roles/storage.admin'
 
 # (Optional) Link billing account to the current project.
 export BILLING_ACCOUNT=$(gcloud beta billing accounts list --format "value(name)" | head -n 1)
-gcloud beta billing projects link $PROJECT_ID --billing-account $BILLING_ACCOUNT
+gcloud beta billing projects link ${PROJECT_ID} --billing-account ${BILLING_ACCOUNT}
 ```
 
 Create Terraform Statefile in GCS bucket.

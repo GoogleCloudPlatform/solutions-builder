@@ -14,7 +14,7 @@ from common.models import User
 import mock
 
 # assigning url
-API_URL = "http://localhost/sample_service"
+API_URL = "http://{{cookiecutter.api_domain}}/sample_service"
 TEST_USER = {
     "user_id": "user-12345",
     "first_name": "John",
@@ -24,7 +24,7 @@ TEST_USER = {
     "email_address": "john.338@gmail.com",
 }
 
-os.environ["FIRESTORE_EMULATOR_HOST"] = "localhost:8080"
+os.environ["FIRESTORE_EMULATOR_HOST"] = "{{cookiecutter.api_domain}}:8080"
 os.environ["GOOGLE_CLOUD_PROJECT"] = "fake-project"
 SUCCESS_RESPONSE = {"status": "Success"}
 

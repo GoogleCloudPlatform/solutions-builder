@@ -80,7 +80,7 @@ variable "api_domain" {
 variable "web_app_domain" {
   type        = string
   description = "Web app domain, excluding protocol"
-  default     = "localhost:8080"
+  default     = "{{cookiecutter.api_domain}}:8080"
 }
 
 variable "firebase_init" {
