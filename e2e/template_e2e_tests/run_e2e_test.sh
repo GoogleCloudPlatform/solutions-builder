@@ -48,8 +48,6 @@ SECONDS=0
 declare -a EnvVars=(
   "ORGANIZATION_ID"
   "BILLING_ACCOUNT"
-  # "FOLDER_ID"
-  # "GOOGLE_APPLICATION_CREDENTIALS"
 )
 for variable in ${EnvVars[@]}; do
   if [[ -z "${!variable}" ]]; then
@@ -62,17 +60,16 @@ done
 # For example, set up env vars and action secrets in Github Action workflow.
 echo "ORGANIZATION_ID=$ORGANIZATION_ID"
 echo "BILLING_ACCOUNT=$BILLING_ACCOUNT"
-echo "FOLDER_ID=$FOLDER_ID"
 echo "GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS"
 
 # Parsing arguments
 skip_cleanup=""
-is_create_new_project=""
+is_create_new_project="false"
 while getopts "sn" flag
 do
   case "${flag}" in
     s) skip_cleanup="skip_cleanup";;
-    g) is_create_new_project="is_create_new_project";;
+    g) is_create_new_project="true";;
   esac
 done
 
@@ -181,7 +178,7 @@ delete_project() {
 }
 
 # Start e2e test steps
-if [[ "$is_create_new_project" !=  "" ]]; then
+if [[ "$is_create_new_project" !=  "true" ]]; then
   echo "Creating new project..."
   # create_new_project
 fi
