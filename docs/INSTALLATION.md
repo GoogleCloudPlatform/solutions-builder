@@ -9,15 +9,15 @@ Table of Content
 	* 1.3. [Required packages for deploying to GKE cluster:](#RequiredpackagesfordeployingtoGKEcluster:)
 	* 1.4. [Apple M1 Chip Support for Terraform (Optional)](#AppleM1ChipSupportforTerraformOptional)
 	* 1.5. [File structure](#Filestructure)
-2. [Setting up Google Cloud Project](#SettingupGoogleCloudProject)
-3. [Setting up Google Cloud Project (Manual Steps)](#SettingupGoogleCloudProjectManualSteps)
-	* 3.1. [Set up working environment:](#Setupworkingenvironment:)
-	* 3.2. [Updating GCP Organizational policies](#UpdatingGCPOrganizationalpolicies)
-	* 3.3. [ Setting up GCP foundation - Terraform](#SettingupGCPfoundation-Terraform)
-	* 3.4. [Deploying Microservices to GKE (Optional)](#DeployingMicroservicestoGKEOptional)
-	* 3.5. [Deploying Microservices to Cloud Run (Optional)](#DeployingMicroservicestoCloudRunOptional)
-	* 3.6. [(Optional) Manually Deploying Microservices to CloudRun](#OptionalManuallyDeployingMicroservicestoCloudRun)
-	* 3.7. [Cleaning up all deployment and resources](#Cleaningupalldeploymentandresources)
+2. [Set up Google Cloud Project](#SetupGoogleCloudProject)
+3. [Set up Google Cloud Project (Manual Steps)](#SetupGoogleCloudProjectManualSteps)
+	* 3.1. [Set up working environment](#Setupworkingenvironment)
+	* 3.2. [Update GCP Organizational policies](#UpdateGCPOrganizationalpolicies)
+	* 3.3. [Set up GCP foundation - Terraform](#SetupGCPfoundation-Terraform)
+	* 3.4. [Optional: Deploy Microservices to GKE](#DeployMicroservicestoGKEOptional)
+	* 3.5. [Optional: Deploy Microservices to Cloud Run](#DeployMicroservicestoCloudRunOptional)
+	* 3.6. [Optional: Manually Deploy Microservices to CloudRun](#OptionalManuallyDeployMicroservicestoCloudRun)
+	* 3.7. [Clean up all deployment and resources](#Cleanupalldeploymentandresources)
 4. [Development](#Development)
 5. [End-to-End API tests](#End-to-EndAPItests)
 6. [CI/CD and Test Automation](#CICDandTestAutomation)
@@ -111,16 +111,16 @@ m1-terraform-provider-helper install hashicorp/template -v v2.2.0
 └── .github/
 ```
 
-- **README.md** - General info and setup guide.
-- **DEVELOPMENT.md** - Development best practices, code submission flow, and other guidances.
-- **skaffold.yaml** - The master Skaffold YAML file that defines how everything is built and deployed, depending on different profiles.
-- **microservices** - The main directory for all microservices, can be broken down into individual folder for each microservie, e.g. `sample_service`.
-  - [**microservice subfolder**] - Each microservice folder is a Docker container with [Skaffold](https://skaffold.dev/) + [Kustomize](https://kustomize.io/) to build images in different environments.
-- **common** - The common image contains shared data models and util libraries used by all other microservices.
-- **docs** - Documentations and other guidances.
-- **.github** - Github workflows including tests and CI/CD.
+- *README.md* - General info and setup guide.
+- *DEVELOPMENT.md* - Development best practices, code submission flow, and other guidances.
+- *skaffold.yaml* - The master Skaffold YAML file that defines how everything is built and deployed, depending on different profiles.
+- *microservices* - The main directory for all microservices, can be broken down into individual folder for each microservie, e.g. `sample_service`.
+  - [*microservice* subfolder] - Each microservice folder is a Docker container with [Skaffold](https://skaffold.dev/) + [Kustomize](https://kustomize.io/) to build images in different environments.
+- *common* - The common image contains shared data models and util libraries used by all other microservices.
+- *docs* - Documentation and other guidance.
+- *.github* - Github workflows including tests and CI/CD.
 
-##  2. <a name='SettingupGoogleCloudProject'></a>Setting up Google Cloud Project
+##  2. <a name='SetupGoogleCloudProject'></a>Setup and deploy Solutions Template
 
 ```
 # Set up environmental variables
@@ -152,7 +152,7 @@ sh setup/setup_all.sh
 
 It will then run the following steps:
 - Updating GCP Organizational policies and required IAM roles.
-- Run terraform to set up foundation and GKE cluster (imperonating a service account)
+- Run terraform to set up foundation and GKE cluster (impersonating a service account)
 - Build and deploy microservices to GKE cluster. (If choosing "gke" in TEMPLATE_FEATURES)
 - Generate Swagger UI for API documentation.
 
@@ -161,9 +161,9 @@ Once the microservice has been deployed successfully, you will see the message b
 The API endpoints are ready. See the auto-generated API docs at this URL: https://<your-sample-domain>/sample_service/docs
 ```
 
-##  3. <a name='SettingupGoogleCloudProjectManualSteps'></a>Setting up Google Cloud Project (Manual Steps)
+##  3. <a name='SetupGoogleCloudProjectManualSteps'></a>Setup and deploy Solutions Template (Manual Steps)
 
-###  3.1. <a name='Setupworkingenvironment:'></a>Set up working environment:
+###  3.1. <a name='Setupworkingenvironment'></a>Set up working environment
 
 Please make sure you are at the generated folder **my-project-folder**
 ```
@@ -181,7 +181,7 @@ gcloud auth application-default set-quota-project $PROJECT_ID
 gcloud config set project $PROJECT_ID
 ```
 
-###  3.2. <a name='UpdatingGCPOrganizationalpolicies'></a>Updating GCP Organizational policies
+###  3.2. <a name='UpdateGCPOrganizationalpolicies'></a>Update GCP Organizational policies
 
 Run the following commands to update Organization policies:
 ```
@@ -195,9 +195,9 @@ Or, go to [GCP Console](https://console.cloud.google.com/iam-admin/orgpolicies) 
 - constraints/compute.requireOsLogin - `Enforced Off`
 - constraints/compute.vmExternalIpAccess - `Allow All`
 
-###  3.3. <a name='SettingupGCPfoundation-Terraform'></a> Setting up GCP foundation - Terraform
+###  3.3. <a name='SetupGCPfoundation-Terraform'></a> Set up GCP foundation - Terraform
 
-Set up Terraform environment variables and GCS bucket for state file.
+Set up Terraform environment variables and GCS bucket for terraform tate file.
 If the new project is just created recently, you may need to wait for 1-2 minutes
 before running the Terraform command.
 
@@ -246,9 +246,9 @@ terraform apply -target=module.firebase -var="firebase_init=true" -auto-approve
 terraform apply -auto-approve
 ```
 
-###  3.4. <a name='DeployingMicroservicestoGKEOptional'></a>Deploying Microservices to GKE (Optional)
+###  3.4. <a name='DeployMicroservicestoGKEOptional'></a>Optional: Deploy Microservices to GKE
 
-Init GKE cluster (via Terraform). This will create the follow resources:
+Initialize GKE cluster (via Terraform). This will create the following resources:
 - A GKE cluster
 - Service account for GKE
 
@@ -281,7 +281,7 @@ python e2e/utils/port_forward.py --namespace default
 PYTHONPATH=common/src python -m pytest e2e/gke_api_tests/
 ```
 
-###  3.5. <a name='DeployingMicroservicestoCloudRunOptional'></a>Deploying Microservices to Cloud Run (Optional)
+###  3.5. <a name='DeployingMicroservicestoCloudRunOptional'></a>Optional: Deploying Microservices to Cloud Run
 
 Run the following to build and deploy microservices to Cloud Run.
 ```
@@ -309,7 +309,7 @@ export SERVICE_LIST_JSON=.test_output/cloudrun_service_list.json
 PYTHONPATH=common/src python -m pytest e2e/cloudrun_api_tests/
 ```
 
-###  3.6. <a name='OptionalManuallyDeployingMicroservicestoCloudRun'></a>(Optional) Manually Deploying Microservices to CloudRun
+###  3.6. <a name='OptionalManuallyDeployMicroservicestoCloudRun'></a>Optional: Manually Deploy Microservices to CloudRun
 
 Build common image
 ```
