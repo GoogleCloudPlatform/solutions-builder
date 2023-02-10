@@ -9,3 +9,7 @@ export TF_VAR_web_app_domain=$API_DOMAIN
 export TF_VAR_admin_email=$ADMIN_EMAIL
 export TF_BUCKET_NAME="${PROJECT_ID}-tfstate"
 export TF_BUCKET_LOCATION="us"
+
+# Terraform impersonate service account
+export TF_RUNNER_SA_EMAIL="terraform-runner@$PROJECT_ID.iam.gserviceaccount.com"
+export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=$TF_RUNNER_SA_EMAIL

@@ -19,7 +19,7 @@
 
 # Setting up environment variables.
 setup_env_vars() {
-  export PROJECT_ID="solutions-template-sandbox"
+  export PROJECT_ID="solutions-template-e2etest"
   export ADMIN_EMAIL="your_email@example.com"
   export REGION="us-central1"
   export TF_VAR_project_id=$PROJECT_ID

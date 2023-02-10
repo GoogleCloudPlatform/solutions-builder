@@ -14,7 +14,7 @@ on:
       - '.pylintrc'
   workflow_dispatch:
 env:
-  PROJECT_ID: solutions-template-sandbox
+  PROJECT_ID: solutions-template-e2etest
 
 # cookiecutter:raw {% raw %}
 jobs:

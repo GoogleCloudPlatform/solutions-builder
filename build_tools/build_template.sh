@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-PROJECT_ID="solutions-template-sandbox"
+PROJECT_ID="solutions-template-e2etest"
 REGION="us-central1"
 ADMIN_EMAIL="your_email@example.com"
 

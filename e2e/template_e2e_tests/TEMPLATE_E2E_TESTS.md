@@ -7,6 +7,9 @@ This doc covers the setup and steps required for running e2e tests for Template.
 > Currently we run into issues of creating brand new project for every e2e test. Hence we use one static project for e2e testing with resources clean up.
 
 - Create a project for running e2e test against.
+  ```
+  export PROJECT_ID=<e2e-test-project-id>
+  ```
 - Create a service account as e2e-runner:
   ```
   gcloud iam service-accounts create "solutions-template-e2e-runner"
@@ -27,8 +30,13 @@ This doc covers the setup and steps required for running e2e tests for Template.
   ```
 - Log in with Service Account runner.
   ```
-  gcloud auth activate-service-account $SA_EMAIL --key-file=/Users/jonchen/workspace/solutions-template/.tmp/service-account-e2e-key.json
   export GOOGLE_APPLICATION_CREDENTIALS=.tmp/service-account-e2e-key.json
+  gcloud auth activate-service-account $SA_EMAIL --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+  ```
+
+- Add Storage IAM permission to the Service Account.
+  ```
+  gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA_EMAIL" --role='roles/storage.admin' --quiet
   ```
 
 ## Run E2E tests
