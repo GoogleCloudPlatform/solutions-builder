@@ -2,7 +2,7 @@
 name: Template E2E test
 on:
   issue_comment:
-    types: [created, edited]
+    types: [created]
   workflow_dispatch:
 
 env:
@@ -12,7 +12,7 @@ env:
 
 jobs:
   run_template_e2e_test:
-    if: contains(github.event.comment.body, '/e2e-test')
+    if: ${{ (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/e2e-test')) || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     environment: e2e
     name: Template E2E tests
