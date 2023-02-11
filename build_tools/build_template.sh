@@ -177,6 +177,7 @@ verify() {
   grep -rnw "$1" -e "${PROJECT_ID}"
   grep -rnw "$1" -e "${REGION}"
   grep -rnw "$1" -e "${ADMIN_EMAIL}"
+  grep -rnw "$1" -e "${API_DOMAIN}"
 }
 
 build_path=$1
