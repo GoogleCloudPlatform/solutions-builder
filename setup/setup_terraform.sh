@@ -19,7 +19,8 @@ declare -a EnvVars=(
   "TF_BUCKET_NAME"
   "TF_BUCKET_LOCATION"
 )
-for variable in ${EnvVars[@]}; do
+
+for variable in "${EnvVars[@]}"; do
   if [[ -z "${!variable}" ]]; then
     input_value=""
     while [[ -z "$input_value" ]]; do
@@ -34,14 +35,14 @@ RED=$(tput setaf 1)
 NORMAL=$(tput sgr0)
 
 create_bucket () {
-  printf "PROJECT_ID=${PROJECT_ID}\n"
-  printf "TF_BUCKET_NAME=${TF_BUCKET_NAME}\n"
-  printf "TF_BUCKET_LOCATION=${TF_BUCKET_LOCATION}\n"
+  printf "PROJECT_ID=%s\n" "${PROJECT_ID}"
+  printf "TF_BUCKET_NAME=%s\n" "${TF_BUCKET_NAME}"
+  printf "TF_BUCKET_LOCATION=%s\n" "${TF_BUCKET_LOCATION}"
 
-  print_highlight "Creating terraform state bucket: ${TF_BUCKET_NAME}\n"
-  gsutil mb -l $TF_BUCKET_LOCATION gs://$TF_BUCKET_NAME
-  gsutil versioning set on gs://$TF_BUCKET_NAME
-  export TF_BUCKET_NAME=$TF_BUCKET_NAME
+  print_highlight "Creating terraform state bucket: ${TF_BUCKET_NAME}"
+  gsutil mb -l "$TF_BUCKET_LOCATION" gs://"${TF_BUCKET_NAME}"
+  gsutil versioning set on gs://"${TF_BUCKET_NAME}"
+  export TF_BUCKET_NAME=${TF_BUCKET_NAME}
   echo
 }
 
@@ -50,10 +51,10 @@ enable_apis () {
 }
 
 print_highlight () {
-  printf "${BLUE}$1${NORMAL}\n"
+  printf "%s%s%s\n" "${BLUE}" "$1" "${NORMAL}"
 }
 
 enable_apis
 create_bucket
 
-print_highlight "Terraform state bucket: ${TF_BUCKET_NAME}\n"
+print_highlight "Terraform state bucket: ${TF_BUCKET_NAME}"

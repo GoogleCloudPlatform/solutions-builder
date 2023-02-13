@@ -17,36 +17,27 @@
 # the Solutions template and set up all components to a brand-new Google Cloud
 # project.
 
-# Setting up environment variables.
+# Set up environment variables.
 setup_env_vars() {
-  export PROJECT_ID="{{cookiecutter.project_id}}"
-  export ADMIN_EMAIL="{{cookiecutter.admin_email}}"
-  export REGION="{{cookiecutter.gcp_region}}"
-  export TF_VAR_project_id=$PROJECT_ID
-  export TF_VAR_api_domain=$API_DOMAIN
-  export TF_VAR_web_app_domain=$API_DOMAIN
-  export TF_VAR_admin_email=$ADMIN_EMAIL
-  export TF_BUCKET_NAME="${PROJECT_ID}-tfstate"
-  export TF_BUCKET_LOCATION="us"
-  export BASE_DIR=$(pwd)
+  source init_env_vars.sh
 }
 
-# Setting up gcloud CLI
+# Set up gcloud CLI
 setup_gcloud() {
-  gcloud config set project $PROJECT_ID --quiet
+  gcloud config set project ${PROJECT_ID} --quiet
   gcloud components install gke-gcloud-auth-plugin --quiet
   gcloud services enable cloudresourcemanager.googleapis.com --quiet
 }
 
-# Updating GCP Organizational policies
+# Update GCP Organizational policies
 update_gcp_org_policies() {
-  if [[ "$ORGANIZATION_ID" ==  "" ]]; then
+  if [[ "${ORGANIZATION_ID}" == "" ]]; then
     export ORGANIZATION_ID="$(gcloud organizations list --format='value(name)' | head -n 1)"
   fi
-  echo "Updating orgniazation policies: ORGANIZATION_ID=$ORGANIZATION_ID"
-  gcloud resource-manager org-policies disable-enforce constraints/compute.requireOsLogin --organization=$ORGANIZATION_ID
-  gcloud resource-manager org-policies delete constraints/compute.vmExternalIpAccess --organization=$ORGANIZATION_ID
-  gcloud resource-manager org-policies delete constraints/iam.allowedPolicyMemberDomains --organization=$ORGANIZATION_ID
+  echo "Updating organization policies: ORGANIZATION_ID=${ORGANIZATION_ID}"
+  gcloud resource-manager org-policies disable-enforce constraints/compute.requireOsLogin --organization="${ORGANIZATION_ID}"
+  gcloud resource-manager org-policies delete constraints/compute.vmExternalIpAccess --organization="${ORGANIZATION_ID}"
+  gcloud resource-manager org-policies delete constraints/iam.allowedPolicyMemberDomains --organization="${ORGANIZATION_ID}"
 }
 
 # Create a Service Account for Terraform impersonating and grant Storage admin to the current user IAM.
@@ -60,8 +51,8 @@ setup_service_accounts_and_iam() {
   fi
   
   # Create TF runner services account and use it for impersonate.
-  export TF_RUNNER_SA_EMAIL="terraform-runner@$PROJECT_ID.iam.gserviceaccount.com"
-  export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=$TF_RUNNER_SA_EMAIL
+  export TF_RUNNER_SA_EMAIL="terraform-runner@${PROJECT_ID}.iam.gserviceaccount.com"
+  export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=${TF_RUNNER_SA_EMAIL}
   gcloud iam service-accounts create "terraform-runner"
   
   # Grant service account Token creator for current user.
@@ -69,8 +60,8 @@ setup_service_accounts_and_iam() {
     "roles/iam.serviceAccountTokenCreator"
     "roles/iam.serviceAccountUser"
   )
-  for role in ${runnerRoles[@]}; do
-    gcloud iam service-accounts add-iam-policy-binding $TF_RUNNER_SA_EMAIL --member="$MEMBER_PREFIX:$CURRENT_USER" --role="$role"
+  for role in "${runnerRoles[@]}"; do
+    gcloud iam service-accounts add-iam-policy-binding ${TF_RUNNER_SA_EMAIL} --member="$MEMBER_PREFIX:$CURRENT_USER" --role="$role"
   done
   
   # Bind the TF runner service account with required roles.
@@ -78,18 +69,18 @@ setup_service_accounts_and_iam() {
     "roles/owner"
     "roles/storage.admin"
   )
-  for role in ${runnerRoles[@]}; do
-    gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$TF_RUNNER_SA_EMAIL" --role="$role" --quiet
+  for role in "${runnerRoles[@]}"; do
+    gcloud projects add-iam-policy-binding ${PROJECT_ID} --member="serviceAccount:${TF_RUNNER_SA_EMAIL}" --role="$role" --quiet
   done
 }
 
 # Link billing account to the current project.
 link_billing_account() {
-  if [[ "$BILLING_ACCOUNT" ==  "" ]]; then
+  if [[ "${BILLING_ACCOUNT}" == "" ]]; then
     export BILLING_ACCOUNT=$(gcloud beta billing accounts list --format "value(name)" | head -n 1)
   fi
-  echo "Linking billing account to $PROJECT: BILLING_ACCOUNT=$BILLING_ACCOUNT"
-  gcloud beta billing projects link $PROJECT_ID --billing-account $BILLING_ACCOUNT --quiet
+  echo "Linking billing account to ${PROJECT_ID}: BILLING_ACCOUNT=${BILLING_ACCOUNT}"
+  gcloud beta billing projects link ${PROJECT_ID} --billing-account "${BILLING_ACCOUNT}" --quiet
 }
 
 # Create Terraform Statefile in GCS bucket.
@@ -105,8 +96,8 @@ create_terraform_gcs_bucket() {
 # Run terraform to set up all GCP resources. (Setting up GKE by default)
 init_foundation() {
   # Init Terraform
-  cd $BASE_DIR/terraform/stages/foundation
-  terraform init -reconfigure -backend-config=bucket=$TF_BUCKET_NAME
+  cd "$BASE_DIR"/terraform/stages/foundation
+  terraform init -reconfigure -backend-config=bucket=${TF_BUCKET_NAME}
   
   # Enabling GCP services first.
   terraform apply -target=module.project_services -target=module.service_accounts -auto-approve
@@ -121,20 +112,20 @@ init_foundation() {
 
 # Build all microservices and deploy to the cluster:
 deploy_microservices_to_gke() {
-  cd $BASE_DIR/terraform/stages/gke
-  terraform init -backend-config=bucket=$TF_BUCKET_NAME
+  cd "$BASE_DIR"/terraform/stages/gke
+  terraform init -backend-config=bucket=${TF_BUCKET_NAME}
   terraform apply -auto-approve
   
-  cd $BASE_DIR
+  cd "$BASE_DIR"
   export CLUSTER_NAME=main-cluster
-  gcloud container clusters get-credentials $CLUSTER_NAME --region $REGION --project $PROJECT_ID
-  skaffold run -p prod --default-repo=gcr.io/$PROJECT_ID
+  gcloud container clusters get-credentials ${CLUSTER_NAME} --region $REGION --project ${PROJECT_ID}
+  skaffold run -p prod --default-repo=gcr.io/${PROJECT_ID}
 }
 
 # Build all microservices and deploy to CloudRun:
 deploy_microservices_to_cloudrun() {
-  cd $BASE_DIR/terraform/stages/cloudrun
-  terraform init -backend-config=bucket=$TF_BUCKET_NAME
+  cd "$BASE_DIR"/terraform/stages/cloudrun
+  terraform init -backend-config=bucket=${TF_BUCKET_NAME}
   terraform apply -auto-approve
 }
 

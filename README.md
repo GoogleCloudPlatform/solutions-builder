@@ -1,7 +1,7 @@
 # Google Cloud Solutions Template
 
-> A template to generate a new project with built-in structure and features
-> to accelerate your project setup.
+**A template to generate a new project with built-in structure and features
+to accelerate your project setup.**
 
 ## TL;DR
 
@@ -37,13 +37,13 @@ We recommend the following resources to get familiar with Google Cloud and micro
 
 ### Tool requirements:
 
-| Tool  | Required Version  | Documentation site |
-|---|---|---|
-| gcloud CLI          | Latest     | https://cloud.google.com/sdk/docs/install |
-| Terraform           | >= v1.3.7  | https://developer.hashicorp.com/terraform/downloads |
-| Skaffold (for GKE)  | >= v2.0.4  | https://skaffold.dev/ |
-| Kustomize (for GKE) | >= v4.3.1  | https://kustomize.io/ |
-| Cookiecutter        | >=2.1.1    | https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter |
+| Tool  | Required Version | Documentation site |
+|---|---------------|---|
+| gcloud CLI          | Latest        | https://cloud.google.com/sdk/docs/install |
+| Terraform           | &gt;= v1.3.7  | https://developer.hashicorp.com/terraform/downloads |
+| Skaffold (for GKE)  | &gt;= v2.1.0  | https://skaffold.dev/ |
+| Kustomize (for GKE) | &gt;= v4.3.1  | https://kustomize.io/ |
+| Cookiecutter        | &gt;= v2.1.1  | https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter |
 
 ### Install Cookiecutter ([Github](https://github.com/cookiecutter/cookiecutter)):
 - For Google CloudShell or Linux/Ubuntu:
@@ -59,12 +59,11 @@ We recommend the following resources to get familiar with Google Cloud and micro
 ### Required packages for deploying to GKE cluster:
 > You can skip this section if you choose to deploy microservices to Cloud Run only.
 
-Install **skaffold (2.0.4 or later)** and kustomize:
+Install **skaffold** and **kustomize**:
 
 - For Google CloudShell or Linux/Ubuntu:
   ```
-  export SKAFFOLD_VERSION=v2.0.4
-  curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/$SKAFFOLD_VERSION/skaffold-linux-amd64 && \
+  curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/LATEST/skaffold-linux-amd64 && \
   sudo install skaffold /usr/local/bin/
   ```
 - For MacOS:
@@ -79,18 +78,18 @@ Install **skaffold (2.0.4 or later)** and kustomize:
 ### Other dependencies (Optional)
 - Apple M1 Chip Support for Terraform
 
-  If you are running commands on an Apple M1 chip Macbook, make sure run the following to add M1 support for Terraform:
-  ```
-  brew install kreuzwerker/taps/m1-terraform-provider-helper
-  m1-terraform-provider-helper activate
-  m1-terraform-provider-helper install hashicorp/template -v v2.2.0
-  ```
+If you are running commands on an Apple M1 chip Macbook, make sure run the following to add M1 support for Terraform:
+```
+brew install kreuzwerker/taps/m1-terraform-provider-helper
+m1-terraform-provider-helper activate
+m1-terraform-provider-helper install hashicorp/template -v v2.2.0
+```
 
 ## Getting Started - Creating Solution Skeleton
 
 ### Create a new Google Cloud project (Optional):
 
-> It is recommeneded to start with a brand new Google Cloud project to have a clean start.
+> It is recommended to start with a brand new Google Cloud project to have a clean start.
 
 Run the following to create a new Google Cloud project, or you can log in to Google Cloud Console to [create a new project](https://console.cloud.google.com/projectcreate).
 ```
@@ -138,6 +137,9 @@ In the newly created folder, you will see the file structure like below:
 ├── microservices
 │   └── sample_service
 │       ├── Dockerfile
+│       ├── cloudbuild.yaml
+│       ├── kustomize
+│       ├── requirements.txt
 │       ├── skaffold.yaml
 │       ├── src
 │       └   ...
@@ -145,6 +147,7 @@ In the newly created folder, you will see the file structure like below:
 └── common/
 │   └── src/
 │   │   Dockerfile
+│   │   requirements.txt
 │   │   skaffold.yaml
 │   │   ...
 │

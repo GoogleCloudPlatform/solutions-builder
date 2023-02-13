@@ -30,7 +30,7 @@ def firestore_emulator():
         preexec_fn=os.setsid)
   time.sleep(15)
 
-  os.environ["FIRESTORE_EMULATOR_HOST"] = "localhost:8080"
+  os.environ["FIRESTORE_EMULATOR_HOST"] = "{{cookiecutter.api_domain}}:8080"
   os.environ["GOOGLE_CLOUD_PROJECT"] = "fake-project"
   os.environ["PROJECT_ID"] = "fake-project"
 
@@ -59,5 +59,5 @@ def firestore_emulator():
 @pytest.fixture
 def clean_firestore(firestore_emulator):
   requests.delete(
-      "http://localhost:8080/emulator/v1/projects/fake-project/databases/(default)/documents",
+      "http://{{cookiecutter.api_domain}}:8080/emulator/v1/projects/fake-project/databases/(default)/documents",
       timeout=10)

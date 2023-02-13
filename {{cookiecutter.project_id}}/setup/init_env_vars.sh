@@ -1,7 +1,7 @@
 export PROJECT_ID="{{cookiecutter.project_id}}"
 export ADMIN_EMAIL="{{cookiecutter.admin_email}}"
 export REGION={{cookiecutter.gcp_region}}
-export API_DOMAIN=localhost
+export API_DOMAIN={{cookiecutter.api_domain}}
 export BASE_DIR=$(pwd)
 export TF_VAR_project_id=$PROJECT_ID
 export TF_VAR_api_domain=$API_DOMAIN
