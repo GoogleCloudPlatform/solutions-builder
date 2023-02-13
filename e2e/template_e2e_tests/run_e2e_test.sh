@@ -33,13 +33,13 @@
 #
 # 3. Run the script with optional flags:
 # Regular e2e test with clean up.
-# > sh run_e2e_test.sh
+# > bash run_e2e_test.sh
 #
 # Create new project ID with random UUID and run e2e tests.
-# > sh run_e2e_test.sh -n
+# > bash run_e2e_test.sh -n
 #
 # Run e2e test but skip cleaning up project, for debug purpose.
-# > sh run_e2e_test.sh -s #
+# > bash run_e2e_test.sh -s #
 
 # To calculate time elapsed.
 SECONDS=0
@@ -79,7 +79,7 @@ export ADMIN_EMAIL=$(gcloud auth list --filter=status:ACTIVE --format='value(acc
 
 build_template() {
   # Re-build template
-  echo yes | sh ./build_tools/build_template.sh
+  echo yes | bash ./build_tools/build_template.sh
 }
 
 # Create a new Google Cloud project
@@ -192,7 +192,7 @@ cd $BASE_DIR
 build_template
 install_dependencies
 setup_working_folder
-sh setup/setup_all.sh
+bash setup/setup_all.sh
 test_api_endpoints_gke
 # test_api_endpoints_gcloud
 clean_up

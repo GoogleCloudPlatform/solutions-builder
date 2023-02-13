@@ -22,7 +22,7 @@ python3 e2e/utils/port_forward.py --namespace default
 sleep 3
 
 # Run test.
-PYTHONPATH=common/src python3 -m pytest e2e/gke_api_tests/
+PYTHONPATH=common/src python3 -m pytest --tb=no --disable-warnings e2e/gke_api_tests/
 
 # Remove port-forwarding process.
 # Alternative: list port-forward process: ps -ef | grep 'kubectl port-forward service/sample-service'
