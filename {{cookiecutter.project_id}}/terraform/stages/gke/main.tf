@@ -39,7 +39,7 @@ module "gke" {
   service_account_name = "gke-sa"
 
   # See latest stable version at https://cloud.google.com/kubernetes-engine/docs/release-notes-stable
-  kubernetes_version = "1.23.13-gke.900"
+  kubernetes_version = "1.23.14-gke.1800"
 }
 
 module "ingress" {

@@ -17,7 +17,6 @@
 
 # Terraform Block
 terraform {
-  required_version = ">= 0.13"
   required_providers {
     kubectl = {
       source  = "gavinbunney/kubectl"
@@ -25,7 +24,7 @@ terraform {
     }
     helm = {
       source  = "hashicorp/helm"
-      version = ">= 2.5.1"
+      version = ">= 2.7.0"
     }
   }
 }
@@ -51,7 +50,7 @@ resource "google_compute_address" "ingress_ip_address" {
 
 module "nginx-controller" {
   source    = "terraform-iaac/nginx-controller/helm"
-  version   = "2.0.2"
+  version   = "2.1.0"
   namespace = "ingress-nginx"
 
   ip_address = google_compute_address.ingress_ip_address.address
@@ -71,7 +70,7 @@ resource "kubernetes_ingress_v1" "default_ingress" {
     name = "default-ingress"
     annotations = {
       "kubernetes.io/ingress.class"                        = "nginx"
-      "cert-manager.io/cluster-issuer"                     = "module.cert_manager.cluster_issuer_name"
+      "cert-manager.io/cluster-issuer"                     = module.cert_manager.cluster_issuer_name
       "nginx.ingress.kubernetes.io/enable-cors"            = "true"
       "nginx.ingress.kubernetes.io/cors-allow-methods"     = "PUT,GET,POST,DELETE,OPTIONS"
       "nginx.ingress.kubernetes.io/cors-allow-origin"      = var.cors_allow_origin
