@@ -19,12 +19,12 @@
 
 # Set up environment variables.
 setup_env_vars() {
-  source init_env_vars.sh
+  source "$BASE_DIR"/setup/init_env_vars.sh
 }
 
 # Set up gcloud CLI
 setup_gcloud() {
-  gcloud config set project ${PROJECT_ID} --quiet
+  gcloud config set project "${PROJECT_ID}" --quiet
   gcloud components install gke-gcloud-auth-plugin --quiet
   gcloud services enable cloudresourcemanager.googleapis.com --quiet
 }
@@ -44,7 +44,7 @@ update_gcp_org_policies() {
 setup_service_accounts_and_iam() {
   export CURRENT_USER=$(gcloud config list account --format "value(core.account)" | head -n 1)
   # Check if the current user is a service account.
-  if [[ "$CURRENT_USER" == *"iam.gserviceaccount.com"* ]]; then
+  if [[ "${CURRENT_USER}" == *"iam.gserviceaccount.com"* ]]; then
     MEMBER_PREFIX="serviceAccount"
   else
     MEMBER_PREFIX="user"
@@ -61,7 +61,7 @@ setup_service_accounts_and_iam() {
     "roles/iam.serviceAccountUser"
   )
   for role in "${runnerRoles[@]}"; do
-    gcloud iam service-accounts add-iam-policy-binding ${TF_RUNNER_SA_EMAIL} --member="$MEMBER_PREFIX:$CURRENT_USER" --role="$role"
+    gcloud iam service-accounts add-iam-policy-binding "${TF_RUNNER_SA_EMAIL}" --member="$MEMBER_PREFIX:${CURRENT_USER}" --role="$role"
   done
   
   # Bind the TF runner service account with required roles.
@@ -70,7 +70,7 @@ setup_service_accounts_and_iam() {
     "roles/storage.admin"
   )
   for role in "${runnerRoles[@]}"; do
-    gcloud projects add-iam-policy-binding ${PROJECT_ID} --member="serviceAccount:${TF_RUNNER_SA_EMAIL}" --role="$role" --quiet
+    gcloud projects add-iam-policy-binding "${PROJECT_ID}" --member="serviceAccount:${TF_RUNNER_SA_EMAIL}" --role="$role" --quiet
   done
 }
 
@@ -80,7 +80,7 @@ link_billing_account() {
     export BILLING_ACCOUNT=$(gcloud beta billing accounts list --format "value(name)" | head -n 1)
   fi
   echo "Linking billing account to ${PROJECT_ID}: BILLING_ACCOUNT=${BILLING_ACCOUNT}"
-  gcloud beta billing projects link ${PROJECT_ID} --billing-account "${BILLING_ACCOUNT}" --quiet
+  gcloud beta billing projects link "${PROJECT_ID}" --billing-account "${BILLING_ACCOUNT}" --quiet
 }
 
 # Create Terraform Statefile in GCS bucket.
@@ -97,7 +97,7 @@ create_terraform_gcs_bucket() {
 init_foundation() {
   # Init Terraform
   cd "$BASE_DIR"/terraform/stages/foundation
-  terraform init -reconfigure -backend-config=bucket=${TF_BUCKET_NAME}
+  terraform init -reconfigure -backend-config=bucket="${TF_BUCKET_NAME}"
   
   # Enabling GCP services first.
   terraform apply -target=module.project_services -target=module.service_accounts -auto-approve
@@ -113,19 +113,19 @@ init_foundation() {
 # Build all microservices and deploy to the cluster:
 deploy_microservices_to_gke() {
   cd "$BASE_DIR"/terraform/stages/gke
-  terraform init -backend-config=bucket=${TF_BUCKET_NAME}
+  terraform init -backend-config=bucket="${TF_BUCKET_NAME}"
   terraform apply -auto-approve
   
   cd "$BASE_DIR"
   export CLUSTER_NAME=main-cluster
-  gcloud container clusters get-credentials ${CLUSTER_NAME} --region $REGION --project ${PROJECT_ID}
-  skaffold run -p prod --default-repo=gcr.io/${PROJECT_ID}
+  gcloud container clusters get-credentials "${CLUSTER_NAME}" --region "${REGION}" --project "${PROJECT_ID}"
+  skaffold run -p prod --default-repo="gcr.io/${PROJECT_ID}"
 }
 
 # Build all microservices and deploy to CloudRun:
 deploy_microservices_to_cloudrun() {
   cd "$BASE_DIR"/terraform/stages/cloudrun
-  terraform init -backend-config=bucket=${TF_BUCKET_NAME}
+  terraform init -backend-config=bucket="${TF_BUCKET_NAME}"
   terraform apply -auto-approve
 }
 
