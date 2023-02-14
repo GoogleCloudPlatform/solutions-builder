@@ -17,7 +17,7 @@
 
 variable "feature_flags" {
   type        = string
-  description = "A comma-seperated string of feature flags to enable specific terraform blocks."
+  description = "A comma-separated string of feature flags to enable specific terraform blocks."
 
   # TODO: Use Cookiecutter to replace this string.
   default = "gke,gke-ingress"
