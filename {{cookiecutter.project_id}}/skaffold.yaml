@@ -10,3 +10,6 @@ requires:
 - configs:
   - sample-service
   path: ./microservices/sample_service
+- configs:
+  - frontend-angular
+  path: ./microservices/frontend_angular

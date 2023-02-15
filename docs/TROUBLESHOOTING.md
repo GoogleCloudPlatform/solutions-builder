@@ -58,8 +58,8 @@
     {
       "client_id": "<hash-id>.apps.googleusercontent.com",
       "client_secret": "<client_secret>",
-      "quota_project_id": "solutions-template-e2etest",
-      "refresh_token": "<refresh_token-hash>",
+      "quota_project_id": "<project_id>",
+      "refresh_token": "<refresh_token_hash>",
       "type": "authorized_user"
     }
     ```

@@ -30,3 +30,4 @@ ui-debug.log
 # test artifacts
 .e2e_test_output
 .test_output
+.angular

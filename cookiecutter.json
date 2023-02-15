@@ -9,7 +9,13 @@
   "api_domain": "localhost",
   "web_app_domain": "localhost",
   "_copy_without_render": [
-    "*.html",
-    "**/.terraform"
-  ]
+    "*.html"
+  ],
+  "_symlinks": {
+    "cicd": "../cicd",
+    "docs": "../docs",
+    "e2e": "../e2e",
+    "microservices": "../microservices",
+    "terraform": "../terraform"
+  }
 }

@@ -2,6 +2,8 @@ apiVersion: skaffold/v4beta1
 kind: Config
 metadata:
   name: sample-service
+
+# Requires the common image for shared data models or utils.
 requires:
 - configs:
   - common
@@ -24,19 +26,27 @@ manifests:
   kustomize:
     paths:
     - ./kustomize/minikube
+
+# Portforwarding when running `skaffold dev` locally.
 portForward:
 - resourceType: service
   resourceName: sample-service
   port: 80
-  localPort: 8888
+  localPort: 8001 # Change this when adding other microservice.
+
+# Simple deployment using kubectl.
 deploy:
   kubectl: {}
+
 profiles:
-- name: prod_non_cloudbuild
+# Profile for building images locally.
+- name: non_cloudbuild
   manifests:
     kustomize:
       paths:
       - ./kustomize/prod
+
+# Profile for Production environment, building images via CloudBuild.
 - name: prod
   build:
     artifacts:
@@ -53,22 +63,22 @@ profiles:
     kustomize:
       paths:
       - ./kustomize/prod
+
+# Profile for Dev environment, building images via CloudBuild
 - name: dev
-  activation:
-  - kubeContext: gke_solutions-template-e2etest_us-central1_default-cluster
   build:
     artifacts:
-    - image: gcr.io/solutions-template-e2etest/sample-service
+    - image: sample-service
       sync:
         infer:
         - '**/*.py'
         - '**/*.json'
       docker:
         cacheFrom:
-        - gcr.io/solutions-template-e2etest/sample-service
-        - gcr.io/solutions-template-e2etest/sample-service:latest
+        - sample-service
+        - sample-service:latest
       requires:
-      - image: gcr.io/solutions-template-e2etest/common
+      - image: common
         alias: BASE_IMG
     googleCloudBuild: {}
   manifests:

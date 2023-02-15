@@ -126,8 +126,8 @@ m1-terraform-provider-helper install hashicorp/template -v v2.2.0
 # Set up environmental variables
 export PROJECT_ID=<my-project-id>
 export ADMIN_EMAIL=<my-email>
-export REGION=us-central1
-export API_DOMAIN=localhost
+export REGION={{cookiecutter.gcp_region}}
+export API_DOMAIN={{cookiecutter.api_domain}}
 
 cd <my-project-id>
 export BASE_DIR=$(pwd)
@@ -170,7 +170,7 @@ Please make sure you are at the generated folder **my-project-folder**
 # Set up environmental variables
 cd <my-project-folder>
 export PROJECT_ID=<my-project-folder>
-export API_DOMAIN=localhost
+export API_DOMAIN={{cookiecutter.api_domain}}
 ```
 
 Log in to Google Cloud.
@@ -293,7 +293,7 @@ terraform apply -auto-approve
 Test with API endpoint:
 ```
 cd $BASE_DIR
-export SERVICE_URL=$(gcloud run services describe "cloudrun-sample" --region=us-central1 --format="value(status.url)")
+export SERVICE_URL=$(gcloud run services describe "cloudrun-sample" --region={{cookiecutter.gcp_region}} --format="value(status.url)")
 export URL="${SERVICE_URL}/sample_service/docs"
 echo "Open this URL in a browser: ${URL}"
 ```
