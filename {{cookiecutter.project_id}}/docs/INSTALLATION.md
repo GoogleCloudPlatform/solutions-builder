@@ -3,24 +3,25 @@
 Table of Content
 
 <!-- vscode-markdown-toc -->
-1. [Prerequisites](#Prerequisites)
+* 1. [Prerequisites](#Prerequisites)
 	* 1.1. [Understanding Google Cloud](#UnderstandingGoogleCloud)
 	* 1.2. [Tool requirements:](#Toolrequirements:)
 	* 1.3. [Required packages for deploying to GKE cluster:](#RequiredpackagesfordeployingtoGKEcluster:)
 	* 1.4. [Apple M1 Chip Support for Terraform (Optional)](#AppleM1ChipSupportforTerraformOptional)
 	* 1.5. [File structure](#Filestructure)
-2. [Set up Google Cloud Project](#SetupGoogleCloudProject)
-3. [Set up Google Cloud Project (Manual Steps)](#SetupGoogleCloudProjectManualSteps)
+* 2. [Setup and deploy Solutions Template](#SetupanddeploySolutionsTemplate)
+* 3. [Setup and deploy Solutions Template (Manual Steps)](#SetupanddeploySolutionsTemplateManualSteps)
 	* 3.1. [Set up working environment](#Setupworkingenvironment)
 	* 3.2. [Update GCP Organizational policies](#UpdateGCPOrganizationalpolicies)
-	* 3.3. [Set up GCP foundation - Terraform](#SetupGCPfoundation-Terraform)
-	* 3.4. [Optional: Deploy Microservices to GKE](#DeployMicroservicestoGKEOptional)
-	* 3.5. [Optional: Deploy Microservices to Cloud Run](#DeployMicroservicestoCloudRunOptional)
-	* 3.6. [Optional: Manually Deploy Microservices to CloudRun](#OptionalManuallyDeployMicroservicestoCloudRun)
-	* 3.7. [Clean up all deployment and resources](#Cleanupalldeploymentandresources)
-4. [Development](#Development)
-5. [End-to-End API tests](#End-to-EndAPItests)
-6. [CI/CD and Test Automation](#CICDandTestAutomation)
+	* 3.3. [ Set up GCP foundation - Terraform](#SetupGCPfoundation-Terraform)
+	* 3.4. [Optional: Deploy Microservices to GKE](#Optional:DeployMicroservicestoGKE)
+	* 3.5. [Optional: Deploying Microservices to Cloud Run](#Optional:DeployingMicroservicestoCloudRun)
+	* 3.6. [Optional: Manually Deploy Microservices to CloudRun](#Optional:ManuallyDeployMicroservicestoCloudRun)
+	* 3.7. [Deploy Frontend app (Angular) to GKE](#DeployFrontendappAngulartoGKE)
+	* 3.8. [Clean up all deployment and resources](#Cleanupalldeploymentandresources)
+* 4. [Development](#Development)
+* 5. [End-to-End API tests](#End-to-EndAPItests)
+* 6. [CI/CD and Test Automation](#CICDandTestAutomation)
 	* 6.1. [Github Actions](#GithubActions)
 	* 6.2. [Test Github Action workflows locally](#TestGithubActionworkflowslocally)
 
@@ -120,7 +121,7 @@ m1-terraform-provider-helper install hashicorp/template -v v2.2.0
 - *docs* - Documentation and other guidance.
 - *.github* - Github workflows including tests and CI/CD.
 
-##  2. <a name='SetupGoogleCloudProject'></a>Setup and deploy Solutions Template
+##  2. <a name='SetupanddeploySolutionsTemplate'></a>Setup and deploy Solutions Template
 
 ```
 # Set up environmental variables
@@ -161,7 +162,7 @@ Once the microservice has been deployed successfully, you will see the message b
 The API endpoints are ready. See the auto-generated API docs at this URL: https://<your-sample-domain>/sample_service/docs
 ```
 
-##  3. <a name='SetupGoogleCloudProjectManualSteps'></a>Setup and deploy Solutions Template (Manual Steps)
+##  3. <a name='SetupanddeploySolutionsTemplateManualSteps'></a>Setup and deploy Solutions Template (Manual Steps)
 
 ###  3.1. <a name='Setupworkingenvironment'></a>Set up working environment
 
@@ -246,7 +247,7 @@ terraform apply -target=module.firebase -var="firebase_init=true" -auto-approve
 terraform apply -auto-approve
 ```
 
-###  3.4. <a name='DeployMicroservicestoGKEOptional'></a>Optional: Deploy Microservices to GKE
+###  3.4. <a name='Optional:DeployMicroservicestoGKE'></a>Optional: Deploy Microservices to GKE
 
 Initialize GKE cluster (via Terraform). This will create the following resources:
 - A GKE cluster
@@ -281,7 +282,7 @@ python e2e/utils/port_forward.py --namespace default
 PYTHONPATH=common/src python -m pytest e2e/gke_api_tests/
 ```
 
-###  3.5. <a name='DeployingMicroservicestoCloudRunOptional'></a>Optional: Deploying Microservices to Cloud Run
+###  3.5. <a name='Optional:DeployingMicroservicestoCloudRun'></a>Optional: Deploying Microservices to Cloud Run
 
 Run the following to build and deploy microservices to Cloud Run.
 ```
@@ -309,7 +310,7 @@ export SERVICE_LIST_JSON=.test_output/cloudrun_service_list.json
 PYTHONPATH=common/src python -m pytest e2e/cloudrun_api_tests/
 ```
 
-###  3.6. <a name='OptionalManuallyDeployMicroservicestoCloudRun'></a>Optional: Manually Deploy Microservices to CloudRun
+###  3.6. <a name='Optional:ManuallyDeployMicroservicestoCloudRun'></a>Optional: Manually Deploy Microservices to CloudRun
 
 Build common image
 ```
@@ -350,7 +351,31 @@ gcloud run services add-iam-policy-binding $SERVICE_NAME \
 --role="roles/run.invoker"
 ```
 
-###  3.7. <a name='Cleaningupalldeploymentandresources'></a>Cleaning up all deployment and resources
+###  3.7. <a name='DeployFrontendappAngulartoGKE'></a>Deploy Frontend app (Angular) to GKE
+
+Run the following to deploy only Frontend app to the remote GKE cluster with port-forwarding:
+```
+skaffold dev -p prod --default-repo=gcr.io/$PROJECT_ID -m frontend-angular
+```
+
+Once it completes, it will show the localhost endpoint to access the remote Pod in GKE:
+```
+Starting deploy...
+ - configmap/env-vars-cg6d4t27k4 unchanged
+ - service/frontend-angular configured
+ - deployment.apps/frontend-angular configured
+Waiting for deployments to stabilize...
+ - deployment/frontend-angular is ready.
+Deployments stabilized in 4.77 seconds
+Port forwarding service/frontend-angular in namespace default, remote port 80 -> http://127.0.0.1:8080
+Listing files to watch...
+ - frontend-angular
+Press Ctrl+C to exit
+```
+
+Open the browser with http://127.0.0.1:8080 or http://localhost:8080, and you will see the default Angular Frontend app page.
+
+###  3.8. <a name='Cleanupalldeploymentandresources'></a>Clean up all deployment and resources
 Run the following to destroy all deployment and resources.
 > Note: there are some GCP resources that are not deletable, e.g. Firebase initialization.
 ```
