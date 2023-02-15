@@ -35,17 +35,15 @@ profiles:
         - common:latest
     googleCloudBuild: {}
 - name: dev
-  activation:
-  - kubeContext: gke_{{cookiecutter.project_id}}_{{cookiecutter.gcp_region}}_main-cluster
   build:
     artifacts:
-    - image: gcr.io/{{cookiecutter.project_id}}/common
+    - image: common
       sync:
         infer:
         - '**/*.py'
         - '**/*.json'
       docker:
         cacheFrom:
-        - gcr.io/{{cookiecutter.project_id}}/common
-        - gcr.io/{{cookiecutter.project_id}}/common:latest
+        - common
+        - common:latest
     googleCloudBuild: {}

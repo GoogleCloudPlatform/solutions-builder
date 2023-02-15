@@ -9,7 +9,7 @@ spec:
       serviceAccountName: gke-sa
       containers:
       - name: sample-service
-        image: gcr.io/{{cookiecutter.project_id}}/sample-service
+        image: sample-service
         imagePullPolicy: Always
         env:
         - name: PROJECT_ID

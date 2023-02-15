@@ -35,18 +35,10 @@ for variable in "${EnvVars[@]}"; do
   fi
 done
 
-# List all files that will be skipped in the cookiecutter folder.
-declare -a files_to_skip=(
-  "cookiecutter.json"
-  ".github/workflows/template_e2e_test.yaml"
-  "CONTRIBUTING.md"
-  "e2e/template_e2e_tests"
-)
-
-declare -a folders=(
+# Full list of folders to copy.
+declare -a folders_to_copy=(
   ".github"
   "common"
-  "microservices"
   "setup"
   # FIXME: The symblink doesn't work with cookiecutter. Need to find a
   # solution to reduce the duplication between root folder vs. cookiecutter.
@@ -54,10 +46,35 @@ declare -a folders=(
   "cicd"
   "docs"
   "e2e"
+  "microservices"
   "terraform"
 )
 
-# Currently avoid adding symlink in template folder.
+# List all files that will be skipped in the cookiecutter folder.
+# FIXME: Use regex to match the list.
+declare -a files_to_remove=(
+  "cookiecutter.json"
+  "CONTRIBUTING.md"
+)
+
+declare -a ignore_list=(
+  "__pycache__"
+  ".coverage"
+  ".github/workflows/template_e2e_test.yaml"
+  ".pytest_cache"
+  ".terraform*"
+  ".venv"
+  ".vscode"
+  "CONTRIBUTING.md"
+  "cookiecutter.json"
+  "e2e/template_e2e_tests"
+  "microservices/frontend_angular/.angular"
+  "microservices/frontend_angular/node_modules"
+  "microservices/frontend_angular/dist"
+)
+
+# Currently avoid adding symlink in template folder. Once added the folder,
+# please add to ./cookiecutter.json for reverse mapping.
 declare -a symlink_folders=(
 )
 
@@ -94,15 +111,18 @@ build_template() {
   echo "api_domain: ${API_DOMAIN} => {{cookiecutter.api_domain}}"
   echo
 
-  # Copy folders
-  for folder in "${folders[@]}"; do
-    rsync -rv "$folder" "$build_folder/" \
-    --exclude=.venv \
-    --exclude=.pytest_cache \
-    --exclude=.coverage \
-    --exclude=.vscode \
-    --exclude=__pycache__ \
-    --exclude=.terraform*
+  # Combine excluded files to params.
+  exclude_str=""
+  for item in "${ignore_list[@]}"
+  do
+    exclude_str=${exclude_str:+$exclude_str }--exclude="\"${item}\""
+  done
+
+  # Copy folders in the selected list.
+  for folder in "${folders_to_copy[@]}"; do
+    echo "Copying folder \"${folder}\"..."
+    command="rsync -rv ${folder} ${build_folder}/ ${exclude_str}"
+    eval $command
 
     echo
     echo "Replacing with cookiecutter vars in folder $build_folder/$folder"
@@ -115,7 +135,7 @@ build_template() {
 
   # Remove skipped files based on the list.
   echo
-  for filename in "${files_to_skip[@]}"; do
+  for filename in "${files_to_remove[@]}"; do
     echo "Removing $build_folder/$filename"
     rm -rf "$build_folder/$filename"
   done
@@ -154,6 +174,7 @@ replace_cookiecutter_vars() {
     -name '*.tf' -o \
     -name '*.cfg' -o \
     -name '*.txt' -o \
+    -name '*.md' -o \
     -name 'Dockerfile' \
   "
 

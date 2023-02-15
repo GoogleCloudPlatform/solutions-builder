@@ -1,0 +1,37 @@
+apiVersion: skaffold/v4beta1
+kind: Config
+metadata:
+  name: frontend-angular
+manifests:
+  kustomize:
+    paths:
+    - ./kustomize/base
+
+# Portforwarding when running `skaffold dev` locally.
+portForward:
+- resourceType: service
+  resourceName: frontend-angular
+  port: 80
+  localPort: 8080
+
+# Simple deployment using kubectl.
+deploy:
+  kubectl: {}
+
+# Build locally using Buildkit: https://docs.docker.com/build/buildkit
+build:
+  local:
+    useBuildkit: true
+  artifacts:
+  - image: frontend-angular
+    docker:
+      cacheFrom:
+      - frontend-angular
+      - frontend-angular:latest
+    sync:
+      infer:
+      - '**/*.py'
+      - '**/*.json'
+      - '**/*.js'
+      - '**/*.ts'
+      - '**/*.sh'
