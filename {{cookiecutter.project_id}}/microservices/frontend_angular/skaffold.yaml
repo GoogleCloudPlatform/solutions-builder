@@ -40,7 +40,7 @@ profiles:
 - name: cloudrun
   manifests:
     rawYaml:
-      - manifests/*
+      - cloudrun_manifests/*
   deploy:
     cloudrun:
       projectid: solutions-template-develop
