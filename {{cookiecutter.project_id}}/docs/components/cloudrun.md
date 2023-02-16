@@ -49,24 +49,6 @@ Cloud Run Service frontend-angular finished: Service started. 0/1 deployment(s) 
 You can also run [skaffold run --tail] to get the logs
 ```
 
-### Allowing public (unauthenticated) access to the frontend app
-
-> By default, Cloud Run services require authentication (e.g. Service Account) to access the services. To allow all web users to access the frontend application, run the following to allow unauthenticated users.
-
-Run the following commands to update Organization policies:
-```
-export ORGANIZATION_ID=$(gcloud organizations list --format="value(name)" | head -n 1)
-gcloud resource-manager org-policies delete constraints/iam.allowedPolicyMemberDomains --organization=$ORGANIZATION_ID
-```
-
-Run the following to allow unauthenticated users:
-```
-gcloud run services add-iam-policy-binding $SERVICE_NAME \
---region="$REGION" \
---member="allUsers" \
---role="roles/run.invoker"
-```
-
 Display the URL for the deployed Cloud Run services:
 ```
 gcloud run services describe $SERVICE_NAME --region=$REGION
@@ -85,3 +67,20 @@ gcloud run services describe $SERVICE_NAME --region=$REGION
 Open up the URL in a browser to check out the frontend app.
 
 
+### Allowing public (unauthenticated) access to the frontend app
+
+> By default, Cloud Run services require authentication (e.g. Service Account) to access the services. To allow all web users to access the frontend application, run the following to allow unauthenticated users.
+
+Run the following commands to update Organization policies:
+```
+export ORGANIZATION_ID=$(gcloud organizations list --format="value(name)" | head -n 1)
+gcloud resource-manager org-policies delete constraints/iam.allowedPolicyMemberDomains --organization=$ORGANIZATION_ID
+```
+
+Run the following to allow unauthenticated users:
+```
+gcloud run services add-iam-policy-binding $SERVICE_NAME \
+--region="$REGION" \
+--member="allUsers" \
+--role="roles/run.invoker"
+```
