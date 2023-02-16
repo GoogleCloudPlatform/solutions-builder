@@ -263,8 +263,13 @@ Build all microservices (including web app) and deploy to the cluster:
 cd $BASE_DIR
 export CLUSTER_NAME=main-cluster
 gcloud container clusters get-credentials $CLUSTER_NAME --region $REGION --project $PROJECT_ID
-skaffold run -p prod --default-repo=gcr.io/$PROJECT_ID
+skaffold run -p gke --default-repo=gcr.io/$PROJECT_ID
 ```
+
+- Optionally, you can also deploy with Horizontal Pod Autoscaler (HPA) using `hpa` profile like below:
+  ```
+  skaffold run -p gke,hpa --default-repo=gcr.io/$PROJECT_ID
+  ```
 
 Verify API endpoint:
 ```
