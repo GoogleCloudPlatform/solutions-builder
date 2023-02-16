@@ -119,7 +119,7 @@ deploy_microservices_to_gke() {
   cd "$BASE_DIR"
   export CLUSTER_NAME=main-cluster
   gcloud container clusters get-credentials "${CLUSTER_NAME}" --region "${REGION}" --project "${PROJECT_ID}"
-  skaffold run -p prod --default-repo="gcr.io/${PROJECT_ID}"
+  skaffold run -p gke --default-repo="gcr.io/${PROJECT_ID}"
 }
 
 # Build all microservices and deploy to CloudRun:
