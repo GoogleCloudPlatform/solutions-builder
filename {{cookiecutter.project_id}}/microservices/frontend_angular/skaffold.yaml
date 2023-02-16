@@ -2,21 +2,6 @@ apiVersion: skaffold/v4beta1
 kind: Config
 metadata:
   name: frontend-angular
-manifests:
-  kustomize:
-    paths:
-    - ./kustomize/base
-
-# Portforwarding when running `skaffold dev` locally.
-portForward:
-- resourceType: service
-  resourceName: frontend-angular
-  port: 80
-  localPort: 8080
-
-# Simple deployment using kubectl.
-deploy:
-  kubectl: {}
 
 # Build locally using Buildkit: https://docs.docker.com/build/buildkit
 build:
@@ -35,3 +20,28 @@ build:
       - '**/*.js'
       - '**/*.ts'
       - '**/*.sh'
+portForward:
+- resourceType: service
+  resourceName: frontend-angular
+  port: 80
+  localPort: 8080
+
+profiles:
+- name: gke
+  manifests:
+    kustomize:
+      paths:
+      - ./kustomize/base
+  # Simple deployment using kubectl.
+  deploy:
+    kubectl: {}
+  # Portforwarding when running `skaffold dev` locally.
+
+- name: cloudrun
+  manifests:
+    rawYaml:
+      - cloudrun_manifests/*
+  deploy:
+    cloudrun:
+      projectid: solutions-template-develop
+      region: {{cookiecutter.gcp_region}}

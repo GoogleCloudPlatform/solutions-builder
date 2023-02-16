@@ -321,15 +321,6 @@ _REPOSITORY="cloudrun",\
 _IMAGE="common"
 ```
 
-Set up endpoint permission:
-```
-export SERVICE_NAME=sample-service
-gcloud run services add-iam-policy-binding $SERVICE_NAME \
---region="$REGION" \
---member="allUsers" \
---role="roles/run.invoker"
-```
-
 Build service image
 ```
 gcloud builds submit --config=cloudbuild.yaml --substitutions=\
@@ -342,7 +333,7 @@ _SERVICE_ACCOUNT="deployment-dev@$PROJECT_ID.iam.gserviceaccount.com",\
 _ALLOW_UNAUTHENTICATED_FLAG="--allow-unauthenticated"
 ```
 
-Manually deploy a microservice to CloudRun with public endpoint:
+Deploy a microservice to CloudRun with public endpoint:
 ```
 gcloud run services add-iam-policy-binding $SERVICE_NAME \
 --region="$REGION" \
