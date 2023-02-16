@@ -33,7 +33,7 @@ Starting deploy...
 Waiting for deployments to stabilize...
 - deployment/sample-service is ready.
 Deployments stabilized in 1.927 second
-Port forwarding service/sample-service in namespace default, remote port 80 -> http://127.0.0.1:8080
+Port forwarding service/sample-service in namespace default, remote port 80 -> http://127.0.0.1:9001
 Listing files to watch...
 - sample-service
 Press Ctrl+C to exit
@@ -41,7 +41,8 @@ Press Ctrl+C to exit
 Watching for changes...
 ```
 
-Open the link http://127.0.0.1:9001 or http://{{cookiecutter.api_domain}}:9001 in a browser to see the service.
-- If you are deploying the microservice, open http://{{cookiecutter.api_domain}}:9001/sample_service/docs for the API swagger documentation.
+Open the link http://127.0.0.1:PORT or http://{{cookiecutter.api_domain}}:PORT in a browser to see the service. (PORT will be different for each service)
+- If you are deploying a microservice, open http://{{cookiecutter.api_domain}}:9001/sample_service/docs for the API swagger documentation.
+- If you are deploying a frontend service, open http://{{cookiecutter.api_domain}}:8080 to see the web UI.
 - At this point, every changes in local files will trigger files hot-swap and update to the remote instance automatically. See [Skaffold File Sync](https://skaffold.dev/docs/pipeline-stages/filesync/) for more details.
 - When clicked Ctrl+C, it will remove the Cloud Run service.

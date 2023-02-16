@@ -8,64 +8,46 @@ requires:
 - configs:
   - common
   path: ../../common
+
 build:
   artifacts:
   - image: sample-service
     requires:
     - image: common
       alias: BASE_IMG
-    sync:
-      infer:
-      - '**/*.py'
-      - '**/*.json'
-  tagPolicy:
-    gitCommit: {}
-  local:
-    concurrency: 0
-manifests:
-  kustomize:
-    paths:
-    - ./kustomize/minikube
+    docker:
+      cacheFrom:
+      - sample-service
+      - sample-service:latest
+  googleCloudBuild: {}
 
 # Portforwarding when running `skaffold dev` locally.
 portForward:
 - resourceType: service
   resourceName: sample-service
   port: 80
-  localPort: 8001 # Change this when adding other microservice.
-
-# Simple deployment using kubectl.
-deploy:
-  kubectl: {}
+  localPort: 9001 # Change this when adding other microservice.
 
 profiles:
 # Profile for building images locally.
-- name: non_cloudbuild
-  manifests:
-    kustomize:
-      paths:
-      - ./kustomize/prod
-
-# Profile for Production environment, building images via CloudBuild.
-- name: prod
+- name: local_build
   build:
     artifacts:
     - image: sample-service
       requires:
       - image: common
         alias: BASE_IMG
-      docker:
-        cacheFrom:
-        - sample-service
-        - sample-service:latest
-    googleCloudBuild: {}
-  manifests:
-    kustomize:
-      paths:
-      - ./kustomize/prod
+      sync:
+        infer:
+        - '**/*.py'
+        - '**/*.json'
+    tagPolicy:
+      gitCommit: {}
+    local:
+      concurrency: 0
 
-# Profile for Dev environment, building images via CloudBuild
-- name: dev
+# Profile for GKE deployment, building images via CloudBuild
+- name: gke
   build:
     artifacts:
     - image: sample-service
@@ -84,4 +66,32 @@ profiles:
   manifests:
     kustomize:
       paths:
-      - ./kustomize/dev
+      - ./kustomize/base
+  # Simple deployment using kubectl.
+  deploy:
+    kubectl: {}
+
+# Profile for GKE Horizontal Pod Autoscaler.
+# This profile only works with `gke` profile together.
+# E.g. skaffold run -p gke,hpa
+- name: hpa
+  manifests:
+    kustomize:
+      paths:
+      - ./kustomize/hpa
+
+# Profile for Dev environment, building images via CloudBuild
+- name: cloudrun
+  manifests:
+    rawYaml:
+      - cloudrun_manifests/*
+  deploy:
+    cloudrun:
+      projectid: solutions-template-develop
+      region: us-central1
+  portForward:
+  - resourceType: service
+    resourceName: sample-service
+    port: 80
+    localPort: 9001 # Change this when adding other microservice.
+

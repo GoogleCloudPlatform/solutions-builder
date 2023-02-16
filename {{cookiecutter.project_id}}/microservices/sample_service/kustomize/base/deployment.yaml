@@ -43,3 +43,14 @@ spec:
           periodSeconds: 30
           successThreshold: 1
           timeoutSeconds: 10
+        env:
+        - name: PROJECT_ID
+          valueFrom:
+            configMapKeyRef:
+              name: env-vars
+              key: PROJECT_ID
+        - name: DATABASE_PREFIX
+          valueFrom:
+            configMapKeyRef:
+              name: env-vars
+              key: DATABASE_PREFIX
