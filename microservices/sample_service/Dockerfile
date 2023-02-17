@@ -12,7 +12,7 @@ RUN pip install -r requirements.txt
 
 COPY src/ .
 
-EXPOSE 8888
+EXPOSE 9001
 
 # ENTRYPOINT [ "python", "main.py", "--prod=True" ]
 ENTRYPOINT [ "python", "main.py" ]
