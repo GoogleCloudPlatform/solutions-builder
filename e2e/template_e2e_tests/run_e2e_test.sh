@@ -143,6 +143,8 @@ print_api_test_result() {
 
 clean_up_gke() {
   cd $BASE_DIR/terraform/stages/gke
+  # To restore the TF state from a remote bucket. This is in case the state are
+  # lost due to change of the local environment when executing TF.
   terraform init -reconfigure -backend-config=bucket=$TF_BUCKET_NAME
   terraform destroy -auto-approve
 }
