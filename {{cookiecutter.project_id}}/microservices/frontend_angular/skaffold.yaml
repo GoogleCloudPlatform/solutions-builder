@@ -43,5 +43,5 @@ profiles:
       - cloudrun_manifests/*
   deploy:
     cloudrun:
-      projectid: solutions-template-develop
+      projectid: {{cookiecutter.project_id}}
       region: {{cookiecutter.gcp_region}}

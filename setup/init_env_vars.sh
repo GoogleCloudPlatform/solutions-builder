@@ -1,4 +1,4 @@
-export PROJECT_ID="solutions-template-e2etest"
+export PROJECT_ID="solutions-template-develop"
 export ADMIN_EMAIL="your_email@example.com"
 export REGION=us-central1
 export API_DOMAIN=localhost

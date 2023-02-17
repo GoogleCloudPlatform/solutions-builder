@@ -16,14 +16,14 @@ on:
       - '.github/workflows/e2e_gke_api_test.yaml'
   workflow_dispatch:
 env:
-  PROJECT_ID: solutions-template-e2etest
-  SKAFFOLD_DEFAULT_REPO: gcr.io/solutions-template-e2etest
+  PROJECT_ID: solutions-template-develop
+  SKAFFOLD_DEFAULT_REPO: gcr.io/solutions-template-develop
   SKAFFOLD_NAMESPACE: default
   GKE_CLUSTER: main-cluster
   GKE_ZONE: us-central1
   KUSTOMIZE_VERSION: 4.1.3
   SKAFFOLD_VERSION: 2.0.3
-  SKAFFOLD_CACHE_GCS: gs://solutions-template-e2etest.appspot.com/skaffold/cache
+  SKAFFOLD_CACHE_GCS: gs://solutions-template-develop.appspot.com/skaffold/cache
 
 # cookiecutter:raw {% raw %}
 jobs:

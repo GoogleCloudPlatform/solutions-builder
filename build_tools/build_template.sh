@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-PROJECT_ID="solutions-template-e2etest"
+PROJECT_ID="solutions-template-develop"
 REGION="us-central1"
 ADMIN_EMAIL="your_email@example.com"
 API_DOMAIN="localhost"

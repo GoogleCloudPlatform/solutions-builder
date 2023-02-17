@@ -25,7 +25,6 @@ Waiting for deployments to stabilize...
 Deployments stabilized in 1.932 second
 You can also run [skaffold run --tail] to get the logs
 ```
-
 Display the URL for the deployed Cloud Run services:
 ```
 gcloud run services describe $SERVICE_NAME --region=$REGION
@@ -39,18 +38,15 @@ gcloud run services describe $SERVICE_NAME --region=$REGION
   Traffic:
     100% LATEST (currently frontend-angular-<hash>)
   ```
+- You can also list all deployed Cloud Run services:
+  ```
+  gcloud run services list --region=us-central1 --format="value(name,status.url)"
+  ```
+- Skaffold uses the <project_number>-compute@developer.gserviceaccount.com Service Account for Cloud Run deployment. To run with a different service account, check out the **Optional: Manually deploy Microservices to CloudRun** section below.
 
-Open up the URL in a browser to check out the frontend app.
-
-> By default, Cloud Run services require authentication (e.g. Service Account) to access the services. To allow all web users to access the frontend application, check out the following section to allow public access.
-
-To deploy a service to Cloud Run, specify the `cloudrun` profile in Skaffold command as below:
-```
-skaffold run -p cloudrun --default-repo=gcr.io/$PROJECT_ID -m $SERVICE_NAME
-```
-- This will deploy the `$SERVICE_NAME` service to Cloud Run and generate a service with default **run.app** URL.
-
-See the following sections for other use cases.
+Open up the URL like **https://frontend-angular-<hash>.a.run.app** in a browser to check out the frontend app.
+- By default, Cloud Run services require authentication (e.g. Service Account) to access the services.
+- To allow all users to access the frontend application from the Internet, follow the **Allowing public (unauthenticated) access to a Cloud Run service** section to allow public access.
 
 ### Deploy with live-reload for debugging
 
@@ -99,4 +95,44 @@ gcloud run services add-iam-policy-binding $SERVICE_NAME \
 --region="$REGION" \
 --member="allUsers" \
 --role="roles/run.invoker"
+```
+
+###  Optional: Manually deploy Microservices to CloudRun
+
+Build common image
+```
+cd common
+gcloud builds submit --config=cloudbuild.yaml --substitutions=\
+_PROJECT_ID="$PROJECT_ID",\
+_REGION="$REGION",\
+_REPOSITORY="cloudrun",\
+_IMAGE="common"
+```
+
+Build a service image
+```
+gcloud builds submit --config=cloudbuild.yaml --substitutions=\
+_CLOUD_RUN_SERVICE_NAME=$SERVICE_NAME,\
+_PROJECT_ID="$PROJECT_ID",\
+_REGION="$REGION",\
+_REPOSITORY="cloudrun",\
+_IMAGE="$SERVICE_NAME",\
+_SERVICE_ACCOUNT="<my-custom-sa>@$PROJECT_ID.iam.gserviceaccount.com",\
+_ALLOW_UNAUTHENTICATED_FLAG="--allow-unauthenticated"
+```
+
+Deploy a microservice to CloudRun with public endpoint:
+```
+gcloud run services add-iam-policy-binding $SERVICE_NAME \
+--region="$REGION" \
+--member="allUsers" \
+--role="roles/run.invoker"
+```
+
+### Delete Cloud Run Services
+
+To delete a specific Cloud Run service:
+```
+export SERVICE_NAME=sample-service
+gcloud run services delete $SERVICE_NAME
 ```

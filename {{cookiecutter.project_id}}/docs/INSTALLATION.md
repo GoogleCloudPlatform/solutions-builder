@@ -3,26 +3,20 @@
 Table of Content
 
 <!-- vscode-markdown-toc -->
-1. [Prerequisites](#Prerequisites)
+* 1. [Prerequisites](#Prerequisites)
 	* 1.1. [Understanding Google Cloud](#UnderstandingGoogleCloud)
 	* 1.2. [Tool requirements:](#Toolrequirements:)
 	* 1.3. [Required packages for deploying to GKE cluster:](#RequiredpackagesfordeployingtoGKEcluster:)
 	* 1.4. [Apple M1 Chip Support for Terraform (Optional)](#AppleM1ChipSupportforTerraformOptional)
 	* 1.5. [File structure](#Filestructure)
-2. [Set up Google Cloud Project](#SetupGoogleCloudProject)
-3. [Set up Google Cloud Project (Manual Steps)](#SetupGoogleCloudProjectManualSteps)
+* 2. [Setup and deploy Solutions Template (Automated)](#SetupanddeploySolutionsTemplateAutomated)
+* 3. [Setup and deploy Solutions Template (Manual Steps)](#SetupanddeploySolutionsTemplateManualSteps)
 	* 3.1. [Set up working environment](#Setupworkingenvironment)
 	* 3.2. [Update GCP Organizational policies](#UpdateGCPOrganizationalpolicies)
-	* 3.3. [Set up GCP foundation - Terraform](#SetupGCPfoundation-Terraform)
-	* 3.4. [Optional: Deploy Microservices to GKE](#DeployMicroservicestoGKEOptional)
-	* 3.5. [Optional: Deploy Microservices to Cloud Run](#DeployMicroservicestoCloudRunOptional)
-	* 3.6. [Optional: Manually Deploy Microservices to CloudRun](#OptionalManuallyDeployMicroservicestoCloudRun)
-	* 3.7. [Clean up all deployment and resources](#Cleanupalldeploymentandresources)
-4. [Development](#Development)
-5. [End-to-End API tests](#End-to-EndAPItests)
-6. [CI/CD and Test Automation](#CICDandTestAutomation)
-	* 6.1. [Github Actions](#GithubActions)
-	* 6.2. [Test Github Action workflows locally](#TestGithubActionworkflowslocally)
+	* 3.3. [ Set up GCP foundation - Terraform](#SetupGCPfoundation-Terraform)
+	* 3.4. [Optional: Deploy Microservices to GKE](#Optional:DeployMicroservicestoGKE)
+	* 3.5. [Optional: Deploying Microservices to Cloud Run](#Optional:DeployingMicroservicestoCloudRun)
+	* 3.6. [Cleaning up all deployment and resources](#Cleaningupalldeploymentandresources)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -120,7 +114,7 @@ m1-terraform-provider-helper install hashicorp/template -v v2.2.0
 - *docs* - Documentation and other guidance.
 - *.github* - Github workflows including tests and CI/CD.
 
-##  2. <a name='SetupGoogleCloudProject'></a>Setup and deploy Solutions Template
+##  2. <a name='SetupanddeploySolutionsTemplateAutomated'></a>Setup and deploy Solutions Template (Automated)
 
 ```
 # Set up environmental variables
@@ -144,7 +138,7 @@ Run setup_all.sh to run all steps:
 ```
 # Choose the microservice deployment option: "gke" or "cloudrun"
 # If you wish to deploy microservices to both GKE and cloudrun, use "gke|cloudrun"
-export TEMPLATE_FEATURES="gke" # "gke|cloudrun"
+export TEMPLATE_FEATURES="gke" # "cloudrun"
 
 # Run all setup steps.
 sh setup/setup_all.sh
@@ -161,7 +155,7 @@ Once the microservice has been deployed successfully, you will see the message b
 The API endpoints are ready. See the auto-generated API docs at this URL: https://<your-sample-domain>/sample_service/docs
 ```
 
-##  3. <a name='SetupGoogleCloudProjectManualSteps'></a>Setup and deploy Solutions Template (Manual Steps)
+##  3. <a name='SetupanddeploySolutionsTemplateManualSteps'></a>Setup and deploy Solutions Template (Manual Steps)
 
 ###  3.1. <a name='Setupworkingenvironment'></a>Set up working environment
 
@@ -246,7 +240,7 @@ terraform apply -target=module.firebase -var="firebase_init=true" -auto-approve
 terraform apply -auto-approve
 ```
 
-###  3.4. <a name='DeployMicroservicestoGKEOptional'></a>Optional: Deploy Microservices to GKE
+###  3.4. <a name='Optional:DeployMicroservicestoGKE'></a>Optional: Deploy Microservices to GKE
 
 Initialize GKE cluster (via Terraform). This will create the following resources:
 - A GKE cluster
@@ -258,132 +252,19 @@ terraform init -backend-config=bucket=$TF_BUCKET_NAME
 terraform apply -auto-approve
 ```
 
-Build all microservices (including web app) and deploy to the cluster:
-```
-cd $BASE_DIR
-export CLUSTER_NAME=main-cluster
-gcloud container clusters get-credentials $CLUSTER_NAME --region $REGION --project $PROJECT_ID
-skaffold run -p gke --default-repo=gcr.io/$PROJECT_ID
-```
+Once the cluster is up and running, follow the steps in [docs/components/gke.md](docs/components/gke.md).
 
-- Optionally, you can also deploy with Horizontal Pod Autoscaler (HPA) using `hpa` profile like below:
-  ```
-  skaffold run -p gke,hpa --default-repo=gcr.io/$PROJECT_ID
-  ```
+###  3.5. <a name='Optional:DeployingMicroservicestoCloudRun'></a>Optional: Deploying Microservices to Cloud Run
 
-Verify API endpoint:
-```
-export API_DOMAIN=$(kubectl describe ingress | grep Address | awk '{print $2}')
-export URL="http://${API_DOMAIN}/sample_service/docs"
-echo "Open this URL in a browser: ${URL}"
-```
-- When opening up the URL, you will see the Swagger frontend page with available API endpoint description.
+Follow the steps in [docs/components/cloudrun.md](docs/components/cloudrun.md).
 
-Run API tests (Optional):
-```
-# Run API tests
-python e2e/utils/port_forward.py --namespace default
-PYTHONPATH=common/src python -m pytest e2e/gke_api_tests/
-```
-
-###  3.5. <a name='DeployingMicroservicestoCloudRunOptional'></a>Optional: Deploying Microservices to Cloud Run
-
-Run the following to build and deploy microservices to Cloud Run.
-```
-cd $BASE_DIR/terraform/stages/cloudrun
-terraform init -backend-config=bucket=$TF_BUCKET_NAME
-terraform apply -auto-approve
-```
-
-Test with API endpoint:
-```
-cd $BASE_DIR
-export SERVICE_URL=$(gcloud run services describe "cloudrun-sample" --region={{cookiecutter.gcp_region}} --format="value(status.url)")
-export URL="${SERVICE_URL}/sample_service/docs"
-echo "Open this URL in a browser: ${URL}"
-```
-- When opening up the URL, you will see the Swagger frontend page with available API endpoint description.
-
-Run API tests (Optional):
-```
-# Run API tests
-cd $BASE_DIR
-mkdir -p .test_output
-gcloud run services list --format=json > .test_output/cloudrun_service_list.json
-export SERVICE_LIST_JSON=.test_output/cloudrun_service_list.json
-PYTHONPATH=common/src python -m pytest e2e/cloudrun_api_tests/
-```
-
-###  3.6. <a name='OptionalManuallyDeployMicroservicestoCloudRun'></a>Optional: Manually Deploy Microservices to CloudRun
-
-Build common image
-```
-cd common
-gcloud builds submit --config=cloudbuild.yaml --substitutions=\
-_PROJECT_ID="$PROJECT_ID",\
-_REGION="$REGION",\
-_REPOSITORY="cloudrun",\
-_IMAGE="common"
-```
-
-Build service image
-```
-gcloud builds submit --config=cloudbuild.yaml --substitutions=\
-_CLOUD_RUN_SERVICE_NAME=$SERVICE_NAME,\
-_PROJECT_ID="$PROJECT_ID",\
-_REGION="$REGION",\
-_REPOSITORY="cloudrun",\
-_IMAGE="cloudrun-sample",\
-_SERVICE_ACCOUNT="deployment-dev@$PROJECT_ID.iam.gserviceaccount.com",\
-_ALLOW_UNAUTHENTICATED_FLAG="--allow-unauthenticated"
-```
-
-Deploy a microservice to CloudRun with public endpoint:
-```
-gcloud run services add-iam-policy-binding $SERVICE_NAME \
---region="$REGION" \
---member="allUsers" \
---role="roles/run.invoker"
-```
-
-###  3.7. <a name='Cleaningupalldeploymentandresources'></a>Cleaning up all deployment and resources
+###  3.6. <a name='Cleaningupalldeploymentandresources'></a>Cleaning up all deployment and resources
 Run the following to destroy all deployment and resources.
 > Note: there are some GCP resources that are not deletable, e.g. Firebase initialization.
 ```
 cd $BASE_DIR/terraform/stages/gke
 terraform destroy -auto-approve
 
-cd $BASE_DIR/terraform/stages/cloudrun
-terraform destroy -auto-approve
-
 cd $BASE_DIR/terraform/stages/foundation
 terraform destroy -auto-approve
 ```
-
-##  4. <a name='Development'></a>Development
-
-##  5. <a name='End-to-EndAPItests'></a>End-to-End API tests
-
-##  6. <a name='CICDandTestAutomation'></a>CI/CD and Test Automation
-
-###  6.1. <a name='GithubActions'></a>Github Actions
-
-###  6.2. <a name='TestGithubActionworkflowslocally'></a>Test Github Action workflows locally
-- Install [Docker desktop](https://www.docker.com/products/docker-desktop/)
-- Install [Act](https://github.com/nektos/act)
-  ```
-  # Mac
-  brew install act
-
-  # Windows
-  choco install act-cli
-  ```
-
-- Run a specific Workflow
-  ```
-  act --workflows .github/workflows/e2e_gke_api_test.yaml
-  ```
-
-# Development Process & Best Practices
-
-See the [developer guide](./DEVELOPMENT.md) for detailed development workflow

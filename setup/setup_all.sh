@@ -19,6 +19,7 @@
 
 # Set up environment variables.
 setup_env_vars() {
+  export BASE_DIR=$(pwd)
   source "$BASE_DIR"/setup/init_env_vars.sh
 }
 
@@ -113,7 +114,7 @@ init_foundation() {
 # Build all microservices and deploy to the cluster:
 deploy_microservices_to_gke() {
   cd "$BASE_DIR"/terraform/stages/gke
-  terraform init -backend-config=bucket="${TF_BUCKET_NAME}"
+  terraform init -reconfigure -backend-config=bucket="${TF_BUCKET_NAME}"
   terraform apply -auto-approve
   
   cd "$BASE_DIR"
@@ -124,27 +125,54 @@ deploy_microservices_to_gke() {
 
 # Build all microservices and deploy to CloudRun:
 deploy_microservices_to_cloudrun() {
-  cd "$BASE_DIR"/terraform/stages/cloudrun
-  terraform init -backend-config=bucket="${TF_BUCKET_NAME}"
-  terraform apply -auto-approve
+  cd "$BASE_DIR"
+  skaffold run -p cloudrun --default-repo="gcr.io/${PROJECT_ID}"
+  
+  # Allow public access to the all Cloud Run services.
+  declare -a service_names=$(gcloud run services list --region=us-central1 --format="value(name)")
+  for service_name in ${service_names[@]}; do
+    gcloud run services add-iam-policy-binding $service_name \
+    --region="${REGION}" \
+    --member="allUsers" \
+    --role="roles/run.invoker"
+  done
 }
 
 # Test with API endpoint (GKE):
 test_api_endpoints_gke() {
-  # Run API e2e tests
   API_DOMAIN=$(kubectl describe ingress | grep Address | awk '{print $2}')
   URL="http://${API_DOMAIN}/sample_service/docs"
-  GKE_OUTPUT="The API endpoints are ready. See the auto-generated API docs at this URL: ${URL}"
+  GKE_OUTPUT="GKE deployment:\n"
+  GKE_OUTPUT+="The API endpoints are ready. See the auto-generated API docs at this URL: ${URL} \n"
+  GKE_OUTPUT+="\n"
 }
 
 # Test with API endpoint (CloudRun):
 test_api_endpoints_cloudrun() {
   # Run API e2e tests
-  SERVICE_URL=$(gcloud run services describe "cloudrun-sample" --region=us-central1 --format="value(status.url)")
+  SERVICE_URL=$(gcloud run services describe "sample-service" --region=us-central1 --format="value(status.url)")
   URL="${SERVICE_URL}/sample_service/docs"
-  CLOUDRUN_OUTPUT="The API endpoints are ready. See the auto-generated API docs at this URL: ${URL}"
+  
+  FRONTEND_URL=$(gcloud run services describe "frontend-angular" --region=us-central1 --format="value(status.url)")
+  CLOUDRUN_OUTPUT="Cloud Run deployment:\n"
+  CLOUDRUN_OUTPUT+="The Frontend application is ready: ${FRONTEND_URL} \n"
+  CLOUDRUN_OUTPUT+="The API endpoints are ready. See the auto-generated API docs at this URL: ${URL} \n"
+  CLOUDRUN_OUTPUT+="\n"
 }
 
+check_proceed_prompt() {
+  echo
+  read -p  "This will set up the Solutions Template in project \"$PROJECT_ID\". Continue? (y/n)" -n 1 -r
+  
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    echo
+  else
+    printf "\nTerminated.\n"
+    exit 0
+  fi
+}
+
+check_proceed_prompt
 setup_env_vars
 setup_gcloud
 update_gcp_org_policies
@@ -168,16 +196,16 @@ do
       printf "Deploying microservices to GKE...\n"
       deploy_microservices_to_gke
       test_api_endpoints_gke
-      final_message+=$GKE_OUTPUT$'\n\n'
+      final_message+=$GKE_OUTPUT
       ;;
     "cloudrun")
       printf "Deploying microservices to CloudRun...\n"
       deploy_microservices_to_cloudrun
       test_api_endpoints_cloudrun
-      final_message+=$CLOUDRUN_OUTPUT$'\n\n'
+      final_message+=$CLOUDRUN_OUTPUT
       ;;
   esac
 done
 
-echo $'Setup complete, see the deployment info below:\n\n'
-echo "$final_message"
+printf "Setup complete, see the deployment info below:\n\n"
+printf "${final_message} \n\n"
