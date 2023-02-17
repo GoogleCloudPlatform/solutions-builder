@@ -97,10 +97,10 @@ install_dependencies() {
 
 setup_working_folder() {
   mkdir -p $OUTPUT_FOLDER
-  
+
   # Create skeleton code in a new folder with Cookiecutter
   cookiecutter . --overwrite-if-exists --no-input -o $OUTPUT_FOLDER project_id=$PROJECT_ID admin_email=$ADMIN_EMAIL
-  
+
   # Set up working environment:
   cd $OUTPUT_FOLDER/$PROJECT_ID
   export API_DOMAIN=localhost
@@ -120,7 +120,7 @@ test_api_endpoints_gke() {
 # Test with API endpoint (CloudRun):
 test_api_endpoints_cloudrun() {
   cd $BASE_DIR
-  
+
   # Run API e2e tests
   mkdir -p .test_output
   gcloud run services list --format=json > .test_output/cloudrun_service_list.json
@@ -141,26 +141,43 @@ print_api_test_result() {
   fi
 }
 
+clean_up_gke() {
+  cd $BASE_DIR/terraform/stages/gke
+  terraform init -reconfigure -backend-config=bucket=$TF_BUCKET_NAME
+  terraform destroy -auto-approve
+}
+
+clean_up_cloudrun() {
+  # Delete all Cloud Run services.
+  declare -a service_names=$(gcloud run services list --region=us-central1 --format="value(name)")
+  for service_name in ${service_names[@]}; do
+    gcloud run services delete $service_name
+  done
+}
+
 # Clean up GCP resources.
 clean_up() {
   if [[ "$skip_cleanup" ==  "" ]]; then
     printf "Cleaning up ${PROJECT_ID}...\n"
-    
+
     echo "BASE_DIR=$BASE_DIR"
     export TF_BUCKET_NAME="${PROJECT_ID}-tfstate"
-    
-    cd $BASE_DIR/terraform/stages/gke
-    terraform init -reconfigure -backend-config=bucket=$TF_BUCKET_NAME
-    terraform destroy -auto-approve
-    
-    cd $BASE_DIR/terraform/stages/cloudrun
-    terraform init -reconfigure -backend-config=bucket=$TF_BUCKET_NAME
-    terraform destroy -auto-approve
-    
+
+    # Cleaning up services based on $TEMPLATE_FEATURES
+    IFS='|' read -a strarr <<< "$TEMPLATE_FEATURES"
+    for feature in "${strarr[@]}";
+    do
+      echo "feature=$feature"
+      case $feature in
+        "gke") clean_up_gke;;
+        "cloudrun") clean_up_cloudrun;;
+      esac
+    done
+
     cd $BASE_DIR/terraform/stages/foundation
     terraform init -reconfigure -backend-config=bucket=$TF_BUCKET_NAME
     terraform destroy -auto-approve
-    
+
     # FIXME: This is disabled for now until we find a way to create new project
     # for every e2e test.
     # delete_project
@@ -192,7 +209,7 @@ cd $BASE_DIR
 build_template
 install_dependencies
 setup_working_folder
-bash setup/setup_all.sh
+echo "yes" | bash setup/setup_all.sh
 test_api_endpoints_gke
 # test_api_endpoints_gcloud
 clean_up

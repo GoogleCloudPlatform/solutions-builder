@@ -4,6 +4,18 @@
 
 In this Solutions Template, we use [`skaffold`](https://skaffold.dev/) to deploy for both backend microservices and frontend application. The same steps apply for deploying to GKE and Cloud Run.
 
+### Initialize GKE cluster
+
+If you haven't set up the GKE cluster by following the [INSTALLATION.md](docs/INSTALLATION.md#SetupanddeploySolutionsTemplateAutomated), you can initialize GKE cluster via Terraform. This will create the following resources:
+- A GKE cluster
+- Service account for GKE
+
+```
+cd $BASE_DIR/terraform/stages/gke
+terraform init -backend-config=bucket=$TF_BUCKET_NAME
+terraform apply -auto-approve
+```
+
 ### Deploy a service to GKE cluster
 
 Once you complete the development, run the following to deploy to remote GKE cluster:

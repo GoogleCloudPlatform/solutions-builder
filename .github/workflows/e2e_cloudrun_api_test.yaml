@@ -16,7 +16,7 @@ on:
       - '.github/workflows/e2e_cloudrun_api_test.yaml'
   workflow_dispatch:
 env:
-  PROJECT_ID: solutions-template-e2etest
+  PROJECT_ID: solutions-template-develop
   REGION: us-central1
   ENV: dev
 
