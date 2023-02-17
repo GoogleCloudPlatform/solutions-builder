@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
 
 env:
-  PROJECT_ID: solutions-template-e2etest
+  PROJECT_ID: {{cookiecutter.project_id}}
 
 # cookiecutter:raw {% raw %}
 jobs:

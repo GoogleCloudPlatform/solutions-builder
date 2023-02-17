@@ -144,6 +144,7 @@ test_api_endpoints_gke() {
   URL="http://${API_DOMAIN}/sample_service/docs"
   GKE_OUTPUT="GKE deployment:\n"
   GKE_OUTPUT+="The API endpoints are ready. See the auto-generated API docs at this URL: ${URL} \n"
+  GKE_OUTPUT+="\n"
 }
 
 # Test with API endpoint (CloudRun):
@@ -156,6 +157,7 @@ test_api_endpoints_cloudrun() {
   CLOUDRUN_OUTPUT="Cloud Run deployment:\n"
   CLOUDRUN_OUTPUT+="The Frontend application is ready: ${FRONTEND_URL} \n"
   CLOUDRUN_OUTPUT+="The API endpoints are ready. See the auto-generated API docs at this URL: ${URL} \n"
+  CLOUDRUN_OUTPUT+="\n"
 }
 
 check_proceed_prompt() {
