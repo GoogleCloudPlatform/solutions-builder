@@ -43,6 +43,8 @@
 
 # To calculate time elapsed.
 SECONDS=0
+export PROJECT_ID="solutions-template-e2etest"
+export ADMIN_EMAIL="jonchen@google.com"
 
 # Hardcoded the project ID for all local development.
 declare -a EnvVars=(
@@ -201,11 +203,11 @@ if [[ "$is_create_new_project" !=  "true" ]]; then
   echo "Creating new project..."
   # create_new_project
 fi
-echo "PROJECT_ID=$PROJECT_ID"
+
+echo "PROJECT_ID=${PROJECT_ID}"
 export GKE_PYTEST_STATUS=0
 export CLOUDRUN_PYTEST_STATUS=0
 export TEMPLATE_FEATURES="gke" # "gke|cloudrun"
-source setup/init_env_vars.sh
 
 cd $BASE_DIR
 build_template
