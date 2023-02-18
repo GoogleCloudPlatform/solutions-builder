@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: config-port-config
 data:
-  sample-service.PORT: "8888"
+  sample-service.PORT: "9001"
