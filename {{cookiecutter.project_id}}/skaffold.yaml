@@ -2,7 +2,7 @@
 apiVersion: skaffold/v4beta1
 kind: Config
 metadata:
-  name: backends
+  name: all-services
 requires:
 - configs:
   - common
