@@ -99,6 +99,8 @@ install_dependencies() {
 
 setup_working_folder() {
   echo "Current path: $(pwd)"
+  ls -l
+  echo
   mkdir -p $OUTPUT_FOLDER
 
   # Create skeleton code in a new folder with Cookiecutter
