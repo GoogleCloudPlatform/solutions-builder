@@ -53,6 +53,12 @@ jobs:
       with:
         credentials_json: '${{ secrets.E2E_TEST_SA_KEY }}'
 
+    - name: Check current path
+      run: |
+        echo "Current path: $(pwd)"
+        ls -l
+        echo
+
     - name: Run e2e test script
       run: |
         bash e2e/template_e2e_tests/run_e2e_test.sh
