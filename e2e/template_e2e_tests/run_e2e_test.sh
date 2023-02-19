@@ -212,7 +212,6 @@ export GKE_PYTEST_STATUS=0
 export CLOUDRUN_PYTEST_STATUS=0
 export TEMPLATE_FEATURES="gke" # "gke|cloudrun"
 
-cd $BASE_DIR
 build_template
 install_dependencies
 setup_working_folder
