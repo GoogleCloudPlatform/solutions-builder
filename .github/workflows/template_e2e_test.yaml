@@ -20,8 +20,16 @@ jobs:
     environment: e2e
     name: Template E2E tests
     steps:
-    - name: Check out repository
+
+    - name: Check out repository with main branch
       uses: actions/checkout@v3
+      if: ${{ github.event_name == 'workflow_dispatch' }}
+
+    - name: Check out repository with Pull Request HEAD
+      uses: actions/checkout@v3
+      if: ${{ github.event_name == 'issue_comment' && contains(github.event.comment.body, '/e2e-test') }}
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
 
     - name: Install gcloud
       uses: google-github-actions/setup-gcloud@v1
@@ -52,6 +60,12 @@ jobs:
       uses: 'google-github-actions/auth@v1'
       with:
         credentials_json: '${{ secrets.E2E_TEST_SA_KEY }}'
+
+    - name: Check current path
+      run: |
+        echo "Current path: $(pwd)"
+        ls -l
+        echo
 
     - name: Run e2e test script
       run: |
