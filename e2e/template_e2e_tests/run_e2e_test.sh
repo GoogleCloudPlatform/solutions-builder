@@ -79,6 +79,20 @@ done
 export OUTPUT_FOLDER=".test_output"
 export ADMIN_EMAIL=$(gcloud auth list --filter=status:ACTIVE --format='value(account)')
 
+init_env_vars() {
+  export ADMIN_EMAIL="your_email@example.com"
+  export REGION=us-central1
+  export API_DOMAIN=localhost
+  export BASE_DIR=$(pwd)
+  export TF_VAR_project_id=${PROJECT_ID}
+  export TF_VAR_api_domain=${API_DOMAIN}
+  export TF_VAR_web_app_domain=${API_DOMAIN}
+  export TF_VAR_admin_email=${ADMIN_EMAIL}
+  export TF_BUCKET_NAME="${PROJECT_ID}-tfstate"
+  export TF_BUCKET_LOCATION="us"
+  gcloud config set project $PROJECT_ID --quiet
+}
+
 build_template() {
   # Re-build template
   echo yes | bash ./build_tools/build_template.sh
@@ -212,6 +226,7 @@ export GKE_PYTEST_STATUS=0
 export CLOUDRUN_PYTEST_STATUS=0
 export TEMPLATE_FEATURES="gke" # "gke|cloudrun"
 
+init_env_vars
 build_template
 install_dependencies
 setup_working_folder
