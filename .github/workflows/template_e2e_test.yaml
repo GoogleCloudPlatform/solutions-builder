@@ -22,6 +22,8 @@ jobs:
     steps:
     - name: Check out repository
       uses: actions/checkout@v3
+      with:
+        path: ${{ github.ref_name }}
 
     - name: Install gcloud
       uses: google-github-actions/setup-gcloud@v1
