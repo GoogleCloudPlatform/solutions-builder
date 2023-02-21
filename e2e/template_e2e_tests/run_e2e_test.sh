@@ -80,6 +80,10 @@ export OUTPUT_FOLDER=".test_output"
 export ADMIN_EMAIL=$(gcloud auth list --filter=status:ACTIVE --format='value(account)')
 
 init_env_vars() {
+  # FIXME: Reusing the setup/init_env_vars.sh will mix up the usage of
+  # solutions-template-develop and solutions-template-e2etest.
+  # Currently the following are intentional to stick with
+  # solutions-template-e2etest.
   export ADMIN_EMAIL="your_email@example.com"
   export REGION=us-central1
   export API_DOMAIN=localhost
