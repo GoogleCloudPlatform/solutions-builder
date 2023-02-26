@@ -1,7 +1,6 @@
 # Google Cloud Solutions Template
 
-**A template to generate a new project with built-in structure and features
-to accelerate your project setup.**
+**A template to generate a new project with built-in structure and features to accelerate your project setup.**
 
 ## TL;DR
 
