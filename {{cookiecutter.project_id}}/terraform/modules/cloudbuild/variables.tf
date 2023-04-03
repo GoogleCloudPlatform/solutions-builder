@@ -21,5 +21,5 @@ variable "project_id" {
 }
 
 variable "storage_multiregion" {
-  type        = string
+  type = string
 }
