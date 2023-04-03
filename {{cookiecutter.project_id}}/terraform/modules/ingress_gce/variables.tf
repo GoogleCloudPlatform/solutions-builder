@@ -20,6 +20,22 @@ variable "project_id" {
   description = "project ID"
 }
 
-variable "storage_multiregion" {
-  type = string
+variable "region" {
+  type        = string
+  description = "GCP region"
+}
+
+variable "external_ip_address" {
+  type    = string
+  default = null
+}
+
+variable "api_domain" {
+  type        = string
+  description = "API domain, excluding protocol. E.g. api.example.com"
+}
+
+variable "cors_allow_origin" {
+  type        = string
+  description = "CORS allow origins, comma-separated."
 }

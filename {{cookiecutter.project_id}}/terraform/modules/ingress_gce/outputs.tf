@@ -15,11 +15,6 @@
  *
  */
 
-variable "project_id" {
-  type        = string
-  description = "project ID"
-}
-
-variable "storage_multiregion" {
-  type = string
+output "ingress_ip_address" {
+  value = local.global_static_ip_name
 }

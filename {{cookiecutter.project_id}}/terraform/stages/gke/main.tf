@@ -31,7 +31,7 @@ module "gke" {
   region         = var.region
   min_node_count = 1
   max_node_count = 10
-  machine_type   = "n1-standard-8"
+  machine_type   = "n1-standard-4"
 
   # This service account will be created in both GCP and GKE, and will be
   # used for workload federation in all microservices.
@@ -39,15 +39,14 @@ module "gke" {
   service_account_name = "gke-sa"
 
   # See latest stable version at https://cloud.google.com/kubernetes-engine/docs/release-notes-stable
-  kubernetes_version = "1.23.14-gke.1800"
+  kubernetes_version = "1.23.16-gke.1400"
 }
 
 module "ingress" {
   depends_on = [module.gke]
 
-  source            = "../../modules/ingress"
+  source            = "../../modules/ingress_gce"
   project_id        = var.project_id
-  cert_issuer_email = var.admin_email
   region            = var.region
 
   # API domain, excluding protocols. E.g. example.com.
