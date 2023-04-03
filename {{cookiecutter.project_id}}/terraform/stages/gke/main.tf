@@ -45,8 +45,9 @@ module "gke" {
 module "ingress" {
   depends_on = [module.gke]
 
-  source            = "../../modules/ingress_gce"
+  source            = "../../modules/ingress_nginx"
   project_id        = var.project_id
+  cert_issuer_email = var.admin_email
   region            = var.region
 
   # API domain, excluding protocols. E.g. example.com.
