@@ -49,6 +49,16 @@ variable "region" {
   }
 }
 
+variable "vpc_network" {
+  type    = string
+  default = "vpc-01"
+}
+
+variable "vpc_subnetwork" {
+  type    = string
+  default = "vpc-01-subnet-01"
+}
+
 variable "firestore_region" {
   type        = string
   description = "Firestore Region"

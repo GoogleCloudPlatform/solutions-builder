@@ -23,15 +23,17 @@ locals {
 data "google_project" "project" {}
 
 module "gke" {
-  source         = "../../modules/gke"
-  project_id     = var.project_id
-  cluster_name   = "main-cluster"
-  namespace      = "default"
-  vpc_network    = "default-vpc"
-  region         = var.region
-  min_node_count = 1
-  max_node_count = 10
-  machine_type   = "n1-standard-4"
+  source               = "../../modules/gke"
+  project_id           = var.project_id
+  cluster_name         = "main-cluster"
+  namespace            = "default"
+  vpc_network          = "vpc-01"
+  vpc_subnetwork       = "vpc-01-subnet-01"
+  region               = var.region
+  enable_private_nodes = true
+  min_node_count       = 1
+  max_node_count       = 10
+  machine_type         = "n1-standard-4"
 
   # This service account will be created in both GCP and GKE, and will be
   # used for workload federation in all microservices.

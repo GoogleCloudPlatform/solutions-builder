@@ -24,26 +24,21 @@ module "vpc" {
 
   subnets = [
     {
-      subnet_name               = "vpc-01-subnet-01"
+      subnet_name               = var.vpc_subnetwork
       subnet_ip                 = "10.0.0.0/16"
-      subnet_region             = "us-central1"
+      subnet_region             = var.region
+      subnet_private_access     = "true"
       subnet_flow_logs          = "true"
       subnet_flow_logs_interval = "INTERVAL_10_MIN"
       subnet_flow_logs_sampling = 0.7
       subnet_flow_logs_metadata = "INCLUDE_ALL_METADATA"
-    }
+    },
   ]
 
   secondary_ranges = {
-    vpc-01-subnet-01 = [
-      {
-        range_name    = "secondary-pod-range-01"
-        ip_cidr_range = "10.1.0.0/16"
-      },
-      {
-        range_name    = "secondary-service-range-01"
-        ip_cidr_range = "10.2.0.0/16"
-      },
+    (var.vpc_subnetwork) = [
+      var.secondary_ranges_pods,
+      var.secondary_ranges_services,
     ]
   }
 }

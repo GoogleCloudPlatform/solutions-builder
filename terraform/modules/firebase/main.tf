@@ -15,7 +15,7 @@
  *
  */
 
-# Enabling a firbase project
+# Enabling a firebase project
 
 resource "google_app_engine_application" "firebase_init" {
   # Only execute this module when global var firebase_init set as "true"
@@ -48,7 +48,7 @@ resource "google_storage_bucket" "firestore-backup-bucket" {
 # main service account to be used by kubernetes pods running the aplpications
 module "firebase_backup_sa" {
   source       = "terraform-google-modules/service-accounts/google"
-  version      = "~> 3.0"
+  version      = "~> 4.1"
   project_id   = var.project_id
   names        = ["firebase-backup"]
   display_name = "Firebase backup service account"
