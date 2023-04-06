@@ -14,15 +14,7 @@ If you encounter any issues or bugs, please [file a new Github Issue](https://gi
 
 ### Tool requirements:
 
-Install the following dependencies required for the development for the Solutions Template.
-
-| Tool  | Required Version  | Documentation site |
-|---|---|---|
-| gcloud CLI          | Latest     | https://cloud.google.com/sdk/docs/install |
-| Terraform           | >= v1.3.7  | https://developer.hashicorp.com/terraform/downloads |
-| Skaffold (for GKE)  | >= v2.0.4  | https://skaffold.dev/ |
-| Kustomize (for GKE) | >= v4.3.1  | https://kustomize.io/ |
-| Cookiecutter        | >=2.1.1    | https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter |
+Install the dependencies according to root [README.md](https://github.com/GoogleCloudPlatform/solutions-template#tool-requirements).
 
 Here's the high-level steps of the development flow:
 - Create a **new fork** and a **new feature branch**.
@@ -78,5 +70,4 @@ git commit -a -m 'your message about this change'.
 Create a [Pull Request](https://github.com/GoogleCloudPlatform/solutions-template/compare) to merge to `main` branch, and tag the project owners/admins to review.
 
 - The project owners and admins will run end-to-end tests (TBD) to ensure the change doesn't break existing functions.
-
 

@@ -39,11 +39,11 @@ We recommend the following resources to get familiar with Google Cloud and micro
 
 | Tool  | Required Version | Documentation site |
 |---|---------------|---|
-| gcloud CLI          | Latest        | https://cloud.google.com/sdk/docs/install |
-| Terraform           | &gt;= v1.3.7  | https://developer.hashicorp.com/terraform/downloads |
-| Skaffold (for GKE)  | &gt;= v2.1.0  | https://skaffold.dev/ |
-| Kustomize (for GKE) | &gt;= v4.3.1  | https://kustomize.io/ |
-| Cookiecutter        | &gt;= v2.1.1  | https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter |
+| gcloud CLI          | Latest                 | https://cloud.google.com/sdk/docs/install |
+| Terraform           | &gt;= v1.3.7           | https://developer.hashicorp.com/terraform/downloads |
+| Skaffold (for GKE)  | &gt;= v2.1.0           | https://skaffold.dev/ |
+| Kustomize (for GKE) | &gt;= v4.3.1 (< v5.x) | https://kustomize.io/ |
+| Cookiecutter        | &gt;= v2.1.1           | https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter |
 
 ### Install Cookiecutter ([Github](https://github.com/cookiecutter/cookiecutter)):
 - For Google CloudShell or Linux/Ubuntu:
