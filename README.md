@@ -28,12 +28,10 @@ Please see [Feature Requests in the Github issue list](https://github.com/Google
 We recommend the following resources to get familiar with Google Cloud and microservices.
 
 - What is [Microservice Architecture](https://cloud.google.com/learn/what-is-microservices-architecture)
-- Kubernetes:
-  - Learn about the [basics of Kubernetes](https://kubernetes.io/docs/concepts/overview/)
-  - [Google Kubernetes Engine (GKE)](https://cloud.google.com/kubernetes-engine/docs/concepts/kubernetes-engine-overview) overview
-  - [Skaffold](https://skaffold.dev/docs/), a command line tool that facilitates continuous development for container based & Kubernetes applications:
-- Cloud Run:
-  - Serverless container deployment and execution with [Cloud Run](https://cloud.google.com/run/docs/overview/what-is-cloud-run)
+- Learn about the [basics of Kubernetes](https://kubernetes.io/docs/concepts/overview/)
+- [Google Kubernetes Engine (GKE)](https://cloud.google.com/kubernetes-engine/docs/concepts/kubernetes-engine-overview) overview
+- Serverless container deployment and execution with [Cloud Run](https://cloud.google.com/run/docs/overview/what-is-cloud-run)
+- [Skaffold](https://skaffold.dev/docs/), a command line tool that facilitates continuous development for container based applications (support both GKE and Cloud Run):
 
 ### Tool requirements:
 
@@ -42,37 +40,32 @@ We recommend the following resources to get familiar with Google Cloud and micro
 | gcloud CLI          | Latest                 | https://cloud.google.com/sdk/docs/install |
 | Terraform           | &gt;= v1.3.7           | https://developer.hashicorp.com/terraform/downloads |
 | Skaffold (for GKE)  | &gt;= v2.1.0           | https://skaffold.dev/ |
-| Kustomize (for GKE) | &gt;= v4.3.1 (< v5.x) | https://kustomize.io/ |
+| Kustomize (for GKE) | &gt;= v4.3.1 (< v5.x)  | https://kustomize.io/ |
 | Cookiecutter        | &gt;= v2.1.1           | https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter |
 
-### Install Cookiecutter ([Github](https://github.com/cookiecutter/cookiecutter)):
+### Install tools & dependencies:
 - For Google CloudShell or Linux/Ubuntu:
   ```
+  # Cookiecutter
   python3 -m pip install --user cookiecutter
-  ```
-- For MacOS:
-  ```
-  brew install cookiecutter
-  ```
-- For Windows, refer this [installation guide](https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter)
 
-### Required packages for deploying to GKE cluster:
-> You can skip this section if you choose to deploy microservices to Cloud Run only.
-
-Install **skaffold** and **kustomize**:
-
-- For Google CloudShell or Linux/Ubuntu:
-  ```
+  # Skaffold
   curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/LATEST/skaffold-linux-amd64 && \
   sudo install skaffold /usr/local/bin/
+
+  # Kustomize
+  wget https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh
+  sudo rm /usr/local/bin/kustomize
+  sudo ./install_kustomize.sh 4.5.7 /usr/local/bin
   ```
 - For MacOS:
   ```
-  brew install skaffold kustomize
+  brew install skaffold kustomize cookiecutter
   ```
 - For Windows:
   ```
-  choco install -y skaffold kustomize gcloudsdk
+  # Using pipx to install packages: https://pypa.github.io/pipx/
+  pipx install -y gcloudsdk skaffold kustomize cookiecutter
   ```
 
 ### Other dependencies (Optional)
@@ -93,7 +86,7 @@ Install **skaffold** and **kustomize**:
 
 > It is recommended to start with a brand new Google Cloud project to have a clean start.
 
-Run the following to create a new Google Cloud project, or you can log in to Google Cloud Console to [create a new project](https://console.cloud.google.com/projectcreate).
+Run the following commands to create a new Google Cloud project, or [create a new project](https://console.cloud.google.com/projectcreate) on Google Cloud Console.
 ```
 export PROJECT_ID=<my-project-id>
 gcloud projects create $PROJECT_ID
@@ -102,9 +95,9 @@ gcloud auth application-default login # for Terraform to able to run gcloud with
 gcloud auth application-default set-quota-project $PROJECT_ID
 ```
 
-### Create skeleton code in a new folder with Cookiecutter
+### Create skeleton code in a new folder
 
-Run the following to generate skeleton code in a new folder:
+Run the following to generate skeleton code in a new folder using Cookiecutter:
 ```
 cookiecutter https://github.com/GoogleCloudPlatform/solutions-template.git
 ```
@@ -169,8 +162,8 @@ You can find more documentations in [docs](docs) folder. In a nutshell, it cover
 - [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) - Development guide and code submission process.
 
 In the [docs/components](docs/components/) folder, it contains a few more guidance based on each component/feature available in this template.
-- [gke.md](gke.md) covers the overall developmeng guidance on Google Kubernetes Engine.
-- [cloudrun.md](cloudrun.md) covers the guidance if you want to deploy microservice to Cloud Run.
+- [gke.md](docs/components/gke.md) covers the overall developmeng guidance on Google Kubernetes Engine.
+- [cloudrun.md](docs/components/cloudrun.md) covers the guidance if you want to deploy microservice to Cloud Run.
 
 ## FAQ
 - Who are the target audience/users for this Solutions template?
