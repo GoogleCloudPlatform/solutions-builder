@@ -78,12 +78,12 @@ Install **skaffold** and **kustomize**:
 ### Other dependencies (Optional)
 - Apple M1 Chip Support for Terraform
 
-If you are running commands on an Apple M1 chip Macbook, make sure run the following to add M1 support for Terraform:
-```
-brew install kreuzwerker/taps/m1-terraform-provider-helper
-m1-terraform-provider-helper activate
-m1-terraform-provider-helper install hashicorp/template -v v2.2.0
-```
+  If you are running commands on an Apple M1 chip Macbook, make sure run the following to add M1 support for Terraform:
+  ```
+  brew install kreuzwerker/taps/m1-terraform-provider-helper
+  m1-terraform-provider-helper activate
+  m1-terraform-provider-helper install hashicorp/template -v v2.2.0
+  ```
 
 ## Getting Started - Creating Solution Skeleton
 
@@ -125,45 +125,10 @@ the end of the command to show detailed errors.
 Once `cookiecutter` completes, you will see `<my-project-id>` folder created in
 the path where you ran `cookiecutter` command.
 
-### File structure
+### Deploy the Sample Solution to Google Cloud project
 
-In the newly created folder, you will see the file structure like below:
+Go to the project folder generated from Cookiecutter:
 ```
-<my-project-id>/
-│   README.md
-│   skaffold.yaml
-├── docs
-├── e2e
-├── microservices
-│   └── sample_service
-│       ├── Dockerfile
-│       ├── cloudbuild.yaml
-│       ├── kustomize
-│       ├── requirements.txt
-│       ├── skaffold.yaml
-│       ├── src
-│       └   ...
-│
-└── common/
-│   └── src/
-│   │   Dockerfile
-│   │   requirements.txt
-│   │   skaffold.yaml
-│   │   ...
-│
-└── .github/
-```
-
-
-## Setting up Google Cloud Project
-
-```
-# Set up environmental variables
-export PROJECT_ID=<my-project-id>
-export ADMIN_EMAIL=<my-email>
-export REGION=us-central1
-export API_DOMAIN=localhost
-
 cd <my-project-id>
 export BASE_DIR=$(pwd)
 ```
@@ -199,7 +164,7 @@ You can find more documentations in [docs](docs) folder. In a nutshell, it cover
 - [DEVELOPMENT.md](docs/DEVELOPMENT.md) - Development guide and code submission process.
 - [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) - Development guide and code submission process.
 
-In the [docs/components](docs/components/) folder, it contains a few more guidance based on each component/feature available in this template.
+In the [docs/components](docs/components/) folder, it contains a wfew more guidance based on each component/feature available in this template.
 - [gke.md](gke.md) covers the overall developmeng guidance on Google Kubernetes Engine.
 - [cloudrun.md](cloudrun.md) covers the guidance if you want to deploy microservice to Cloud Run.
 
