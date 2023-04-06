@@ -89,6 +89,25 @@ variable "service_account_name" {
   description = "Google Service Account name"
 }
 
+variable "secondary_ranges_pods" {
+  type = object({
+    range_name    = string
+    ip_cidr_range = string
+  })
+}
+
+variable "secondary_ranges_services" {
+  type = object({
+    range_name    = string
+    ip_cidr_range = string
+  })
+}
+
+variable "master_ipv4_cidr_block" {
+  type        = string
+  description = "The IP range in CIDR notation to use for the hosted master network"
+}
+
 variable "source_subnetwork_ip_ranges_to_nat" {
   type        = string
   description = "Defaults to ALL_SUBNETWORKS_ALL_IP_RANGES. How NAT should be configured per Subnetwork. Valid values include: ALL_SUBNETWORKS_ALL_IP_RANGES, ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES, LIST_OF_SUBNETWORKS. Changing this forces a new NAT to be created."

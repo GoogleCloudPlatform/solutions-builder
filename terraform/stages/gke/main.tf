@@ -22,18 +22,32 @@ locals {
 
 data "google_project" "project" {}
 
+module "vpc_network" {
+  source                    = "../../modules/vpc_network"
+  project_id                = var.project_id
+  region                    = var.region
+  vpc_network               = var.vpc_network
+  vpc_subnetwork            = var.vpc_subnetwork
+  secondary_ranges_pods     = var.secondary_ranges_pods
+  secondary_ranges_services = var.secondary_ranges_services
+}
+
 module "gke" {
-  source               = "../../modules/gke"
-  project_id           = var.project_id
-  cluster_name         = "main-cluster"
-  namespace            = "default"
-  vpc_network          = "vpc-01"
-  vpc_subnetwork       = "vpc-01-subnet-01"
-  region               = var.region
-  enable_private_nodes = true
-  min_node_count       = 1
-  max_node_count       = 10
-  machine_type         = "n1-standard-4"
+  depends_on                = [module.vpc_network]
+  source                    = "../../modules/gke"
+  project_id                = var.project_id
+  cluster_name              = var.cluster_name
+  namespace                 = "default"
+  vpc_network               = var.vpc_network
+  vpc_subnetwork            = var.vpc_subnetwork
+  region                    = var.region
+  secondary_ranges_pods     = var.secondary_ranges_pods
+  secondary_ranges_services = var.secondary_ranges_services
+  master_ipv4_cidr_block    = var.master_ipv4_cidr_block
+  enable_private_nodes      = true
+  min_node_count            = 1
+  max_node_count            = 10
+  machine_type              = "n1-standard-4"
 
   # This service account will be created in both GCP and GKE, and will be
   # used for workload federation in all microservices.

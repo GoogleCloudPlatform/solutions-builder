@@ -30,6 +30,16 @@ variable "project_id" {
   }
 }
 
+variable "vpc_network" {
+  type    = string
+  default = "vpc-01"
+}
+
+variable "vpc_subnetwork" {
+  type    = string
+  default = "vpc-01-subnet-01"
+}
+
 variable "region" {
   type        = string
   description = "Default GCP region"
@@ -39,6 +49,39 @@ variable "region" {
     condition     = length(var.region) > 0
     error_message = "The region value must be an non-empty string."
   }
+}
+
+variable "cluster_name" {
+  type    = string
+  default = "main-cluster"
+}
+
+variable "secondary_ranges_pods" {
+  type = object({
+    range_name    = string
+    ip_cidr_range = string
+  })
+  default = {
+    range_name    = "secondary-pod-range-01"
+    ip_cidr_range = "10.1.0.0/16"
+  }
+}
+
+variable "secondary_ranges_services" {
+  type = object({
+    range_name    = string
+    ip_cidr_range = string
+  })
+  default = {
+    range_name    = "secondary-service-range-01"
+    ip_cidr_range = "10.2.0.0/16"
+  }
+}
+
+variable "master_ipv4_cidr_block" {
+  type        = string
+  description = "The IP range in CIDR notation to use for the hosted master network"
+  default     = "172.16.0.0/28"
 }
 
 variable "firestore_region" {

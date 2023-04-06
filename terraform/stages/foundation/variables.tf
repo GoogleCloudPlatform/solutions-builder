@@ -17,7 +17,7 @@
 
 variable "feature_flags" {
   type        = string
-  description = "A comma-seperated string of feature flags to enable specific terraform blocks."
+  description = "A comma-separated string of feature flags to enable specific terraform blocks."
 
   # TODO: Use Cookiecutter to replace this string.
   default = "gke,gke-ingress"
@@ -47,16 +47,6 @@ variable "region" {
     condition     = length(var.region) > 0
     error_message = "The region value must be an non-empty string."
   }
-}
-
-variable "vpc_network" {
-  type    = string
-  default = "vpc-01"
-}
-
-variable "vpc_subnetwork" {
-  type    = string
-  default = "vpc-01-subnet-01"
 }
 
 variable "firestore_region" {

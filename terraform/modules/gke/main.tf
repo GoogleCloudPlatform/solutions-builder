@@ -29,8 +29,9 @@ module "gke_cluster" {
   network                    = var.vpc_network
   subnetwork                 = var.vpc_subnetwork
   enable_private_nodes       = var.enable_private_nodes
-  ip_range_pods              = "secondary-pod-range-01"
-  ip_range_services          = "secondary-service-range-01"
+  master_ipv4_cidr_block     = var.master_ipv4_cidr_block
+  ip_range_pods              = var.secondary_ranges_pods.range_name
+  ip_range_services          = var.secondary_ranges_services.range_name
   http_load_balancing        = true
   identity_namespace         = "enabled"
   horizontal_pod_autoscaling = true

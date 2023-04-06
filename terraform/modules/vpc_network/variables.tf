@@ -40,11 +40,6 @@ variable "secondary_ranges_pods" {
     range_name    = string
     ip_cidr_range = string
   })
-
-  default = {
-    range_name    = "secondary-pod-range-01"
-    ip_cidr_range = "10.1.0.0/16"
-  }
 }
 
 variable "secondary_ranges_services" {
@@ -52,8 +47,4 @@ variable "secondary_ranges_services" {
     range_name    = string
     ip_cidr_range = string
   })
-  default = {
-    range_name    = "secondary-service-range-01"
-    ip_cidr_range = "10.2.0.0/16"
-  }
 }
