@@ -19,8 +19,22 @@
   sudo ./install_kustomize.sh 4.5.7 /usr/local/bin
   ```
 
+- Ensure skaffold version to be &gt;= v2.2.0
+  ```
+  skaffold version
+  # v2.2.0
+  ```
+
+- Generate skeleton code in a new folder:
+  ```
+  cookiecutter https://github.com/GoogleCloudPlatform/solutions-template.git
+  ```
+  - Provide the required variables to Cookiecutter prompt.
+
 - Build and deploy services to CloudRun:
   ```
+  cd <my-project-id>
+
   # Choose the microservice deployment options: "gke", "cloudrun" or "gke|cloudrun"
   export TEMPLATE_FEATURES="cloudrun"
   source setup/init_env_var.sh

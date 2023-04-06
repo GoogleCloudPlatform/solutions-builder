@@ -87,6 +87,8 @@ Install **skaffold** and **kustomize**:
 
 ## Getting Started - Creating Solution Skeleton
 
+> If you wish to run the setup in Cloud Shell, please refer to this [Cloud Shell cookbook](/docs/cookbook/cloudshell.md).
+
 ### Create a new Google Cloud project (Optional):
 
 > It is recommended to start with a brand new Google Cloud project to have a clean start.
@@ -101,8 +103,6 @@ gcloud auth application-default set-quota-project $PROJECT_ID
 ```
 
 ### Create skeleton code in a new folder with Cookiecutter
-
-> If you wish to run the setup in Cloud Shell, please refer to this [Cloud Shell cookbook](docs/cookbook/cloudshell.md).
 
 Run the following to generate skeleton code in a new folder:
 ```
@@ -142,15 +142,17 @@ gcloud auth login
 gcloud config set project $PROJECT_ID
 ```
 
-Run setup_all.sh to run all steps:
+Choose the microservice deployment options:
 ```
-# Choose the microservice deployment options:
+# Template feature options:
 # "gke": to deploy services to GKE
 # "cloudrun": to deploy services to Cloud Run
 # "gke|cloudrun": to deploy services to both GKE and Cloud Run
 export TEMPLATE_FEATURES="gke"
+```
 
-# Run all setup steps.
+Run all setup steps.
+```
 bash setup/setup_all.sh
 ```
 
@@ -166,7 +168,7 @@ You can find more documentations in [docs](docs) folder. In a nutshell, it cover
 - [DEVELOPMENT.md](docs/DEVELOPMENT.md) - Development guide and code submission process.
 - [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) - Development guide and code submission process.
 
-In the [docs/components](docs/components/) folder, it contains a wfew more guidance based on each component/feature available in this template.
+In the [docs/components](docs/components/) folder, it contains a few more guidance based on each component/feature available in this template.
 - [gke.md](gke.md) covers the overall developmeng guidance on Google Kubernetes Engine.
 - [cloudrun.md](cloudrun.md) covers the guidance if you want to deploy microservice to Cloud Run.
 
