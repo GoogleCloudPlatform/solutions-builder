@@ -162,8 +162,8 @@ You can find more documentations in [docs](docs) folder. In a nutshell, it cover
 - [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) - Development guide and code submission process.
 
 In the [docs/components](docs/components/) folder, it contains a few more guidance based on each component/feature available in this template.
-- [gke.md](gke.md) covers the overall developmeng guidance on Google Kubernetes Engine.
-- [cloudrun.md](cloudrun.md) covers the guidance if you want to deploy microservice to Cloud Run.
+- [gke.md](docs/components/gke.md) covers the overall developmeng guidance on Google Kubernetes Engine.
+- [cloudrun.md](docs/components/cloudrun.md) covers the guidance if you want to deploy microservice to Cloud Run.
 
 ## FAQ
 - Who are the target audience/users for this Solutions template?
