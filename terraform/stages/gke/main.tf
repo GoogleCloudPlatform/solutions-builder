@@ -18,9 +18,18 @@
 # project-specific locals
 locals {
   lh = join("", ["local", "host"])
+  default_service_account = data.terraform_remote_state.foundation.outputs.default-compute-sa
 }
 
 data "google_project" "project" {}
+
+data "terraform_remote_state" "foundation" {
+  backend       = "gcs"
+  config = {
+    bucket = "${var.project_id}-tfstate"
+    prefix = "stage/foundation"
+  }
+}
 
 module "vpc_network" {
   source                    = "../../modules/vpc_network"
