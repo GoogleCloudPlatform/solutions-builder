@@ -102,6 +102,8 @@ gcloud auth application-default set-quota-project $PROJECT_ID
 
 ### Create skeleton code in a new folder with Cookiecutter
 
+> If you wish to run the setup in Cloud Shell, please refer to this [Cloud Shell cookbook](docs/cookbook/cloudshell.md).
+
 Run the following to generate skeleton code in a new folder:
 ```
 cookiecutter https://github.com/GoogleCloudPlatform/solutions-template.git
