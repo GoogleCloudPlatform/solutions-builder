@@ -39,11 +39,11 @@ We recommend the following resources to get familiar with Google Cloud and micro
 
 | Tool  | Required Version | Documentation site |
 |---|---------------|---|
-| gcloud CLI          | Latest        | https://cloud.google.com/sdk/docs/install |
-| Terraform           | &gt;= v1.3.7  | https://developer.hashicorp.com/terraform/downloads |
-| Skaffold (for GKE)  | &gt;= v2.1.0  | https://skaffold.dev/ |
-| Kustomize (for GKE) | &gt;= v4.3.1  | https://kustomize.io/ |
-| Cookiecutter        | &gt;= v2.1.1  | https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter |
+| gcloud CLI          | Latest                 | https://cloud.google.com/sdk/docs/install |
+| Terraform           | &gt;= v1.3.7           | https://developer.hashicorp.com/terraform/downloads |
+| Skaffold (for GKE)  | &gt;= v2.1.0           | https://skaffold.dev/ |
+| Kustomize (for GKE) | &gt;= v4.3.1 (< v5.x) | https://kustomize.io/ |
+| Cookiecutter        | &gt;= v2.1.1           | https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter |
 
 ### Install Cookiecutter ([Github](https://github.com/cookiecutter/cookiecutter)):
 - For Google CloudShell or Linux/Ubuntu:
@@ -78,14 +78,16 @@ Install **skaffold** and **kustomize**:
 ### Other dependencies (Optional)
 - Apple M1 Chip Support for Terraform
 
-If you are running commands on an Apple M1 chip Macbook, make sure run the following to add M1 support for Terraform:
-```
-brew install kreuzwerker/taps/m1-terraform-provider-helper
-m1-terraform-provider-helper activate
-m1-terraform-provider-helper install hashicorp/template -v v2.2.0
-```
+  If you are running commands on an Apple M1 chip Macbook, make sure run the following to add M1 support for Terraform:
+  ```
+  brew install kreuzwerker/taps/m1-terraform-provider-helper
+  m1-terraform-provider-helper activate
+  m1-terraform-provider-helper install hashicorp/template -v v2.2.0
+  ```
 
 ## Getting Started - Creating Solution Skeleton
+
+> If you wish to run the setup in Cloud Shell, please refer to this [Cloud Shell cookbook](/docs/cookbook/cloudshell.md).
 
 ### Create a new Google Cloud project (Optional):
 
@@ -125,45 +127,10 @@ the end of the command to show detailed errors.
 Once `cookiecutter` completes, you will see `<my-project-id>` folder created in
 the path where you ran `cookiecutter` command.
 
-### File structure
+### Deploy the Sample Solution to Google Cloud project
 
-In the newly created folder, you will see the file structure like below:
+Go to the project folder generated from Cookiecutter:
 ```
-<my-project-id>/
-│   README.md
-│   skaffold.yaml
-├── docs
-├── e2e
-├── microservices
-│   └── sample_service
-│       ├── Dockerfile
-│       ├── cloudbuild.yaml
-│       ├── kustomize
-│       ├── requirements.txt
-│       ├── skaffold.yaml
-│       ├── src
-│       └   ...
-│
-└── common/
-│   └── src/
-│   │   Dockerfile
-│   │   requirements.txt
-│   │   skaffold.yaml
-│   │   ...
-│
-└── .github/
-```
-
-
-## Setting up Google Cloud Project
-
-```
-# Set up environmental variables
-export PROJECT_ID=<my-project-id>
-export ADMIN_EMAIL=<my-email>
-export REGION=us-central1
-export API_DOMAIN=localhost
-
 cd <my-project-id>
 export BASE_DIR=$(pwd)
 ```
@@ -175,15 +142,17 @@ gcloud auth login
 gcloud config set project $PROJECT_ID
 ```
 
-Run setup_all.sh to run all steps:
+Choose the microservice deployment options:
 ```
-# Choose the microservice deployment options:
+# Template feature options:
 # "gke": to deploy services to GKE
 # "cloudrun": to deploy services to Cloud Run
 # "gke|cloudrun": to deploy services to both GKE and Cloud Run
 export TEMPLATE_FEATURES="gke"
+```
 
-# Run all setup steps.
+Run all setup steps.
+```
 bash setup/setup_all.sh
 ```
 

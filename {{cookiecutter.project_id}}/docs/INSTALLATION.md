@@ -252,11 +252,11 @@ terraform init -backend-config=bucket=$TF_BUCKET_NAME
 terraform apply -auto-approve
 ```
 
-Once the cluster is up and running, follow the steps in [docs/components/gke.md](docs/components/gke.md).
+Once the cluster is up and running, follow the steps in [docs/components/gke.md](../docs/components/gke.md).
 
 ###  3.5. <a name='Optional:DeployingMicroservicestoCloudRun'></a>Optional: Deploying Microservices to Cloud Run
 
-Follow the steps in [docs/components/cloudrun.md](docs/components/cloudrun.md).
+Follow the steps in [docs/components/cloudrun.md](../docs/components/cloudrun.md).
 
 ###  3.6. <a name='Cleaningupalldeploymentandresources'></a>Cleaning up all deployment and resources
 Run the following to destroy all deployment and resources.

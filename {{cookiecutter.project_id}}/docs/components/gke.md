@@ -6,7 +6,7 @@ In this Solutions Template, we use [`skaffold`](https://skaffold.dev/) to deploy
 
 ### Initialize GKE cluster
 
-If you haven't set up the GKE cluster by following the [INSTALLATION.md](docs/INSTALLATION.md#SetupanddeploySolutionsTemplateAutomated), you can initialize GKE cluster via Terraform. This will create the following resources:
+If you haven't set up the GKE cluster by following the [INSTALLATION.md](../docs/INSTALLATION.md#SetupanddeploySolutionsTemplateAutomated), you can initialize GKE cluster via Terraform. This will create the following resources:
 - A GKE cluster
 - Service account for GKE
 
@@ -23,7 +23,7 @@ Once you complete the development, run the following to deploy to remote GKE clu
 export PROJECT_ID=<my-gcp-project-id>
 export SERVICE_NAME=<service-name> # e.g. sample-service or frontend-angular
 
-skaffold run --default-repo=gcr.io/$PROJECT_ID -m $SERVICE_NAME
+skaffold run -p gke --default-repo=gcr.io/$PROJECT_ID -m $SERVICE_NAME
 ```
 
 Update the ingress with new rules for this deployed service:
@@ -33,7 +33,7 @@ Update the ingress with new rules for this deployed service:
 
 To deploy to remote GKE cluster with local port-forwarding:
 ```
-skaffold dev --default-repo=gcr.io/$PROJECT_ID -m sample-service
+skaffold dev -p gke --default-repo=gcr.io/$PROJECT_ID -m sample-service
 ```
 
 You will see the following output with the local port-forwarding endpoint:
