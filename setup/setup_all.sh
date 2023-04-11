@@ -102,10 +102,15 @@ init_foundation() {
   
   # Enabling GCP services first.
   terraform apply -target=module.project_services -target=module.service_accounts -auto-approve
-  
-  # Initializing Firebase (Only need this for the first time.)
-  # NOTE: the Firebase can only be initialized once (via App Engine).
-  terraform apply -target=module.firebase -var="firebase_init=true" -auto-approve
+
+  # Check if firebase is already initialized
+  KEY_NAME=$(gcloud alpha services api-keys list --filter="displayName='Browser key (auto created by Firebase)'" \
+   --format="value(name)" | wc -l)
+  if [[ "$KEY_NAME" == 0 ]]; then
+    # Initializing Firebase (Only need this for the first time.)
+    # NOTE: the Firebase can only be initialized once (via App Engine).
+    terraform apply -target=module.firebase -var="firebase_init=true" -auto-approve
+  fi
   
   # Run the rest of Terraform
   terraform apply -auto-approve
@@ -114,6 +119,14 @@ init_foundation() {
 # Build all microservices and deploy to the cluster:
 deploy_microservices_to_gke() {
   cd "$BASE_DIR"/terraform/stages/gke
+
+  # Check for GKE-SA service account and delete if exists
+  GKE_SA=gke-sa@${PROJECT_ID}.iam.gserviceaccount.com
+  GKE_SA_EXISTS=$(gcloud iam service-accounts list | grep -c "$GKE_SA")
+  if [[ "$GKE_SA_EXISTS" == 1 ]]; then
+    gcloud iam service-accounts delete "$GKE_SA" --quite
+  fi
+
   terraform init -reconfigure -backend-config=bucket="${TF_BUCKET_NAME}"
   terraform apply -auto-approve
   
@@ -130,8 +143,8 @@ deploy_microservices_to_cloudrun() {
   
   # Allow public access to the all Cloud Run services.
   declare -a service_names=$(gcloud run services list --region=us-central1 --format="value(name)")
-  for service_name in ${service_names[@]}; do
-    gcloud run services add-iam-policy-binding $service_name \
+  for service_name in "${service_names[@]}"; do
+    gcloud run services add-iam-policy-binding "$service_name" \
     --region="${REGION}" \
     --member="allUsers" \
     --role="roles/run.invoker"
