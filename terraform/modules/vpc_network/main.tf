@@ -25,7 +25,7 @@ module "vpc" {
   subnets = [
     {
       subnet_name               = var.vpc_subnetwork
-      subnet_ip                 = "10.0.0.0/16"
+      subnet_ip                 = var.subnet_ip
       subnet_region             = var.region
       subnet_private_access     = "true"
       subnet_flow_logs          = "true"
@@ -41,6 +41,28 @@ module "vpc" {
       var.secondary_ranges_services,
     ]
   }
+
+  firewall_rules = [
+    {
+      name                    = "gke-ingress-nginx-webhook"
+      description             = null
+      direction               = "INGRESS"
+      priority                = null
+      ranges                  = var.master_cidr_ranges
+      source_tags             = null
+      source_service_accounts = null
+      target_tags             = var.node_pools_tags
+      target_service_accounts = null
+      allow = [{
+        protocol = "tcp"
+        ports    = ["8443"]
+      }]
+      deny = []
+      log_config = {
+        metadata = "EXCLUDE_ALL_METADATA"
+      }
+    }
+  ]
 }
 
 # resource "google_compute_network" "vpc_network" {

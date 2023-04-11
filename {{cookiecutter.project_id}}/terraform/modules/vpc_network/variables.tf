@@ -35,6 +35,11 @@ variable "region" {
   description = "GCP region"
 }
 
+variable "subnet_ip" {
+  type        = string
+  description = "10.0.0.0/16"
+}
+
 variable "secondary_ranges_pods" {
   type = object({
     range_name    = string
@@ -47,4 +52,14 @@ variable "secondary_ranges_services" {
     range_name    = string
     ip_cidr_range = string
   })
+}
+
+variable "master_cidr_ranges" {
+  type        = list(any)
+  description = "Master/Control Plan CIDR range to allow communication with GKE Node"
+}
+
+variable "node_pools_tags" {
+  type        = list(any)
+  description = "GKE Nodes tags to allow communication with Master/Control Plan"
 }

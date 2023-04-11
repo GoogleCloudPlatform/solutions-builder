@@ -22,11 +22,3 @@ output "vpc_network" {
 output "vpc_network_id" {
   value = google_compute_network.vpc_network.id
 }
-
-output "api_domain" {
-  value = var.api_domain
-}
-
-output "admin_email" {
-  value = var.admin_email
-}

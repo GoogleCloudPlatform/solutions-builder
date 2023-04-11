@@ -38,6 +38,22 @@ variable "project_id" {
   }
 }
 
+variable "shared_vpc" {
+  description = "Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values."
+  type = object({
+    host_project      = string
+    network           = string
+    subnet            = string
+    serverless_subnet = string
+    region            = string
+    gke_secondary_ranges = object({
+      pods     = string
+      services = string
+    })
+  })
+  default = null
+}
+
 variable "vpc_network" {
   type    = string
   default = "vpc-01"
@@ -69,24 +85,6 @@ variable "bq_dataset_location" {
 variable "storage_multiregion" {
   type    = string
   default = "us"
-}
-
-variable "admin_email" {
-  type = string
-  # TODO: replace with your own email
-  default = "admin@google.com"
-}
-
-variable "api_domain" {
-  type        = string
-  description = "API endpoint domain, excluding protocol"
-  default     = "localhost"
-}
-
-variable "web_app_domain" {
-  type        = string
-  description = "Web app domain, excluding protocol"
-  default     = "localhost:8080"
 }
 
 variable "firebase_init" {

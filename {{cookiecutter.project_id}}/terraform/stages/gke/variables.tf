@@ -32,9 +32,14 @@ variable "project_id" {
   }
 }
 
+variable "vpc_network" {
+  type    = string
+  default = "gke-vpc"
+}
+
 variable "vpc_subnetwork" {
   type    = string
-  default = "vpc-01-subnet-01"
+  default = "gke-vpc-subnet"
 }
 
 variable "region" {
@@ -101,6 +106,18 @@ variable "bq_dataset_location" {
 variable "storage_multiregion" {
   type    = string
   default = "us"
+}
+
+variable "admin_email" {
+  type = string
+  # TODO: replace with your own email
+  default = "admin@google.com"
+}
+
+variable "api_domain" {
+  type        = string
+  description = "API endpoint domain, excluding protocol"
+  default     = "{{cookiecutter.api_domain}}"
 }
 
 variable "web_app_domain" {
