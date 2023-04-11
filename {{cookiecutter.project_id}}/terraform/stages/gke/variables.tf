@@ -23,11 +23,18 @@ variable "env" {
 variable "project_id" {
   type        = string
   description = "GCP Project ID"
+  # TODO: Update below to your PROJECT_ID
+  default = "february-2023-376523"
 
   validation {
     condition     = length(var.project_id) > 0
     error_message = "The project_id value must be an non-empty string."
   }
+}
+
+variable "vpc_subnetwork" {
+  type    = string
+  default = "vpc-01-subnet-01"
 }
 
 variable "region" {
@@ -39,6 +46,44 @@ variable "region" {
     condition     = length(var.region) > 0
     error_message = "The region value must be an non-empty string."
   }
+}
+
+variable "cluster_name" {
+  type    = string
+  default = "main-cluster"
+}
+
+variable "ip_cidr_range" {
+  type    = string
+  default = "10.0.0.0/16"
+}
+
+variable "secondary_ranges_pods" {
+  type = object({
+    range_name    = string
+    ip_cidr_range = string
+  })
+  default = {
+    range_name    = "secondary-pod-range-01"
+    ip_cidr_range = "10.1.0.0/16"
+  }
+}
+
+variable "secondary_ranges_services" {
+  type = object({
+    range_name    = string
+    ip_cidr_range = string
+  })
+  default = {
+    range_name    = "secondary-service-range-01"
+    ip_cidr_range = "10.2.0.0/16"
+  }
+}
+
+variable "master_ipv4_cidr_block" {
+  type        = string
+  description = "The IP range in CIDR notation to use for the hosted master network"
+  default     = "172.16.0.0/28"
 }
 
 variable "firestore_region" {
@@ -56,18 +101,6 @@ variable "bq_dataset_location" {
 variable "storage_multiregion" {
   type    = string
   default = "us"
-}
-
-variable "admin_email" {
-  type = string
-  # TODO: replace with your own email
-  default = "admin@google.com"
-}
-
-variable "api_domain" {
-  type        = string
-  description = "API endpoint domain, excluding protocol"
-  default     = "{{cookiecutter.api_domain}}"
 }
 
 variable "web_app_domain" {

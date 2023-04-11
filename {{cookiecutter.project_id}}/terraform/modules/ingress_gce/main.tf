@@ -34,6 +34,10 @@ locals {
     var.external_ip_address != null ? var.external_ip_address
     : google_compute_global_address.ingress_ip_address[0].name
   )
+  cert_name = (
+    length(kubectl_manifest.managed_certificate) == 0 ? "dummy-cert"
+        : kubectl_manifest.managed_certificate[0].name
+  )
 }
 
 resource "google_compute_global_address" "ingress_ip_address" {
@@ -44,6 +48,7 @@ resource "google_compute_global_address" "ingress_ip_address" {
 }
 
 resource "kubectl_manifest" "managed_certificate" {
+  count        = var.api_domain == "{{cookiecutter.api_domain}}" ? 0 : 1
   yaml_body = <<YAML
 apiVersion: networking.gke.io/v1
 kind: ManagedCertificate
@@ -81,7 +86,7 @@ resource "kubernetes_ingress_v1" "default_ingress" {
     annotations = {
       "kubernetes.io/ingress.class"                 = "gce"
       "kubernetes.io/ingress.global-static-ip-name" = local.global_static_ip_name
-      "networking.gke.io/managed-certificates"      = kubectl_manifest.managed_certificate.name
+      "networking.gke.io/managed-certificates"      = local.cert_name
       "networking.gke.io/v1beta1.FrontendConfig"    = kubectl_manifest.frontend_config.name
     }
   }

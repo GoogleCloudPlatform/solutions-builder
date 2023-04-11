@@ -54,6 +54,12 @@ module "service_accounts" {
   project_number = data.google_project.project.number
 }
 
+resource "google_compute_network" "vpc_network" {
+  name                    = var.vpc_network
+  auto_create_subnetworks = false
+  routing_mode            = "GLOBAL"
+}
+
 module "firebase" {
   depends_on       = [module.project_services]
   source           = "../../modules/firebase"
@@ -62,10 +68,3 @@ module "firebase" {
   firebase_init    = var.firebase_init
 }
 
-module "vpc_network" {
-  depends_on  = [module.project_services]
-  source      = "../../modules/vpc_network"
-  project_id  = var.project_id
-  vpc_network = "default-vpc"
-  region      = var.region
-}

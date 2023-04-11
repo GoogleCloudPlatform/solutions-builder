@@ -17,21 +17,58 @@
 
 # project-specific locals
 locals {
-  lh = join("", ["local", "host"])
+  lh             = join("", ["local", "host"])
+  vpc_network    = data.terraform_remote_state.foundation.outputs.vpc_network
+  vpc_network_id = data.terraform_remote_state.foundation.outputs.vpc_network_id
+  api_domain     = data.terraform_remote_state.foundation.outputs.api_domain
+  admin_email    = data.terraform_remote_state.foundation.outputs.admin_email
 }
 
 data "google_project" "project" {}
 
+data "terraform_remote_state" "foundation" {
+  backend = "gcs"
+  config = {
+    bucket = "${var.project_id}-tfstate"
+    prefix = "stage/foundation"
+  }
+}
+
+resource "google_compute_subnetwork" "subnetwork" {
+  name                     = var.vpc_subnetwork
+  ip_cidr_range            = var.ip_cidr_range
+  region                   = var.region
+  network                  = local.vpc_network_id
+  private_ip_google_access = true
+
+  log_config {
+    aggregation_interval = "INTERVAL_10_MIN"
+    flow_sampling        = 0.7
+    metadata             = "INCLUDE_ALL_METADATA"
+  }
+
+  secondary_ip_range = [
+    var.secondary_ranges_pods,
+    var.secondary_ranges_services
+  ]
+}
+
 module "gke" {
-  source         = "../../modules/gke"
-  project_id     = var.project_id
-  cluster_name   = "main-cluster"
-  namespace      = "default"
-  vpc_network    = "default-vpc"
-  region         = var.region
-  min_node_count = 1
-  max_node_count = 10
-  machine_type   = "n1-standard-4"
+  depends_on                = [google_compute_subnetwork.subnetwork]
+  source                    = "../../modules/gke"
+  project_id                = var.project_id
+  cluster_name              = var.cluster_name
+  namespace                 = "default"
+  vpc_network               = local.vpc_network
+  vpc_subnetwork            = var.vpc_subnetwork
+  region                    = var.region
+  secondary_ranges_pods     = var.secondary_ranges_pods
+  secondary_ranges_services = var.secondary_ranges_services
+  master_ipv4_cidr_block    = var.master_ipv4_cidr_block
+  enable_private_nodes      = true
+  min_node_count            = 1
+  max_node_count            = 10
+  machine_type              = "n1-standard-4"
 
   # This service account will be created in both GCP and GKE, and will be
   # used for workload federation in all microservices.
@@ -47,10 +84,10 @@ module "ingress" {
 
   source            = "../../modules/ingress_nginx"
   project_id        = var.project_id
-  cert_issuer_email = var.admin_email
+  cert_issuer_email = local.admin_email
   region            = var.region
 
   # API domain, excluding protocols. E.g. example.com.
-  api_domain        = var.api_domain
+  api_domain        = local.api_domain
   cors_allow_origin = "http://${local.lh}:4200,http://${local.lh}:3000,http://${var.web_app_domain},https://${var.web_app_domain}"
 }

@@ -38,6 +38,11 @@ variable "project_id" {
   }
 }
 
+variable "vpc_network" {
+  type    = string
+  default = "vpc-01"
+}
+
 variable "region" {
   type        = string
   description = "Default GCP region"

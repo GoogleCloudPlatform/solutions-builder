@@ -27,9 +27,11 @@ module "gke_cluster" {
   region                     = var.region
   regional                   = true
   network                    = var.vpc_network
-  subnetwork                 = "vpc-01-subnet-01"
-  ip_range_pods              = "secondary-pod-range-01"
-  ip_range_services          = "secondary-service-range-01"
+  subnetwork                 = var.vpc_subnetwork
+  enable_private_nodes       = var.enable_private_nodes
+  master_ipv4_cidr_block     = var.master_ipv4_cidr_block
+  ip_range_pods              = var.secondary_ranges_pods.range_name
+  ip_range_services          = var.secondary_ranges_services.range_name
   http_load_balancing        = true
   identity_namespace         = "enabled"
   horizontal_pod_autoscaling = true
@@ -75,6 +77,21 @@ module "gke_cluster" {
 resource "time_sleep" "wait_for_gke" {
   depends_on      = [module.gke_cluster]
   create_duration = "120s"
+}
+
+module "cloud-nat" {
+  count = var.enable_private_nodes ? 1 : 0
+  source                             = "terraform-google-modules/cloud-nat/google"
+  version                            = "~> 1.2"
+  name                               = format("%s-%s-nat", var.project_id, var.region)
+  create_router                      = true
+  router                             = format("%s-%s-router", var.project_id, var.region)
+  project_id                         = var.project_id
+  region                             = var.region
+  network                            = var.vpc_network
+  source_subnetwork_ip_ranges_to_nat = var.source_subnetwork_ip_ranges_to_nat
+  log_config_enable                  = true
+  log_config_filter                  = "ERRORS_ONLY"
 }
 
 module "gke-workload-identity" {

@@ -15,36 +15,6 @@
  *
  */
 
-variable "project_id" {
-  type        = string
-  description = "specify the project name"
-}
-
-variable "vpc_network" {
-  type        = string
-  description = "specify the vpc name"
-}
-
-variable "vpc_subnetwork" {
-  type        = string
-  description = "specify the vpc subnetwork"
-}
-
-variable "region" {
-  type        = string
-  description = "GCP region"
-}
-
-variable "secondary_ranges_pods" {
-  type = object({
-    range_name    = string
-    ip_cidr_range = string
-  })
-}
-
-variable "secondary_ranges_services" {
-  type = object({
-    range_name    = string
-    ip_cidr_range = string
-  })
+output "default-compute-sa" {
+  value = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
 }

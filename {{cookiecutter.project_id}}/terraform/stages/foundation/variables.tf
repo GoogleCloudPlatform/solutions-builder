@@ -17,7 +17,7 @@
 
 variable "feature_flags" {
   type        = string
-  description = "A comma-seperated string of feature flags to enable specific terraform blocks."
+  description = "A comma-separated string of feature flags to enable specific terraform blocks."
 
   # TODO: Use Cookiecutter to replace this string.
   default = "gke,gke-ingress"
@@ -36,6 +36,11 @@ variable "project_id" {
     condition     = length(var.project_id) > 0
     error_message = "The project_id value must be an non-empty string."
   }
+}
+
+variable "vpc_network" {
+  type    = string
+  default = "vpc-01"
 }
 
 variable "region" {

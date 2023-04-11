@@ -54,6 +54,12 @@ module "service_accounts" {
   project_number = data.google_project.project.number
 }
 
+resource "google_compute_network" "vpc_network" {
+  name                    = var.vpc_network
+  auto_create_subnetworks = false
+  routing_mode            = "GLOBAL"
+}
+
 module "firebase" {
   depends_on       = [module.project_services]
   source           = "../../modules/firebase"

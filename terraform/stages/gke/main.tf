@@ -17,37 +17,49 @@
 
 # project-specific locals
 locals {
-  lh = join("", ["local", "host"])
-  default_service_account = data.terraform_remote_state.foundation.outputs.default-compute-sa
+  lh             = join("", ["local", "host"])
+  vpc_network    = data.terraform_remote_state.foundation.outputs.vpc_network
+  vpc_network_id = data.terraform_remote_state.foundation.outputs.vpc_network_id
+  api_domain     = data.terraform_remote_state.foundation.outputs.api_domain
+  admin_email    = data.terraform_remote_state.foundation.outputs.admin_email
 }
 
 data "google_project" "project" {}
 
 data "terraform_remote_state" "foundation" {
-  backend       = "gcs"
+  backend = "gcs"
   config = {
     bucket = "${var.project_id}-tfstate"
     prefix = "stage/foundation"
   }
 }
 
-module "vpc_network" {
-  source                    = "../../modules/vpc_network"
-  project_id                = var.project_id
-  region                    = var.region
-  vpc_network               = var.vpc_network
-  vpc_subnetwork            = var.vpc_subnetwork
-  secondary_ranges_pods     = var.secondary_ranges_pods
-  secondary_ranges_services = var.secondary_ranges_services
+resource "google_compute_subnetwork" "subnetwork" {
+  name                     = var.vpc_subnetwork
+  ip_cidr_range            = var.ip_cidr_range
+  region                   = var.region
+  network                  = local.vpc_network_id
+  private_ip_google_access = true
+
+  log_config {
+    aggregation_interval = "INTERVAL_10_MIN"
+    flow_sampling        = 0.7
+    metadata             = "INCLUDE_ALL_METADATA"
+  }
+
+  secondary_ip_range = [
+    var.secondary_ranges_pods,
+    var.secondary_ranges_services
+  ]
 }
 
 module "gke" {
-  depends_on                = [module.vpc_network]
+  depends_on                = [google_compute_subnetwork.subnetwork]
   source                    = "../../modules/gke"
   project_id                = var.project_id
   cluster_name              = var.cluster_name
   namespace                 = "default"
-  vpc_network               = var.vpc_network
+  vpc_network               = local.vpc_network
   vpc_subnetwork            = var.vpc_subnetwork
   region                    = var.region
   secondary_ranges_pods     = var.secondary_ranges_pods
@@ -72,10 +84,10 @@ module "ingress" {
 
   source            = "../../modules/ingress_nginx"
   project_id        = var.project_id
-  cert_issuer_email = var.admin_email
+  cert_issuer_email = local.admin_email
   region            = var.region
 
   # API domain, excluding protocols. E.g. example.com.
-  api_domain        = var.api_domain
+  api_domain        = local.api_domain
   cors_allow_origin = "http://${local.lh}:4200,http://${local.lh}:3000,http://${var.web_app_domain},https://${var.web_app_domain}"
 }

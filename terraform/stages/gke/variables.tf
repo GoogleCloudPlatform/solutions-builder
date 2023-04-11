@@ -23,16 +23,13 @@ variable "env" {
 variable "project_id" {
   type        = string
   description = "GCP Project ID"
+  # TODO: Update below to your PROJECT_ID
+  default = "february-2023-376523"
 
   validation {
     condition     = length(var.project_id) > 0
     error_message = "The project_id value must be an non-empty string."
   }
-}
-
-variable "vpc_network" {
-  type    = string
-  default = "vpc-01"
 }
 
 variable "vpc_subnetwork" {
@@ -54,6 +51,11 @@ variable "region" {
 variable "cluster_name" {
   type    = string
   default = "main-cluster"
+}
+
+variable "ip_cidr_range" {
+  type    = string
+  default = "10.0.0.0/16"
 }
 
 variable "secondary_ranges_pods" {
@@ -99,18 +101,6 @@ variable "bq_dataset_location" {
 variable "storage_multiregion" {
   type    = string
   default = "us"
-}
-
-variable "admin_email" {
-  type = string
-  # TODO: replace with your own email
-  default = "admin@google.com"
-}
-
-variable "api_domain" {
-  type        = string
-  description = "API endpoint domain, excluding protocol"
-  default     = "localhost"
 }
 
 variable "web_app_domain" {
