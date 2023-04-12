@@ -16,9 +16,5 @@
  */
 
 output "vpc_network" {
-  value = google_compute_network.vpc_network.name
-}
-
-output "vpc_network_id" {
-  value = google_compute_network.vpc_network.id
+  value = module.shared_vpc.network_name
 }

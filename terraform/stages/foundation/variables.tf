@@ -56,7 +56,22 @@ variable "shared_vpc" {
 
 variable "vpc_network" {
   type    = string
-  default = "vpc-01"
+  default = "default-vpc"
+}
+
+variable "vpc_subnetwork" {
+  type    = string
+  default = "default-vpc-subnet"
+}
+
+variable "serverless_subnet" {
+  type    = string
+  default = "serverless-subnet"
+}
+
+variable "vpc_connector_name" {
+  type    = string
+  default = "serverless-connector"
 }
 
 variable "region" {

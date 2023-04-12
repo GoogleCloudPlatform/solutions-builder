@@ -1,3 +1,4 @@
+
 /**
  * Copyright 2022 Google LLC
  *
@@ -15,6 +16,18 @@
  *
  */
 
-output "vpc_network" {
-  value = module.shared_vpc.network_name
+module "serverless-connector" {
+  source     = "terraform-google-modules/network/google//modules/vpc-serverless-connector-beta"
+  version    = "~> 6.0"
+  project_id = var.project_id
+  vpc_connectors = [{
+    name        = var.vpc_connector_name
+    region      = var.region
+    subnet_name = var.subnet_name
+    host_project_id = var.host_project_id
+    max_throughput  = 1000
+    min_instances = 2
+    max_instances = 10
+    }
+  ]
 }

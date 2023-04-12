@@ -15,6 +15,6 @@
  *
  */
 
-output "vpc_network" {
-  value = module.shared_vpc.network_name
+output "network_name" {
+  value = module.vpc.network_name
 }

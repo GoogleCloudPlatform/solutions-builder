@@ -36,6 +36,19 @@ locals {
     "secretmanager.googleapis.com",        # Secret Manager
     "storage.googleapis.com",              # Cloud Storage
   ]
+
+  shared_vpc_project = try(var.shared_vpc.host_project, null)
+  use_shared_vpc     = var.shared_vpc != null
+  region             = (local.use_shared_vpc ? var.shared_vpc.region : var.region)
+
+  network_config = {
+    host_project      = (local.use_shared_vpc ? var.shared_vpc.host_project : var.project_id)
+    network           = (local.use_shared_vpc ? var.shared_vpc.network : var.vpc_network)
+    subnet            = (local.use_shared_vpc ? var.shared_vpc.subnet : var.vpc_subnetwork)
+    serverless_subnet = (local.use_shared_vpc ? var.shared_vpc.serverless_subnet : var.serverless_subnet)
+    region            = (local.use_shared_vpc ? var.shared_vpc.region : var.region)
+  }
+
 }
 
 data "google_project" "project" {}
@@ -54,10 +67,14 @@ module "service_accounts" {
   project_number = data.google_project.project.number
 }
 
-resource "google_compute_network" "vpc_network" {
-  name                    = var.vpc_network
-  auto_create_subnetworks = false
-  routing_mode            = "GLOBAL"
+module "shared_vpc" {
+  depends_on        = [module.project_services]
+  source            = "../../modules/shared_vpc"
+  project_id        = var.project_id
+  vpc_network       = var.vpc_network
+  region            = var.region
+  subnetwork        = var.vpc_subnetwork
+  serverless_subnet = var.serverless_subnet
 }
 
 module "firebase" {

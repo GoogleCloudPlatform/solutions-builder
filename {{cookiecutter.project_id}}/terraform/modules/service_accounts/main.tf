@@ -55,7 +55,7 @@ resource "google_project_iam_member" "default-compute-sa-iam" {
 
 module "service_accounts" {
   source       = "terraform-google-modules/service-accounts/google"
-  version      = "~> 3.0"
+  version      = "~> 4.1"
   project_id   = var.project_id
   names        = ["deployment-${var.env}"]
   display_name = "deployment-${var.env}"

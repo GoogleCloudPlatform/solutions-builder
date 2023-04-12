@@ -15,6 +15,22 @@
  *
  */
 
-output "vpc_network" {
-  value = module.shared_vpc.network_name
+variable "project_id" {
+  type        = string
+}
+
+variable "region" {
+  type        = string
+}
+
+variable "subnet_name" {
+  type        = string
+}
+
+variable "host_project_id" {
+  type        = string
+}
+
+variable "vpc_connector_name" {
+  type = string
 }

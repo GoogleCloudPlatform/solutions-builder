@@ -23,8 +23,6 @@ variable "env" {
 variable "project_id" {
   type        = string
   description = "GCP Project ID"
-  # TODO: Update below to your PROJECT_ID
-  default = "february-2023-376523"
 
   validation {
     condition     = length(var.project_id) > 0
@@ -124,10 +122,4 @@ variable "web_app_domain" {
   type        = string
   description = "Web app domain, excluding protocol"
   default     = "localhost:8080"
-}
-
-variable "firebase_init" {
-  type        = bool
-  description = "Whether to initialize Firebase/Firestore."
-  default     = false
 }
