@@ -42,6 +42,9 @@ module "vpc" {
     ]
   }
 
+  # Create a firewall rule to allow master to use port 8443 to validate
+  # the ingress in a private GKE cluster
+  # Ref: https://github.com/elastic/cloud-on-k8s/issues/1437
   firewall_rules = [
     {
       name                    = "gke-ingress-nginx-webhook"

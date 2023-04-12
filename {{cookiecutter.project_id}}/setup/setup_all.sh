@@ -104,6 +104,7 @@ init_foundation() {
   terraform apply -target=module.project_services -target=module.service_accounts -auto-approve
 
   # Check if firebase is already initialized
+  # FIXME: This may not be reliable. The API key will only be created when creating a Firebase app on the Console UI.
   KEY_NAME=$(gcloud alpha services api-keys list --filter="displayName='Browser key (auto created by Firebase)'" \
    --format="value(name)" | wc -l)
   if [[ "$KEY_NAME" == 0 ]]; then
@@ -119,13 +120,6 @@ init_foundation() {
 # Build all microservices and deploy to the cluster:
 deploy_microservices_to_gke() {
   cd "$BASE_DIR"/terraform/stages/gke
-
-  # Check for GKE-SA service account and delete if exists
-  GKE_SA=gke-sa@${PROJECT_ID}.iam.gserviceaccount.com
-  GKE_SA_EXISTS=$(gcloud iam service-accounts list | grep -c "$GKE_SA")
-  if [[ "$GKE_SA_EXISTS" == 1 ]]; then
-    gcloud iam service-accounts delete "$GKE_SA" --quite
-  fi
 
   terraform init -reconfigure -backend-config=bucket="${TF_BUCKET_NAME}"
   terraform apply -auto-approve

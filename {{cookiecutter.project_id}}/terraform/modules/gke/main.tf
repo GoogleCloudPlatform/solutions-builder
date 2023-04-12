@@ -74,6 +74,7 @@ module "gke_cluster" {
   }
 }
 
+# TODO: Define GKE node pool separate from the cluster
 #resource "google_container_node_pool" "general" {
 #  name       = "general"
 #  cluster    = google_container_cluster.primary.id

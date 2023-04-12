@@ -51,10 +51,10 @@ declare -a EnvVars=(
   "ORGANIZATION_ID"
   "BILLING_ACCOUNT"
 )
-for variable in ${EnvVars[@]}; do
+for variable in "${EnvVars[@]}"; do
   if [[ -z "${!variable}" ]]; then
     printf "$variable is not set.\n"
-    exit -1
+    exit 1
   fi
 done
 
@@ -105,8 +105,8 @@ build_template() {
 # Create a new Google Cloud project
 create_new_project() {
   export PROJECT_ID=solutemp-e2e-$(uuidgen | head -c 8 | awk '{print tolower($0)}')
-  gcloud projects create $PROJECT_ID --folder $FOLDER_ID --quiet
-  gcloud config set project $PROJECT_ID --quiet
+  gcloud projects create "$PROJECT_ID" --folder "$FOLDER_ID" --quiet
+  gcloud config set project "$PROJECT_ID" --quiet
 }
 
 install_dependencies() {
@@ -122,10 +122,10 @@ setup_working_folder() {
   mkdir -p $OUTPUT_FOLDER
 
   # Create skeleton code in a new folder with Cookiecutter
-  cookiecutter . --overwrite-if-exists --no-input -o $OUTPUT_FOLDER project_id=$PROJECT_ID admin_email=$ADMIN_EMAIL
+  cookiecutter . --overwrite-if-exists --no-input -o $OUTPUT_FOLDER project_id="$PROJECT_ID" admin_email=$ADMIN_EMAIL
 
   # Set up working environment:
-  cd $OUTPUT_FOLDER/$PROJECT_ID
+  cd $OUTPUT_FOLDER/"$PROJECT_ID"
   export API_DOMAIN=localhost
   export BASE_DIR=$(pwd)
   echo "Current directory: ${BASE_DIR}"
@@ -135,14 +135,14 @@ setup_working_folder() {
 # Test with API endpoint (GKE):
 test_api_endpoints_gke() {
   # Run API e2e tests
-  cd $BASE_DIR
+  cd "$BASE_DIR"
   bash e2e/gke_api_tests/run_api_tests.sh
   GKE_PYTEST_STATUS=${PIPESTATUS[0]}
 }
 
 # Test with API endpoint (CloudRun):
 test_api_endpoints_cloudrun() {
-  cd $BASE_DIR
+  cd "$BASE_DIR"
 
   # Run API e2e tests
   mkdir -p .test_output
@@ -165,7 +165,7 @@ print_api_test_result() {
 }
 
 clean_up_gke() {
-  cd $BASE_DIR/terraform/stages/gke
+  cd "$BASE_DIR"/terraform/stages/gke
   # To restore the TF state from a remote bucket. This is in case the state are
   # lost due to change of the local environment when executing TF.
   terraform init -reconfigure -backend-config=bucket=$TF_BUCKET_NAME
@@ -175,8 +175,8 @@ clean_up_gke() {
 clean_up_cloudrun() {
   # Delete all Cloud Run services.
   declare -a service_names=$(gcloud run services list --region=us-central1 --format="value(name)")
-  for service_name in ${service_names[@]}; do
-    gcloud run services delete $service_name
+  for service_name in "${service_names[@]}"; do
+    gcloud run services delete "$service_name"
   done
 }
 
@@ -199,9 +199,16 @@ clean_up() {
       esac
     done
 
-    cd $BASE_DIR/terraform/stages/foundation
-    terraform init -reconfigure -backend-config=bucket=$TF_BUCKET_NAME
+    cd "$BASE_DIR"/terraform/stages/foundation
+    terraform init -reconfigure -backend-config=bucket="${TF_BUCKET_NAME}"
     terraform destroy -auto-approve
+
+    # Check for GKE-SA service account and delete if exists
+    GKE_SA=gke-sa@${PROJECT_ID}.iam.gserviceaccount.com
+    GKE_SA_EXISTS=$(gcloud iam service-accounts list | grep -c "$GKE_SA")
+    if [[ "$GKE_SA_EXISTS" == 1 ]]; then
+      gcloud iam service-accounts delete "$GKE_SA" --quite
+    fi
 
     # FIXME: This is disabled for now until we find a way to create new project
     # for every e2e test.
@@ -215,8 +222,8 @@ clean_up() {
 # Deleting project. (Disabled)
 delete_project() {
   echo "PROJECT_ID=${PROJECT_ID}"
-  gcloud projects delete $PROJECT_ID --quiet
-  rm -rf $OUTPUT_FOLDER/$PROJECT_ID
+  gcloud projects delete "$PROJECT_ID" --quiet
+  rm -rf $OUTPUT_FOLDER/"$PROJECT_ID"
 }
 
 # Start e2e test steps

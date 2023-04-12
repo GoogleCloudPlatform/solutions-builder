@@ -35,7 +35,7 @@ locals {
     : google_compute_global_address.ingress_ip_address[0].name
   )
   cert_name = (
-    length(kubectl_manifest.managed_certificate) == 0 ? "dummy-cert"
+    length(kubectl_manifest.managed_certificate) == 0 ? "default-cert"
         : kubectl_manifest.managed_certificate[0].name
   )
 }
