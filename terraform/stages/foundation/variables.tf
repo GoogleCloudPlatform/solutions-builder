@@ -17,7 +17,7 @@
 
 variable "feature_flags" {
   type        = string
-  description = "A comma-seperated string of feature flags to enable specific terraform blocks."
+  description = "A comma-separated string of feature flags to enable specific terraform blocks."
 
   # TODO: Use Cookiecutter to replace this string.
   default = "gke,gke-ingress"
@@ -35,6 +35,49 @@ variable "project_id" {
   validation {
     condition     = length(var.project_id) > 0
     error_message = "The project_id value must be an non-empty string."
+  }
+}
+
+variable "vpc_network" {
+  type    = string
+  default = "default-vpc"
+}
+
+variable "vpc_subnetwork" {
+  type    = string
+  default = "default-vpc-subnet"
+}
+
+variable "ip_cidr_range" {
+  type    = string
+  default = "10.0.0.0/16"
+}
+
+variable "master_ipv4_cidr_block" {
+  type        = string
+  description = "The IP range in CIDR notation to use for the hosted master network"
+  default     = "172.16.0.0/28"
+}
+
+variable "secondary_ranges_pods" {
+  type = object({
+    range_name    = string
+    ip_cidr_range = string
+  })
+  default = {
+    range_name    = "secondary-pod-range-01"
+    ip_cidr_range = "10.1.0.0/16"
+  }
+}
+
+variable "secondary_ranges_services" {
+  type = object({
+    range_name    = string
+    ip_cidr_range = string
+  })
+  default = {
+    range_name    = "secondary-service-range-01"
+    ip_cidr_range = "10.2.0.0/16"
   }
 }
 
@@ -64,24 +107,6 @@ variable "bq_dataset_location" {
 variable "storage_multiregion" {
   type    = string
   default = "us"
-}
-
-variable "admin_email" {
-  type = string
-  # TODO: replace with your own email
-  default = "admin@google.com"
-}
-
-variable "api_domain" {
-  type        = string
-  description = "API endpoint domain, excluding protocol"
-  default     = "localhost"
-}
-
-variable "web_app_domain" {
-  type        = string
-  description = "Web app domain, excluding protocol"
-  default     = "localhost:8080"
 }
 
 variable "firebase_init" {

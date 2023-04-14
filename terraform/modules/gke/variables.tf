@@ -30,9 +30,20 @@ variable "vpc_network" {
   description = "specify the vpc name"
 }
 
+variable "vpc_subnetwork" {
+  type        = string
+  description = "specify the vpc subnetwork"
+}
+
 variable "region" {
   type        = string
   description = "cluster region"
+}
+
+variable "enable_private_nodes" {
+  type        = bool
+  description = "Whether nodes have internal IP addresses only"
+  default     = true
 }
 
 variable "min_node_count" {
@@ -76,4 +87,29 @@ variable "namespace" {
 variable "service_account_name" {
   type        = string
   description = "Google Service Account name"
+}
+
+variable "secondary_ranges_pods" {
+  type = object({
+    range_name    = string
+    ip_cidr_range = string
+  })
+}
+
+variable "secondary_ranges_services" {
+  type = object({
+    range_name    = string
+    ip_cidr_range = string
+  })
+}
+
+variable "master_ipv4_cidr_block" {
+  type        = string
+  description = "The IP range in CIDR notation to use for the hosted master network"
+}
+
+variable "source_subnetwork_ip_ranges_to_nat" {
+  type        = string
+  description = "Defaults to ALL_SUBNETWORKS_ALL_IP_RANGES. How NAT should be configured per Subnetwork. Valid values include: ALL_SUBNETWORKS_ALL_IP_RANGES, ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES, LIST_OF_SUBNETWORKS. Changing this forces a new NAT to be created."
+  default     = "ALL_SUBNETWORKS_ALL_IP_RANGES"
 }
