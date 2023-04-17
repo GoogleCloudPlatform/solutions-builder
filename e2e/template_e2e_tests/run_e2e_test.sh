@@ -46,10 +46,10 @@ SECONDS=0
 declare -a EnvVars=(
   "PROJECT_ID"
 )
-for variable in ${EnvVars[@]}; do
+for variable in "${EnvVars[@]}"; do
   if [[ -z "${!variable}" ]]; then
     printf "$variable is not set.\n"
-    exit -1
+    exit 1
   fi
 done
 
@@ -95,8 +95,8 @@ build_template() {
 # Create a new Google Cloud project
 create_new_project() {
   export PROJECT_ID=solutemp-e2e-$(uuidgen | head -c 8 | awk '{print tolower($0)}')
-  gcloud projects create $PROJECT_ID --folder $FOLDER_ID --quiet
-  gcloud config set project $PROJECT_ID --quiet
+  gcloud projects create "${PROJECT_ID}" --folder "$FOLDER_ID" --quiet
+  gcloud config set project "${PROJECT_ID}" --quiet
 }
 
 install_dependencies() {
@@ -112,10 +112,10 @@ setup_working_folder() {
   mkdir -p $OUTPUT_FOLDER
 
   # Create skeleton code in a new folder with Cookiecutter
-  cookiecutter . --overwrite-if-exists --no-input -o $OUTPUT_FOLDER project_id=$PROJECT_ID admin_email=$ADMIN_EMAIL
+  cookiecutter . --overwrite-if-exists --no-input -o $OUTPUT_FOLDER project_id="${PROJECT_ID}" admin_email=$ADMIN_EMAIL
 
   # Set up working environment:
-  cd $OUTPUT_FOLDER/$PROJECT_ID
+  cd $OUTPUT_FOLDER/"${PROJECT_ID}"
   export API_DOMAIN=localhost
   export BASE_DIR=$(pwd)
   echo "Current directory: ${BASE_DIR}"
@@ -148,14 +148,14 @@ grant_iam_to_runner_sa() {
 # Test with API endpoint (GKE):
 test_api_endpoints_gke() {
   # Run API e2e tests
-  cd $BASE_DIR
+  cd "${BASE_DIR}"
   bash e2e/gke_api_tests/run_api_tests.sh
   GKE_PYTEST_STATUS=${PIPESTATUS[0]}
 }
 
 # Test with API endpoint (CloudRun):
 test_api_endpoints_cloudrun() {
-  cd $BASE_DIR
+  cd "${BASE_DIR}"
 
   # Run API e2e tests
   mkdir -p .test_output
@@ -173,13 +173,13 @@ print_api_test_result() {
     echo -e '\033[31m ERROR: API Tests failed \033[0m'
     echo "GKE_PYTEST_STATUS=$GKE_PYTEST_STATUS"
     echo "CLOUDRUN_PYTEST_STATUS=$CLOUDRUN_PYTEST_STATUS"
-    exit -1
+    exit 1
   fi
 }
 
 clean_up_gke() {
   export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT="terraform-runner@${PROJECT_ID}.iam.gserviceaccount.com"
-  cd $BASE_DIR/terraform/stages/gke
+  cd "${BASE_DIR}"/terraform/stages/gke
   # To restore the TF state from a remote bucket. This is in case the state are
   # lost due to change of the local environment when executing TF.
   terraform init -reconfigure -backend-config=bucket=$TF_BUCKET_NAME
@@ -189,8 +189,8 @@ clean_up_gke() {
 clean_up_cloudrun() {
   # Delete all Cloud Run services.
   declare -a service_names=$(gcloud run services list --region=us-central1 --format="value(name)")
-  for service_name in ${service_names[@]}; do
-    gcloud run services delete $service_name
+  for service_name in "${service_names[@]}"; do
+    gcloud run services delete "$service_name"
   done
 }
 
@@ -199,7 +199,7 @@ clean_up() {
   if [[ "$skip_cleanup" ==  "" ]]; then
     printf "Cleaning up ${PROJECT_ID}...\n"
 
-    echo "BASE_DIR=$BASE_DIR"
+    echo "BASE_DIR=${BASE_DIR}"
     export TF_BUCKET_NAME="${PROJECT_ID}-tfstate"
 
     # Cleaning up services based on $TEMPLATE_FEATURES
@@ -213,9 +213,16 @@ clean_up() {
       esac
     done
 
-    cd $BASE_DIR/terraform/stages/foundation
-    terraform init -reconfigure -backend-config=bucket=$TF_BUCKET_NAME
+    cd "${BASE_DIR}"/terraform/stages/foundation
+    terraform init -reconfigure -backend-config=bucket="${TF_BUCKET_NAME}"
     terraform destroy -auto-approve
+
+    # Check for GKE-SA service account and delete if exists
+    GKE_SA=gke-sa@${PROJECT_ID}.iam.gserviceaccount.com
+    GKE_SA_EXISTS=$(gcloud iam service-accounts list | grep -c "$GKE_SA")
+    if [[ "$GKE_SA_EXISTS" == 1 ]]; then
+      gcloud iam service-accounts delete "$GKE_SA" --quite
+    fi
 
     # FIXME: This is disabled for now until we find a way to create new project
     # for every e2e test.
@@ -229,8 +236,8 @@ clean_up() {
 # Deleting project. (Disabled)
 delete_project() {
   echo "PROJECT_ID=${PROJECT_ID}"
-  gcloud projects delete $PROJECT_ID --quiet
-  rm -rf $OUTPUT_FOLDER/$PROJECT_ID
+  gcloud projects delete "${PROJECT_ID}" --quiet
+  rm -rf $OUTPUT_FOLDER/"${PROJECT_ID}"
 }
 
 # Start e2e test steps
@@ -243,6 +250,7 @@ echo "PROJECT_ID=${PROJECT_ID}"
 export GKE_PYTEST_STATUS=0
 export CLOUDRUN_PYTEST_STATUS=0
 export TEMPLATE_FEATURES="gke" # "gke|cloudrun"
+export RUN_E2E_TEST="true"
 
 init_env_vars
 build_template
@@ -255,5 +263,5 @@ test_api_endpoints_gke
 clean_up
 print_api_test_result
 
-echo "PROJECT_ID=$PROJECT_ID"
+echo "PROJECT_ID=${PROJECT_ID}"
 echo "Elapsed Time: $(expr $SECONDS / 60) minutes"
