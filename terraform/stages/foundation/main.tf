@@ -63,9 +63,13 @@ module "firebase" {
 }
 
 module "vpc_network" {
-  depends_on  = [module.project_services]
-  source      = "../../modules/vpc_network"
-  project_id  = var.project_id
-  vpc_network = "default-vpc"
-  region      = var.region
+  source                    = "../../modules/vpc_network"
+  project_id                = var.project_id
+  vpc_network               = var.vpc_network
+  region                    = var.region
+  vpc_subnetwork            = var.vpc_subnetwork
+  subnet_ip                 = var.ip_cidr_range
+  secondary_ranges_pods     = var.secondary_ranges_pods
+  secondary_ranges_services = var.secondary_ranges_services
 }
+

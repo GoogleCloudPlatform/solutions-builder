@@ -41,6 +41,11 @@ variable "region" {
   }
 }
 
+variable "cluster_name" {
+  type    = string
+  default = "main-cluster"
+}
+
 variable "firestore_region" {
   type        = string
   description = "Firestore Region"
@@ -74,10 +79,4 @@ variable "web_app_domain" {
   type        = string
   description = "Web app domain, excluding protocol"
   default     = "{{cookiecutter.api_domain}}:8080"
-}
-
-variable "firebase_init" {
-  type        = bool
-  description = "Whether to initialize Firebase/Firestore."
-  default     = false
 }

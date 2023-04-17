@@ -6,7 +6,7 @@ In this Solutions Template, we use [`skaffold`](https://skaffold.dev/) to deploy
 
 ### Initialize GKE cluster
 
-If you haven't set up the GKE cluster by following the [INSTALLATION.md](../docs/INSTALLATION.md#SetupanddeploySolutionsTemplateAutomated), you can initialize GKE cluster via Terraform. This will create the following resources:
+If you haven't set up the GKE cluster by following the [INSTALLATION.md](../INSTALLATION.md#SetupanddeploySolutionsTemplateAutomated), you can initialize GKE cluster via Terraform. This will create the following resources:
 - A GKE cluster
 - Service account for GKE
 

@@ -17,21 +17,41 @@
 
 # project-specific locals
 locals {
-  lh = join("", ["local", "host"])
+  lh                        = join("", ["local", "host"])
+  vpc_network               = data.terraform_remote_state.foundation.outputs.vpc_network
+  vpc_subnetwork            = data.terraform_remote_state.foundation.outputs.vpc_subnetwork
+  ip_cidr_range             = data.terraform_remote_state.foundation.outputs.ip_cidr_range
+  secondary_ranges_pods     = data.terraform_remote_state.foundation.outputs.secondary_ranges_pods
+  secondary_ranges_services = data.terraform_remote_state.foundation.outputs.secondary_ranges_services
+  master_ipv4_cidr_block    = data.terraform_remote_state.foundation.outputs.master_ipv4_cidr_block
 }
 
 data "google_project" "project" {}
 
+
+data "terraform_remote_state" "foundation" {
+  backend = "gcs"
+  config = {
+    bucket = "${var.project_id}-tfstate"
+    prefix = "stage/foundation"
+  }
+}
+
 module "gke" {
-  source         = "../../modules/gke"
-  project_id     = var.project_id
-  cluster_name   = "main-cluster"
-  namespace      = "default"
-  vpc_network    = "default-vpc"
-  region         = var.region
-  min_node_count = 1
-  max_node_count = 10
-  machine_type   = "n1-standard-4"
+  source                    = "../../modules/gke"
+  project_id                = var.project_id
+  cluster_name              = var.cluster_name
+  namespace                 = "default"
+  vpc_network               = local.vpc_network
+  vpc_subnetwork            = local.vpc_subnetwork
+  region                    = var.region
+  secondary_ranges_pods     = local.secondary_ranges_pods
+  secondary_ranges_services = local.secondary_ranges_services
+  master_ipv4_cidr_block    = local.master_ipv4_cidr_block
+  enable_private_nodes      = true
+  min_node_count            = 1
+  max_node_count            = 10
+  machine_type              = "n1-standard-4"
 
   # This service account will be created in both GCP and GKE, and will be
   # used for workload federation in all microservices.
