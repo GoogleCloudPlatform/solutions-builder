@@ -32,6 +32,12 @@ profiles:
     kustomize:
       paths:
       - ./kustomize/base
+    hooks:
+      before:
+      - host:
+          dir: ./kustomize/base
+          command: ["sh", "-c",
+            "envsubst < properties.env > properties.rendered.env"]
   # Simple deployment using kubectl.
   deploy:
     kubectl: {}
@@ -43,5 +49,4 @@ profiles:
       - cloudrun_manifests/*
   deploy:
     cloudrun:
-      projectid: {{cookiecutter.project_id}}
       region: {{cookiecutter.gcp_region}}
