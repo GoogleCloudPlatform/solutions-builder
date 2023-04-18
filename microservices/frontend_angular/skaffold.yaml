@@ -32,6 +32,7 @@ profiles:
     kustomize:
       paths:
       - ./kustomize/base
+    # Substitute system's environment vars to properties.rendered.env
     hooks:
       before:
       - host:
