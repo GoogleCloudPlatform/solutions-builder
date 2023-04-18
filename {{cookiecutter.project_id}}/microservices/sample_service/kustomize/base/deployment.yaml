@@ -12,6 +12,7 @@ spec:
       labels:
         app: sample-service
     spec:
+      serviceAccountName: gke-sa
       containers:
       - name: sample-service
         image: sample-service
