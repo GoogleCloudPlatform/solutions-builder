@@ -95,6 +95,8 @@ init_foundation() {
 
 
   # Check for App Engine default service account to check if firebase has been initialized
+  # Note: There is no current command line option to check for firebase initialization. The above is
+  #       just a workaround. We will revisit this issue in future to implement a better solution.
   FIREBASE_INIT=""
   APP_ENGINE_SA=${PROJECT_ID}@appspot.gserviceaccount.com
   APP_ENGINE_SA_EXISTS=$(gcloud iam service-accounts list | grep -c "$APP_ENGINE_SA")
