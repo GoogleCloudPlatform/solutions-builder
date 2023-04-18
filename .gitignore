@@ -31,3 +31,6 @@ ui-debug.log
 .e2e_test_output
 .test_output
 .angular
+
+# Ignore rendered yaml files.
+*.rendered.env
