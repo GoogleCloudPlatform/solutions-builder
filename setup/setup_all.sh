@@ -94,18 +94,14 @@ init_foundation() {
   terraform apply -target=module.project_services -target=module.service_accounts -auto-approve
 
 
-  # Check for App Engine default service account to check if firebase has been initialized
-  # Note: There is no current command line option to check for firebase initialization. The above is
-  #       just a workaround. We will revisit this issue in future to implement a better solution.
-  FIREBASE_INIT=""
-  APP_ENGINE_SA=${PROJECT_ID}@appspot.gserviceaccount.com
-  APP_ENGINE_SA_EXISTS=$(gcloud iam service-accounts list | grep -c "$APP_ENGINE_SA")
-  if [[ "${APP_ENGINE_SA_EXISTS}" == 0 ]]; then
-    FIREBASE_INIT="-var=\"firebase_init=true\""
+  # Check if firestore database already exists using gcloud command
+  FIRESTORE_INIT=""
+  if [[ $(gcloud alpha firestore databases list | grep -c uid) == 0 ]]; then
+    FIRESTORE_INIT="-var=\"firebase_init=true\""
   fi
   # Initializing Firebase (Only need this for the first time.)
   # NOTE: the Firebase can only be initialized once (via App Engine).
-  terraform apply -target=module.firebase "${FIREBASE_INIT}" -auto-approve
+  terraform apply -target=module.firebase "${FIRESTORE_INIT}" -auto-approve
   
   # Run the rest of Terraform
   terraform apply -auto-approve
