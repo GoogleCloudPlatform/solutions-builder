@@ -60,12 +60,12 @@ We recommend the following resources to get familiar with Google Cloud and micro
   ```
 - For MacOS:
   ```
-  brew install skaffold kustomize cookiecutter
+  brew install skaffold kustomize cookiecutter envsubst
   ```
 - For Windows:
   ```
   # Using pipx to install packages: https://pypa.github.io/pipx/
-  pipx install -y gcloudsdk skaffold kustomize cookiecutter
+  pipx install -y gcloudsdk skaffold kustomize cookiecutter envsubst
   ```
 
 ### Other dependencies (Optional)

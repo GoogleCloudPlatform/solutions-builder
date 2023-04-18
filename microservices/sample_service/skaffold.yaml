@@ -64,9 +64,17 @@ profiles:
         alias: BASE_IMG
     googleCloudBuild: {}
   manifests:
+    # Loading kustomzie base file for deployment.
     kustomize:
       paths:
       - ./kustomize/base
+    # Substitute system's environment vars to properties.rendered.env
+    hooks:
+      before:
+      - host:
+          dir: ./kustomize/base
+          command: ["sh", "-c",
+            "envsubst < properties.env > properties.rendered.env"]
   # Simple deployment using kubectl.
   deploy:
     kubectl: {}
@@ -87,11 +95,9 @@ profiles:
       - cloudrun_manifests/*
   deploy:
     cloudrun:
-      projectid: solutions-template-develop
       region: us-central1
   portForward:
   - resourceType: service
     resourceName: sample-service
     port: 80
     localPort: 9001 # Change this when adding other microservice.
-
