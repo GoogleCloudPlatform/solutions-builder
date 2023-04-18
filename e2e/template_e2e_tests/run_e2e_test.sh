@@ -250,7 +250,6 @@ echo "PROJECT_ID=${PROJECT_ID}"
 export GKE_PYTEST_STATUS=0
 export CLOUDRUN_PYTEST_STATUS=0
 export TEMPLATE_FEATURES="gke" # "gke|cloudrun"
-export RUN_E2E_TEST="true"
 
 init_env_vars
 build_template

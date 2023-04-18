@@ -93,12 +93,17 @@ init_foundation() {
   # Enabling GCP services first.
   terraform apply -target=module.project_services -target=module.service_accounts -auto-approve
 
-  # Skip firebase init if running E2E tests as it is already done
-  if [[ "${RUN_E2E_TEST}" != "true" ]]; then
-    # Initializing Firebase (Only need this for the first time.)
-    # NOTE: the Firebase can only be initialized once (via App Engine).
-    terraform apply -target=module.firebase -var="firebase_init=true" -auto-approve
+
+  # Check for App Engine default service account to check if firebase has been initialized
+  FIREBASE_INIT=""
+  APP_ENGINE_SA=${PROJECT_ID}@appspot.gserviceaccount.com
+  APP_ENGINE_SA_EXISTS=$(gcloud iam service-accounts list | grep -c "$APP_ENGINE_SA")
+  if [[ "${APP_ENGINE_SA_EXISTS}" == 0 ]]; then
+    FIREBASE_INIT="-var=\"firebase_init=true\""
   fi
+  # Initializing Firebase (Only need this for the first time.)
+  # NOTE: the Firebase can only be initialized once (via App Engine).
+  terraform apply -target=module.firebase "${FIREBASE_INIT}" -auto-approve
   
   # Run the rest of Terraform
   terraform apply -auto-approve
