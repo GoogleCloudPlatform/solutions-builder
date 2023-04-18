@@ -5,6 +5,7 @@ metadata:
 spec:
   template:
     spec:
+      serviceAccountName: gke-sa
       containers:
       - name: sample-service
         image: sample-service

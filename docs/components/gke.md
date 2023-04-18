@@ -58,3 +58,81 @@ Open the link http://127.0.0.1:PORT or http://localhost:PORT in a browser to see
 - If you are deploying a frontend service, open http://localhost:8080 to see the web UI.
 - At this point, every changes in local files will trigger files hot-swap and update to the remote instance automatically. See [Skaffold File Sync](https://skaffold.dev/docs/pipeline-stages/filesync/) for more details.
 - When clicked Ctrl+C, it will remove the Cloud Run service.
+
+## Design
+
+### Terraform GKE Stage
+
+### Skaffold
+
+### Kustomzie + Kpt
+
+## Troubleshoot
+
+### Kubernetes Service Account
+
+#### Access denied to Firestore in the Sample Service (Kubernetes Pod)
+
+If you're seeing the following in the logs from Sample Service as below:
+```
+google.api_core.exceptions.PermissionDenied: 403 Missing or insufficient permissions.
+```
+this is because the particular Kubernetes pod (sample-service in this case) does not have the correct setup of kubernetes identity worload to access GCP resources.
+
+Most of the operation within a Kubernetes pod is authenticated through workload identity with a service account. Run the following to double check the Kubernetes service account:
+
+```
+# Describe the services account name "gke-sa" registered in Kubernetes:
+kubectl describe sa/gke-sa
+```
+
+This will display the detail of this service account:
+```
+Name:                gke-sa
+Namespace:           default
+Labels:              <none>
+Annotations:         iam.gke.io/gcp-service-account: gke-sa@$PROJECT_ID.iam.gserviceaccount.com
+Image pull secrets:  <none>
+Mountable secrets:   gke-sa-token-<token-hash>
+Tokens:              gke-sa-token-<token-hash>
+Events:              <none>
+```
+
+Next, verify if the service account exists in the GCP project:
+```
+gcloud iam service-accounts describe gke-sa@$PROJECT_ID.iam.gserviceaccount.com
+```
+
+And check all roles this service account has:
+```
+gcloud projects get-iam-policy $PROJECT_ID \
+--flatten="bindings[].members" \
+--format='table(bindings.role)' \
+--filter="bindings.members:gke-sa@$PROJECT_ID.iam.gserviceaccount.com"
+```
+
+For any missing permissions, add roles in `service_account_roles` in the [Terraform GKE stage](../../terraform/stages/gke/main.tf)
+```
+module "gke" {
+  ...
+
+  # Add new roles to the GKE service account:
+  service_account_roles = [
+    "roles/aiplatform.user",
+    "roles/bigquery.admin",
+    "roles/datastore.owner",
+    "roles/documentai.admin",
+    "roles/firebase.admin",
+    "roles/iam.serviceAccountUser",
+    "roles/logging.admin",
+    "roles/logging.logWriter",
+    "roles/monitoring.metricWriter",
+    "roles/monitoring.viewer",
+    "roles/pubsub.admin",
+    "roles/stackdriver.resourceMetadata.writer",
+    "roles/storage.admin",
+  ]
+}
+```
+
+Once added, re-run the GKE terraform stage, following the steps in [Initialize GKE cluster](#initialize-gke-cluster) section above.

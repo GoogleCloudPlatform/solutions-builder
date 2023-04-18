@@ -26,6 +26,7 @@ spec:
       labels:
         app: frontend-angular
     spec:
+      serviceAccountName: gke-sa
       containers:
       - name: frontend-angular
         image: frontend-angular

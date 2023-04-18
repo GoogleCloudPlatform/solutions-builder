@@ -37,6 +37,6 @@
 
   # Choose the microservice deployment options: "gke", "cloudrun" or "gke|cloudrun"
   export TEMPLATE_FEATURES="cloudrun"
-  source setup/init_env_var.sh
+  source setup/init_env_vars.sh
   bash setup/setup_all.sh
   ```

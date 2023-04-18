@@ -8,9 +8,12 @@ import config
 from common.utils.logging_handler import Logger
 from concurrent.futures import ThreadPoolExecutor
 from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
 from routes import user
+import os
 
 app = FastAPI(title="Sample Service API")
+service_path = "sample_service"
 
 
 @app.on_event("startup")
@@ -37,21 +40,22 @@ def health_check():
   return True
 
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
+@app.get(f"/{service_path}", response_class=HTMLResponse)
+@app.get(f"/{service_path}/", response_class=HTMLResponse)
 def hello():
-  return "Hello World."
+  return f"You've reached the Sample Service: See <a href='/{service_path}/docs'>API docs</a>"
 
 
 api = FastAPI(title="Sample Service API", version="latest")
 
 api.include_router(user.router)
 
-app.mount("/sample_service", api)
+app.mount(f"/{service_path}", api)
 
 if __name__ == "__main__":
-  uvicorn.run(
-      "main:app",
-      host="0.0.0.0",
-      port=int(config.PORT),
-      log_level="info",
-      reload=True)
+  uvicorn.run("main:app",
+              host="0.0.0.0",
+              port=int(config.PORT),
+              log_level="info",
+              reload=True)

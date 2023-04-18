@@ -67,7 +67,8 @@ async def create_user(input_user: UserModel):
     return new_user.user_id
 
   except Exception as e:
-    raise HTTPException(status_code=500, detail=e) from e
+    Logger.error(e)
+    raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @router.put("")
@@ -97,7 +98,8 @@ async def update_user(input_user: UserModel):
       user.update(existing_user.id)
 
     except Exception as e:
-      raise HTTPException(status_code=500, detail=FAILED_RESPONSE) from e
+      raise HTTPException(status_code=500, detail=str(e)) from e
+
   else:
     raise HTTPException(status_code=404, detail="user not found")
 

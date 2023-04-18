@@ -5,23 +5,19 @@ metadata:
 build:
   artifacts:
   - image: common
+    docker:
+      cacheFrom:
+      - common
+      - common:latest
     sync:
       infer:
       - '**/*.py'
       - '**/*.json'
-  tagPolicy:
-    gitCommit: {}
+  googleCloudBuild: {}
+
 profiles:
-- name: custom
-  build:
-    artifacts:
-    - image: common
-      docker:
-        cacheFrom:
-        - common
-        - common:latest
-    googleCloudBuild: {}
-- name: prod
+# Profile for building images locally.
+- name: local_build
   build:
     artifacts:
     - image: common
@@ -29,21 +25,7 @@ profiles:
         infer:
         - '**/*.py'
         - '**/*.json'
-      docker:
-        cacheFrom:
-        - common
-        - common:latest
-    googleCloudBuild: {}
-- name: dev
-  build:
-    artifacts:
-    - image: common
-      sync:
-        infer:
-        - '**/*.py'
-        - '**/*.json'
-      docker:
-        cacheFrom:
-        - common
-        - common:latest
-    googleCloudBuild: {}
+    tagPolicy:
+      gitCommit: {}
+    local:
+      concurrency: 0

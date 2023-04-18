@@ -77,3 +77,8 @@ variable "service_account_name" {
   type        = string
   description = "Google Service Account name"
 }
+
+variable "service_account_roles" {
+  type        = list(string)
+  description = "List of IAM roles for GKE service account"
+}

@@ -37,6 +37,21 @@ module "gke" {
   # used for workload federation in all microservices.
   # See microservices/sample_service/kustomize/base/deployment.yaml for example.
   service_account_name = "gke-sa"
+  service_account_roles = [
+    "roles/aiplatform.user",
+    "roles/bigquery.admin",
+    "roles/datastore.owner",
+    "roles/documentai.admin",
+    "roles/firebase.admin",
+    "roles/iam.serviceAccountUser",
+    "roles/logging.admin",
+    "roles/logging.logWriter",
+    "roles/monitoring.metricWriter",
+    "roles/monitoring.viewer",
+    "roles/pubsub.admin",
+    "roles/stackdriver.resourceMetadata.writer",
+    "roles/storage.admin",
+  ]
 
   # See latest stable version at https://cloud.google.com/kubernetes-engine/docs/release-notes-stable
   kubernetes_version = "1.23.16-gke.1400"

@@ -43,5 +43,4 @@ profiles:
       - cloudrun_manifests/*
   deploy:
     cloudrun:
-      projectid: solutions-template-develop
       region: us-central1
