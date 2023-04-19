@@ -122,6 +122,28 @@ setup_working_folder() {
   echo
 }
 
+grant_iam_to_runner_sa() {
+  export CURRENT_USER=$(gcloud config list account --format "value(core.account)" | head -n 1)
+  # Check if the current user is a service account.
+  if [[ "${CURRENT_USER}" == *"iam.gserviceaccount.com"* ]]; then
+    MEMBER_PREFIX="serviceAccount"
+  else
+    MEMBER_PREFIX="user"
+  fi
+
+  # Bind the runner service account with required roles.
+  declare -a runnerRoles=(
+    "roles/resourcemanager.projectIamAdmin"
+    "roles/iam.serviceAccountAdmin"
+    "roles/storage.admin"
+    "roles/container.admin"
+  )
+  for role in "${runnerRoles[@]}"; do
+    echo "Adding IAM ${role} to ${CURRENT_USER}..."
+    gcloud projects add-iam-policy-binding ${PROJECT_ID} --member="$MEMBER_PREFIX:${CURRENT_USER}" --role="$role"
+  done
+}
+
 # Test with API endpoint (GKE):
 test_api_endpoints_gke() {
   # Run API e2e tests
@@ -224,6 +246,7 @@ init_env_vars
 build_template
 install_dependencies
 setup_working_folder
+grant_iam_to_runner_sa
 echo "yes" | bash setup/setup_all.sh
 test_api_endpoints_gke
 # test_api_endpoints_gcloud

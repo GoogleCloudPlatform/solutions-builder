@@ -59,7 +59,7 @@ setup_service_accounts_and_iam() {
     "roles/iam.serviceAccountUser"
   )
   for role in "${runnerRoles[@]}"; do
-    echo "Adding IAM ${role} to ${TF_RUNNER_SA_EMAIL}..."
+    echo "Adding IAM ${role} permissions to ${CURRENT_USER} for ${TF_RUNNER_SA_EMAIL}"
     gcloud iam service-accounts add-iam-policy-binding "${TF_RUNNER_SA_EMAIL}" --member="$MEMBER_PREFIX:${CURRENT_USER}" --role="$role"
   done
   
@@ -69,6 +69,7 @@ setup_service_accounts_and_iam() {
     "roles/storage.admin"
   )
   for role in "${runnerRoles[@]}"; do
+    echo "Adding IAM ${role} to ${TF_RUNNER_SA_EMAIL}..."
     gcloud projects add-iam-policy-binding "${PROJECT_ID}" --member="serviceAccount:${TF_RUNNER_SA_EMAIL}" --role="$role" --quiet
   done
 }
@@ -108,6 +109,7 @@ deploy_microservices_to_gke() {
   
   cd "$BASE_DIR"
   export CLUSTER_NAME=main-cluster
+  echo "Connecting to ${CLUSTER_NAME} in project ${PROJECT_ID}"
   gcloud container clusters get-credentials "${CLUSTER_NAME}" --region "${REGION}" --project "${PROJECT_ID}"
   skaffold run -p gke --default-repo="gcr.io/${PROJECT_ID}"
 }
@@ -183,14 +185,18 @@ do
     "gke")
       printf "Deploying microservices to GKE...\n"
       deploy_microservices_to_gke
-      test_api_endpoints_gke
-      final_message+=$GKE_OUTPUT
+      if [ $? -eq 0 ];then
+        test_api_endpoints_gke
+        final_message+=$GKE_OUTPUT
+      fi
       ;;
     "cloudrun")
       printf "Deploying microservices to CloudRun...\n"
       deploy_microservices_to_cloudrun
-      test_api_endpoints_cloudrun
-      final_message+=$CLOUDRUN_OUTPUT
+      if [ $? -eq 0 ];then
+        test_api_endpoints_cloudrun
+        final_message+=$CLOUDRUN_OUTPUT
+      fi
       ;;
   esac
 done
