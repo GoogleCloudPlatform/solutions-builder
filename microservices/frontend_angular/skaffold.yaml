@@ -46,12 +46,7 @@ profiles:
 
   # Simple deployment using kubectl.
   deploy:
-    kubectl:
-      hooks:
-        after:
-        - host:
-            dir: ./kustomize/base
-            command: ["rm", "*.rendered.env"]
+    kubectl: {}
 
   # Portforwarding when running `skaffold dev` locally.
 

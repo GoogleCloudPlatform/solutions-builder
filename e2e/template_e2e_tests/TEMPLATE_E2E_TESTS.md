@@ -19,6 +19,7 @@ This doc covers the setup and steps required for running e2e tests for Template.
   gcloud services enable cloudresourcemanager.googleapis.com --quiet
   gcloud services enable cloudbilling.googleapis.com --quiet
   gcloud services enable container.googleapis.com --quiet
+  gcloud services enable cloudbuild.googleapis.com --quiet
   ```
 
 - Grant the service account with the following roles to the org-level IAM:

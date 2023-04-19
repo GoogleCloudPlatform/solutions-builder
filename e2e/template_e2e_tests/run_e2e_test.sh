@@ -137,6 +137,7 @@ grant_iam_to_runner_sa() {
     "roles/iam.serviceAccountAdmin"
     "roles/storage.admin"
     "roles/container.admin"
+    "roles/cloudbuild.builds.editor"
   )
   for role in "${runnerRoles[@]}"; do
     echo "Adding IAM ${role} to ${CURRENT_USER}..."
@@ -177,6 +178,7 @@ print_api_test_result() {
 }
 
 clean_up_gke() {
+  export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT="terraform-runner@${PROJECT_ID}.iam.gserviceaccount.com"
   cd $BASE_DIR/terraform/stages/gke
   # To restore the TF state from a remote bucket. This is in case the state are
   # lost due to change of the local environment when executing TF.
