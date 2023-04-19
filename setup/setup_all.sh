@@ -28,6 +28,8 @@ setup_gcloud() {
   gcloud config set project "${PROJECT_ID}" --quiet
   gcloud components install gke-gcloud-auth-plugin --quiet
   gcloud services enable cloudresourcemanager.googleapis.com --quiet
+  gcloud services enable serviceusage.googleapis.com --quiet
+  gcloud services enable iam.googleapis.com --quiet
 }
 
 # Update GCP Organizational policies
