@@ -60,12 +60,12 @@ We recommend the following resources to get familiar with Google Cloud and micro
   ```
 - For MacOS:
   ```
-  brew install skaffold kustomize cookiecutter envsubst
+  brew install skaffold kustomize cookiecutter
   ```
 - For Windows:
   ```
   # Using pipx to install packages: https://pypa.github.io/pipx/
-  pipx install -y gcloudsdk skaffold kustomize cookiecutter envsubst
+  pipx install -y gcloudsdk skaffold kustomize cookiecutter
   ```
 
 ### Other dependencies (Optional)
@@ -90,6 +90,7 @@ Run the following commands to create a new Google Cloud project, or [create a ne
 ```
 export PROJECT_ID=<my-project-id>
 gcloud projects create $PROJECT_ID
+gcloud beta billing projects link $PROJECT_ID --billing-account $BILLING_ACCOUNT --quiet
 gcloud config set project $PROJECT_ID
 gcloud auth application-default login # for Terraform to able to run gcloud with correct config.
 gcloud auth application-default set-quota-project $PROJECT_ID

@@ -16,4 +16,4 @@ def test_hello_world():
   if not base_url:
     raise NotFoundErr("Unable to locate the service URL for sample-service")
   res = requests.get(base_url + "/")
-  assert res.text == "\"Hello World.\""
+  assert "You've reached the Sample Service" in res.text

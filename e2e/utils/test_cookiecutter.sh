@@ -39,7 +39,9 @@ setup_working_folder() {
 
 install_dependencies
 build_template
-generate_new_project_id
+if [[ -z "$PROJECT_ID" ]]; then
+  generate_new_project_id
+fi
 setup_working_folder
 
 echo "New project folder generated at $OUTPUT_FOLDER/$PROJECT_ID"
