@@ -27,9 +27,7 @@
 # Option 2) gcloud auth activate-service-account $SA_EMAIL --key-file=$PATH_TO_KEY_FILE
 #
 # 2. Set up environment variables. If you don't set these values, the script will try to fetch from gcloud config.
-# export ORGANIZATION_ID=<your-org-id>
 # export FOLDER_ID=<your-folder-id>
-# export BILLING_ACCOUNT=<your-billing-id>
 #
 # 3. Run the script with optional flags:
 # Regular e2e test with clean up.
@@ -43,13 +41,10 @@
 
 # To calculate time elapsed.
 SECONDS=0
-export PROJECT_ID="solutions-template-e2etest"
-export ADMIN_EMAIL="jonchen@google.com"
 
 # Hardcoded the project ID for all local development.
 declare -a EnvVars=(
-  "ORGANIZATION_ID"
-  "BILLING_ACCOUNT"
+  "PROJECT_ID"
 )
 for variable in ${EnvVars[@]}; do
   if [[ -z "${!variable}" ]]; then
@@ -60,8 +55,7 @@ done
 
 # The following vars need to be set in the environment when runnin the e2e tests.
 # For example, set up env vars and action secrets in Github Action workflow.
-echo "ORGANIZATION_ID=$ORGANIZATION_ID"
-echo "BILLING_ACCOUNT=$BILLING_ACCOUNT"
+echo "PROJECT_ID=$PROJECT_ID"
 echo "GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS"
 
 # Parsing arguments
@@ -80,11 +74,7 @@ export OUTPUT_FOLDER=".test_output"
 export ADMIN_EMAIL=$(gcloud auth list --filter=status:ACTIVE --format='value(account)')
 
 init_env_vars() {
-  # FIXME: Reusing the setup/init_env_vars.sh will mix up the usage of
-  # solutions-template-develop and solutions-template-e2etest.
-  # Currently the following are intentional to stick with
-  # solutions-template-e2etest.
-  export ADMIN_EMAIL="your_email@example.com"
+  export ADMIN_EMAIL=$(gcloud auth list --filter=status:ACTIVE --format='value(account)')
   export REGION=us-central1
   export API_DOMAIN=localhost
   export BASE_DIR=$(pwd)

@@ -32,13 +32,10 @@ setup_gcloud() {
 
 # Update GCP Organizational policies
 update_gcp_org_policies() {
-  if [[ "${ORGANIZATION_ID}" == "" ]]; then
-    export ORGANIZATION_ID="$(gcloud organizations list --format='value(name)' | head -n 1)"
-  fi
-  echo "Updating organization policies: ORGANIZATION_ID=${ORGANIZATION_ID}"
-  gcloud resource-manager org-policies disable-enforce constraints/compute.requireOsLogin --organization="${ORGANIZATION_ID}"
-  gcloud resource-manager org-policies delete constraints/compute.vmExternalIpAccess --organization="${ORGANIZATION_ID}"
-  gcloud resource-manager org-policies delete constraints/iam.allowedPolicyMemberDomains --organization="${ORGANIZATION_ID}"
+  echo "Updating organization policies: PROJECT_ID=${PROJECT_ID}"
+  gcloud resource-manager org-policies disable-enforce constraints/compute.requireOsLogin --project="${PROJECT_ID}"
+  gcloud resource-manager org-policies delete constraints/compute.vmExternalIpAccess --project="${PROJECT_ID}"
+  gcloud resource-manager org-policies delete constraints/iam.allowedPolicyMemberDomains --project="${PROJECT_ID}"
 }
 
 # Create a Service Account for Terraform impersonating and grant Storage admin to the current user IAM.
@@ -54,7 +51,7 @@ setup_service_accounts_and_iam() {
   # Create TF runner services account and use it for impersonate.
   export TF_RUNNER_SA_EMAIL="terraform-runner@${PROJECT_ID}.iam.gserviceaccount.com"
   export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=${TF_RUNNER_SA_EMAIL}
-  gcloud iam service-accounts create "terraform-runner"
+  gcloud iam service-accounts create "terraform-runner" --project=${PROJECT_ID}
   
   # Grant service account Token creator for current user.
   declare -a runnerRoles=(
@@ -62,6 +59,7 @@ setup_service_accounts_and_iam() {
     "roles/iam.serviceAccountUser"
   )
   for role in "${runnerRoles[@]}"; do
+    echo "Adding IAM ${role} to ${TF_RUNNER_SA_EMAIL}..."
     gcloud iam service-accounts add-iam-policy-binding "${TF_RUNNER_SA_EMAIL}" --member="$MEMBER_PREFIX:${CURRENT_USER}" --role="$role"
   done
   
@@ -73,15 +71,6 @@ setup_service_accounts_and_iam() {
   for role in "${runnerRoles[@]}"; do
     gcloud projects add-iam-policy-binding "${PROJECT_ID}" --member="serviceAccount:${TF_RUNNER_SA_EMAIL}" --role="$role" --quiet
   done
-}
-
-# Link billing account to the current project.
-link_billing_account() {
-  if [[ "${BILLING_ACCOUNT}" == "" ]]; then
-    export BILLING_ACCOUNT=$(gcloud beta billing accounts list --format "value(name)" | head -n 1)
-  fi
-  echo "Linking billing account to ${PROJECT_ID}: BILLING_ACCOUNT=${BILLING_ACCOUNT}"
-  gcloud beta billing projects link "${PROJECT_ID}" --billing-account "${BILLING_ACCOUNT}" --quiet
 }
 
 # Create Terraform Statefile in GCS bucket.
@@ -176,7 +165,6 @@ check_proceed_prompt
 setup_env_vars
 setup_gcloud
 update_gcp_org_policies
-link_billing_account
 setup_service_accounts_and_iam
 create_terraform_gcs_bucket
 
