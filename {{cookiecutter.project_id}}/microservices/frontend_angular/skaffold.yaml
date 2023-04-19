@@ -32,9 +32,27 @@ profiles:
     kustomize:
       paths:
       - ./kustomize/base
+    # Substitute system's environment vars to properties.rendered.env
+    hooks:
+      before:
+      - host:
+          dir: ./kustomize/base
+          command: ["sh", "-c",
+            "envsubst < properties.env > properties.rendered.env"]
+      after:
+      - host:
+          dir: ./kustomize/base
+          command: ["sh", "-c", "rm *.rendered.env"]
+
   # Simple deployment using kubectl.
   deploy:
-    kubectl: {}
+    kubectl:
+      hooks:
+        after:
+        - host:
+            dir: ./kustomize/base
+            command: ["rm", "*.rendered.env"]
+
   # Portforwarding when running `skaffold dev` locally.
 
 - name: cloudrun
@@ -43,5 +61,4 @@ profiles:
       - cloudrun_manifests/*
   deploy:
     cloudrun:
-      projectid: {{cookiecutter.project_id}}
       region: {{cookiecutter.gcp_region}}

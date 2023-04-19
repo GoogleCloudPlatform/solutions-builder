@@ -6,4 +6,4 @@ resources:
 configMapGenerator:
 - name: env-vars
   envs:
-  - env.properties
+  - properties.rendered.env
