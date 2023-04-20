@@ -1,16 +1,16 @@
 # This workflow will run Terraform init, validate, and plan on Pull Request=
-name: Template E2E test
+name: Test auto-comment
 on:
   issue_comment:
     types: [created]
   workflow_dispatch:
 
 jobs:
-  run_template_e2e_test:
+  run_test_comment:
     if: ${{ (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/e2e-test')) || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     environment: e2e
-    name: Template E2E tests
+    name: Test auto-comment
     steps:
 
     - name: Check out repository with main branch
