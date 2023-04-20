@@ -20,7 +20,7 @@
 # Set up environment variables.
 setup_env_vars() {
   export BASE_DIR=$(pwd)
-  source "$BASE_DIR"/setup/init_env_vars.sh
+  source "${BASE_DIR}"/setup/init_env_vars.sh
 }
 
 # Set up gcloud CLI
@@ -87,15 +87,21 @@ create_terraform_gcs_bucket() {
 # Run terraform to set up all GCP resources. (Setting up GKE by default)
 init_foundation() {
   # Init Terraform
-  cd "$BASE_DIR"/terraform/stages/foundation
+  cd "${BASE_DIR}"/terraform/stages/foundation
   terraform init -reconfigure -backend-config=bucket="${TF_BUCKET_NAME}"
   
   # Enabling GCP services first.
   terraform apply -target=module.project_services -target=module.service_accounts -auto-approve
-  
+
+
+  # Check if firestore database already exists using gcloud command
+  FIRESTORE_INIT=""
+  if [[ $(gcloud alpha firestore databases list | grep -c uid) == 0 ]]; then
+    FIRESTORE_INIT="-var=\"firebase_init=true\""
+  fi
   # Initializing Firebase (Only need this for the first time.)
   # NOTE: the Firebase can only be initialized once (via App Engine).
-  terraform apply -target=module.firebase -var="firebase_init=true" -auto-approve
+  terraform apply -target=module.firebase "${FIRESTORE_INIT}" -auto-approve
   
   # Run the rest of Terraform
   terraform apply -auto-approve
@@ -103,11 +109,11 @@ init_foundation() {
 
 # Build all microservices and deploy to the cluster:
 deploy_microservices_to_gke() {
-  cd "$BASE_DIR"/terraform/stages/gke
+  cd "${BASE_DIR}"/terraform/stages/gke
   terraform init -reconfigure -backend-config=bucket="${TF_BUCKET_NAME}"
   terraform apply -auto-approve
   
-  cd "$BASE_DIR"
+  cd "${BASE_DIR}"
   export CLUSTER_NAME=main-cluster
   echo "Connecting to ${CLUSTER_NAME} in project ${PROJECT_ID}"
   gcloud container clusters get-credentials "${CLUSTER_NAME}" --region "${REGION}" --project "${PROJECT_ID}"
@@ -116,13 +122,13 @@ deploy_microservices_to_gke() {
 
 # Build all microservices and deploy to CloudRun:
 deploy_microservices_to_cloudrun() {
-  cd "$BASE_DIR"
+  cd "${BASE_DIR}"
   skaffold run -p cloudrun --default-repo="gcr.io/${PROJECT_ID}"
   
   # Allow public access to the all Cloud Run services.
   declare -a service_names=$(gcloud run services list --region={{cookiecutter.gcp_region}} --format="value(name)")
-  for service_name in ${service_names[@]}; do
-    gcloud run services add-iam-policy-binding $service_name \
+  for service_name in "${service_names[@]}"; do
+    gcloud run services add-iam-policy-binding "$service_name" \
     --region="${REGION}" \
     --member="allUsers" \
     --role="roles/run.invoker"
@@ -153,7 +159,7 @@ test_api_endpoints_cloudrun() {
 
 check_proceed_prompt() {
   echo
-  read -p  "This will set up the Solutions Template in project \"$PROJECT_ID\". Continue? (y/n)" -n 1 -r
+  read -p  "This will set up the Solutions Template in project \"${PROJECT_ID}\". Continue? (y/n)" -n 1 -r
   
   if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo
