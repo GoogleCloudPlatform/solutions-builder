@@ -95,11 +95,10 @@ init_foundation() {
   # Enabling GCP services first.
   terraform apply -target=module.project_services -target=module.service_accounts -auto-approve
 
-
   # Check if firestore database already exists using gcloud command
   FIRESTORE_INIT=""
-  if [[ $(gcloud alpha firestore databases list | grep -c uid) == 0 ]]; then
-    FIRESTORE_INIT="-var=\"firebase_init=true\""
+  if [[ $(gcloud alpha firestore databases list --quiet | grep -c uid) == 0 ]]; then
+    FIRESTORE_INIT="-var=firebase_init=true"
   fi
   # Initializing Firebase (Only need this for the first time.)
   # NOTE: the Firebase can only be initialized once (via App Engine).

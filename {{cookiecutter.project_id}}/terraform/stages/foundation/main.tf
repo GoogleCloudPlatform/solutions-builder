@@ -63,6 +63,7 @@ module "firebase" {
 }
 
 module "vpc_network" {
+  depends_on                = [module.project_services]
   source                    = "../../modules/vpc_network"
   project_id                = var.project_id
   vpc_network               = var.vpc_network
