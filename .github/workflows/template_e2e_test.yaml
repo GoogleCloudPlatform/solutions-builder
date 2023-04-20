@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  PROJECT_ID: ${{ env.E2E_TEST_PROJECT_ID }}
+  PROJECT_ID: ${{ vars.E2E_TEST_PROJECT_ID }}
   ORGANIZATION_ID: ${{ secrets.ORGANIZATION_ID }}
   BILLING_ACCOUNT: ${{ secrets.BILLING_ACCOUNT }}
   GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.E2E_TEST_SA_KEY }}
