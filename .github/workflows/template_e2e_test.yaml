@@ -13,7 +13,6 @@ env:
   KUSTOMIZE_VERSION: 4.1.3
   SKAFFOLD_VERSION: 2.1.0
   TERRAFORM_VERSION: 1.4.5
-  GITHUB_CONTEXT: ${{ toJSON(github) }}
   JOB_ID: ${{ fromJSON(toJSON(github.run_id)) }}
 
 jobs:
