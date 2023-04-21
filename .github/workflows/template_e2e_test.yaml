@@ -14,6 +14,7 @@ env:
   SKAFFOLD_VERSION: 2.1.0
   TERRAFORM_VERSION: 1.4.5
   JOB_ID: ${{ fromJSON(toJSON(github.run_id)) }}
+  E2E_RUNNER_SA: ${{ vars.E2E_RUNNER_SA }}
 
 jobs:
   run_template_e2e_test:
