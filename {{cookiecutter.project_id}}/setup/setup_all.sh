@@ -26,8 +26,10 @@ setup_env_vars() {
 # Set up gcloud CLI
 setup_gcloud() {
   gcloud config set project "${PROJECT_ID}" --quiet
-  gcloud components install gke-gcloud-auth-plugin --quiet
+  gcloud components install alpha gke-gcloud-auth-plugin --quiet
   gcloud services enable cloudresourcemanager.googleapis.com --quiet
+  gcloud services enable serviceusage.googleapis.com --quiet
+  gcloud services enable iam.googleapis.com --quiet
 }
 
 # Update GCP Organizational policies
@@ -79,7 +81,7 @@ create_terraform_gcs_bucket() {
   bash setup/setup_terraform.sh
   
   # List all buckets.
-  gcloud storage ls
+  gcloud storage ls --project="${PROJECT_ID}"
   echo "TF_BUCKET_NAME = ${TF_BUCKET_NAME}"
   echo
 }
@@ -93,11 +95,10 @@ init_foundation() {
   # Enabling GCP services first.
   terraform apply -target=module.project_services -target=module.service_accounts -auto-approve
 
-
   # Check if firestore database already exists using gcloud command
   FIRESTORE_INIT=""
-  if [[ $(gcloud alpha firestore databases list | grep -c uid) == 0 ]]; then
-    FIRESTORE_INIT="-var=\"firebase_init=true\""
+  if [[ $(gcloud alpha firestore databases list --project="${PROJECT_ID}" --quiet | grep -c uid) == 0 ]]; then
+    FIRESTORE_INIT="-var=firebase_init=true"
   fi
   # Initializing Firebase (Only need this for the first time.)
   # NOTE: the Firebase can only be initialized once (via App Engine).

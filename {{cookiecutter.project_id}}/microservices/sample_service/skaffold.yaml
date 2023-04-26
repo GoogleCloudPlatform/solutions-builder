@@ -64,7 +64,7 @@ profiles:
         alias: BASE_IMG
     googleCloudBuild: {}
   manifests:
-    # Loading kustomzie base file for deployment.
+    # Loading kustomize base file for deployment.
     kustomize:
       paths:
       - ./kustomize/base

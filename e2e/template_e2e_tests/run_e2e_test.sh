@@ -71,10 +71,11 @@ done
 
 # Initializing E2E test environment vars
 export OUTPUT_FOLDER=".test_output"
+gcloud config set project "${PROJECT_ID}" --quiet
+gcloud config set account "${E2E_RUNNER_SA}"
 export ADMIN_EMAIL=$(gcloud auth list --filter=status:ACTIVE --format='value(account)')
 
 init_env_vars() {
-  export ADMIN_EMAIL=$(gcloud auth list --filter=status:ACTIVE --format='value(account)')
   export REGION=us-central1
   export API_DOMAIN=localhost
   export BASE_DIR=$(pwd)
@@ -84,7 +85,6 @@ init_env_vars() {
   export TF_VAR_admin_email=${ADMIN_EMAIL}
   export TF_BUCKET_NAME="${PROJECT_ID}-tfstate"
   export TF_BUCKET_LOCATION="us"
-  gcloud config set project $PROJECT_ID --quiet
 }
 
 build_template() {
@@ -112,7 +112,7 @@ setup_working_folder() {
   mkdir -p $OUTPUT_FOLDER
 
   # Create skeleton code in a new folder with Cookiecutter
-  cookiecutter . --overwrite-if-exists --no-input -o $OUTPUT_FOLDER project_id="${PROJECT_ID}" admin_email=$ADMIN_EMAIL
+  cookiecutter . --overwrite-if-exists --no-input -o $OUTPUT_FOLDER project_id="${PROJECT_ID}" admin_email="${ADMIN_EMAIL}"
 
   # Set up working environment:
   cd $OUTPUT_FOLDER/"${PROJECT_ID}"
@@ -141,7 +141,7 @@ grant_iam_to_runner_sa() {
   )
   for role in "${runnerRoles[@]}"; do
     echo "Adding IAM ${role} to ${CURRENT_USER}..."
-    gcloud projects add-iam-policy-binding ${PROJECT_ID} --member="$MEMBER_PREFIX:${CURRENT_USER}" --role="$role"
+    gcloud projects add-iam-policy-binding "${PROJECT_ID}" --member="$MEMBER_PREFIX:${CURRENT_USER}" --role="$role"
   done
 }
 

@@ -6,14 +6,15 @@ on:
   workflow_dispatch:
 
 env:
-  PROJECT_ID: ${{ secrets.E2E_TEST_PROJECT_ID }}
+  PROJECT_ID: ${{ vars.E2E_TEST_PROJECT_ID }}
   ORGANIZATION_ID: ${{ secrets.ORGANIZATION_ID }}
   BILLING_ACCOUNT: ${{ secrets.BILLING_ACCOUNT }}
   GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.E2E_TEST_SA_KEY }}
-  KUSTOMIZE_VERSION: 4.1.3
+  KUSTOMIZE_VERSION: 4.5.7
   SKAFFOLD_VERSION: 2.1.0
   TERRAFORM_VERSION: 1.4.5
   JOB_ID: ${{ fromJSON(toJSON(github.run_id)) }}
+  E2E_RUNNER_SA: ${{ vars.E2E_RUNNER_SA }}
 
 jobs:
   run_template_e2e_test:
