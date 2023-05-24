@@ -1,6 +1,0 @@
-backports-unittest-mock
-mock
-pylint
-pytest
-pytest-cov
-pytest-custom_exit_code

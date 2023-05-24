@@ -1,1 +1,5 @@
+copier
+PyYAML
 typer
+jinja2-time
+copier-templates-extensions

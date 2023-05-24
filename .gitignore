@@ -34,3 +34,6 @@ ui-debug.log
 
 # Ignore rendered yaml files.
 *.rendered.env
+
+# VSCode related
+*.code-workspace

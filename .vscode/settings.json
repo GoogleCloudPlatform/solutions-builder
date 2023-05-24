@@ -15,5 +15,6 @@
   ],
   "python.autoComplete.extraPaths": [
     "${workspaceFolder}/common/src/",
-  ]
+  ],
+  "python.linting.flake8Enabled": false
 }
