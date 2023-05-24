@@ -1,0 +1,46 @@
+# questions
+folder_name:
+  type: str
+  help: What is your project folder name?
+
+project_name:
+  type: str
+  help: What is your project name? (Spaces are allowed.)
+  default: "{{folder_name}}"
+
+project_id:
+  type: str
+  help: What is your Google Cloud project ID?
+  default: "{{folder_name}}"
+
+project_number:
+  type: str
+  help: What is your Google Cloud project number?
+  default: "{{project_id | get_project_number}}"
+
+gcp_region:
+  type: str
+  help: Which Google Cloud region?
+  default: us-central1
+
+terraform_backend_gcs:
+  type: bool
+  help: Use GCS Bucket for Terraform backend?
+  default: true
+
+_exclude:
+  - "copier.yaml"
+  - "copier_extensions"
+  - ".terraform*"
+  - ".tmp"
+  - ".venv"
+  - ".pytest_cache"
+  - "__pycache__"
+  - "*-debug.log"
+
+_templates_suffix: ""
+
+_jinja_extensions:
+  - jinja2_time.TimeExtension
+  - copier_templates_extensions.TemplateExtensionLoader
+  - copier_extensions/st_helpers.py:SolutionsTemplateHelpersExtension

@@ -1,0 +1,16 @@
+{
+  "name": "RESTful API Microservice",
+  "options": {
+    "github_actions": {
+      "default": false,
+      "files": [
+        ".github/*"
+      ]
+    }
+  },
+  "variables": {
+    "project_id": null
+  },
+  "files": [],
+  "exclude_files": []
+}

@@ -1,0 +1,61 @@
+_metadata:
+  module_name: restful_service
+  version: 1.0.0
+  destination_path: .
+  copier_answers: components/restful_service/st_module.yaml
+
+# questions
+component_name:
+  type: str
+  help: What is the name of this component?
+  default: restful-service
+
+gcp_region:
+  type: str
+  help: Which Google Cloud region?
+  default: us-central1
+
+deploy_with_cloudrun:
+  type: bool
+  help: Add Cloud Run to deployment methods (using Skaffold)?
+  default: yes
+
+cloudrun_resource_name:
+  type: str
+  help: Cloud Run resource name?
+  default: "{{ component_name | replace('_', '-') }}"
+  when: "{{deploy_with_cloudrun}}"
+
+deploy_with_gke:
+  type: bool
+  help: Add GKE to deployment methods (using Skaffold)?
+  default: no
+
+default_deploy_profile:
+  type: str
+  help: Default deploy method? (cloudrun or gke)
+  default: cloudrun
+
+depend_on_common:
+  type: bool
+  help: Does this component require the Common image?
+  default: no
+
+use_github_action:
+  type: bool
+  help: Use Github Action as the default CI/CD?
+  default: yes
+
+_exclude:
+  - "copier.yaml"
+  - ".terraform*"
+  - ".tmp"
+  - ".venv"
+  - ".pytest_cache"
+  - "__pycache__"
+  - "*-debug.log"
+
+_patch:
+  - "skaffold.yaml"
+
+_templates_suffix: ""

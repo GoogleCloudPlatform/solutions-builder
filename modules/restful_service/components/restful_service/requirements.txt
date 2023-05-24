@@ -1,0 +1,8 @@
+fastapi
+fastapi-restful
+firedantic
+fireo
+google-cloud-bigquery
+google-cloud-storage
+python-multipart
+uvicorn

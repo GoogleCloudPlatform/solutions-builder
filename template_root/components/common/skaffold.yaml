@@ -1,0 +1,31 @@
+apiVersion: skaffold/v4beta1
+kind: Config
+metadata:
+  name: common
+build:
+  artifacts:
+    - image: common
+      docker:
+        cacheFrom:
+          - common
+          - common:latest
+      sync:
+        infer:
+          - "**/*.py"
+          - "**/*.json"
+  googleCloudBuild: {}
+
+profiles:
+  # Profile for building images locally.
+  - name: local_build
+    build:
+      artifacts:
+        - image: common
+          sync:
+            infer:
+              - "**/*.py"
+              - "**/*.json"
+      tagPolicy:
+        gitCommit: {}
+      local:
+        concurrency: 0
