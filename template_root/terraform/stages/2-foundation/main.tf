@@ -43,6 +43,8 @@ locals {
     "roles/eventarc.admin",
     "roles/eventarc.eventReceiver",
     "roles/eventarc.serviceAgent",
+    "roles/datastore.owner",
+    "roles/firebase.admin",
     "roles/iam.serviceAccountTokenCreator",
     "roles/iam.serviceAccountUser",
     "roles/run.admin",

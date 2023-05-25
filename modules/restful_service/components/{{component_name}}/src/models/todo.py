@@ -24,7 +24,7 @@ class Todo(Model):
   title: str = "Title"
   description: str = "Description"
   is_done: bool = False
-  created_at: datetime
+  created_at: datetime = None
   modified_at: datetime = None
 
   @classmethod
