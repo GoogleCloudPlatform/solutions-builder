@@ -28,9 +28,10 @@ terraform_backend_gcs:
   help: Use GCS Bucket for Terraform backend?
   default: true
 
+_templates_suffix: ""
+
 _exclude:
   - "copier.yaml"
-  - "copier_extensions"
   - ".terraform*"
   - ".tmp"
   - ".venv"
@@ -38,9 +39,7 @@ _exclude:
   - "__pycache__"
   - "*-debug.log"
 
-_templates_suffix: ""
-
 _jinja_extensions:
   - jinja2_time.TimeExtension
   - copier_templates_extensions.TemplateExtensionLoader
-  - copier_extensions/st_helpers.py:SolutionsTemplateHelpersExtension
+  - ../copier_extensions/st_helpers.py:SolutionsTemplateHelpersExtension

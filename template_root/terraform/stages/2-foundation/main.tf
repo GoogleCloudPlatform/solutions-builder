@@ -60,14 +60,6 @@ module "project_services" {
   services   = local.services
 }
 
-module "firebase" {
-  depends_on       = [module.project_services]
-  source           = "../../modules/firebase"
-  project_id       = var.project_id
-  firestore_region = var.firestore_region
-  firebase_init    = var.firebase_init
-}
-
 module "vpc_network" {
   depends_on                = [module.project_services]
   source                    = "../../modules/vpc_network"

@@ -40,6 +40,16 @@ variable "project_number" {
   }
 }
 
+variable "region" {
+  type        = string
+  description = "Default GCP region"
+
+  validation {
+    condition     = length(var.region) > 0
+    error_message = "The region value must be an non-empty string."
+  }
+}
+
 variable "vpc_network" {
   type    = string
   default = "default-vpc"
@@ -83,23 +93,6 @@ variable "secondary_ranges_services" {
   }
 }
 
-variable "region" {
-  type        = string
-  description = "Default GCP region"
-  default     = "{{gcp_region}}"
-
-  validation {
-    condition     = length(var.region) > 0
-    error_message = "The region value must be an non-empty string."
-  }
-}
-
-variable "firestore_region" {
-  type        = string
-  description = "Firestore Region"
-  default     = "us-central"
-}
-
 variable "bq_dataset_location" {
   type        = string
   description = "BigQuery Dataset location"
@@ -113,10 +106,4 @@ variable "storage_multiregion" {
     condition     = length(var.storage_multiregion) > 0
     error_message = "The region value must be an non-empty string."
   }
-}
-
-variable "firebase_init" {
-  type        = bool
-  description = "Whether to initialize Firebase/Firestore."
-  default     = false
 }

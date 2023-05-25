@@ -13,10 +13,38 @@ def add(component_name,
         solution_path: Annotated[Optional[str],
                                  typer.Argument()] = "."):
   validate_solution_folder(solution_path)
-
   confirm(f"This will add component '{component_name}' to {solution_path}. " +
           "Continue?")
+  process_component("add", component_name, solution_path)
+  print_success(
+      f"Complete. Component {component_name} added to solution at {solution_path}\n"
+  )
 
+
+@component_app.command()
+def update(component_name,
+           solution_path: Annotated[Optional[str],
+                                    typer.Argument()] = "."):
+  validate_solution_folder(solution_path)
+  confirm(
+      f"This will update component '{component_name}' to {solution_path}. " +
+      "Continue?")
+  process_component("update", component_name, solution_path)
+  print_success(
+      f"Complete. Component {component_name} updated to solution at {solution_path}\n"
+  )
+
+
+def update_component_to_root_yaml(component_name, solution_path):
+  # Update Solution root YAML with new component name.
+  solution_yaml_dict = read_yaml(f"{solution_path}/st.yaml") or {}
+  components = solution_yaml_dict["components"] or {}
+  components[component_name] = components[component_name] or {}
+  solution_yaml_dict["components"] = components
+  write_yaml(f"{solution_path}/st.yaml", solution_yaml_dict)
+
+
+def process_component(method, component_name, solution_path):
   # TODO: Update this to comply with git path.
   cwd = os.getcwd()
   template_folder = f"{cwd}/modules/{component_name}"
@@ -30,23 +58,15 @@ def add(component_name,
       "destination_path")
   destination_path = destination_path.replace("//", "/")
 
-  # Update Solution root YAML with new component name.
-  solution_yaml_dict = read_yaml(f"{solution_path}/st.yaml")
-  if not solution_yaml_dict:
-    solution_yaml_dict = {}
-
-  component_list = solution_yaml_dict.get("components", [])
-  component_list.append(component_name)
-  component_list = dedupe(component_list)
-  solution_yaml_dict["components"] = component_list
-  write_yaml(f"{solution_path}/st.yaml", solution_yaml_dict)
-
   # Copy component template to destination.
-  run_auto(template_folder,
-           destination_path,
-           data={
-               "component_name": component_name,
-           })
+  if method == "update":
+    run_auto(template_folder,
+             destination_path,
+             data={"component_name": component_name})
+    update_component_to_root_yaml(component_name, solution_path)
+  else:
+    result = run_auto(template_folder, destination_path)
+    print(result)
 
   # Patch skaffold.yaml
   for patch_file in copier_dict.get("_patch", []):
@@ -55,10 +75,6 @@ def add(component_name,
     new_yaml["requires"] = dedupe(new_yaml["requires"])
     write_yaml(f"{solution_path}/{patch_file}", new_yaml)
     os.remove(f"{solution_path}/{patch_file}.patch")
-
-  print_success(
-      f"Complete. Component {component_name} added to solution at {solution_path}\n"
-  )
 
 
 # Add specific component to the destination solution folder.

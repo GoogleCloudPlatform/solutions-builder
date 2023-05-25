@@ -1,5 +1,5 @@
 _metadata:
-  module_name: restful_service
+  module_name: frontend_angular
   version: 1.0.0
   destination_path: .
 
@@ -7,14 +7,14 @@ _metadata:
 component_name:
   type: str
   help: What is the name of this component?
-  default: restful_service
+  default: restful-service
 
 gcp_region:
   type: str
   help: Which Google Cloud region?
   default: us-central1
 
-deploy_cloudrun:
+deploy_with_cloudrun:
   type: bool
   help: Add Cloud Run to deployment methods (using Skaffold)?
   default: yes
@@ -23,19 +23,16 @@ cloudrun_resource_name:
   type: str
   help: Cloud Run resource name?
   default: "{{ component_name | replace('_', '-') }}"
-  when: "{{deploy_cloudrun}}"
+  when: "{{deploy_with_cloudrun}}"
 
-deploy_gke:
+deploy_with_gke:
   type: bool
   help: Add GKE to deployment methods (using Skaffold)?
   default: no
 
-default_deploy:
+default_deploy_profile:
   type: str
   help: Default deploy method? (cloudrun or gke)
-  choices:
-    Cloud Run: cloudrun
-    GKE: gke
   default: cloudrun
 
 depend_on_common:
@@ -48,9 +45,9 @@ use_github_action:
   help: Use Github Action as the default CI/CD?
   default: yes
 
-_answers_file: "components/{{component_name}}/st_module.yaml"
-
 _templates_suffix: ""
+
+_answers_file: "components/{{component_name}}/st_module.yaml"
 
 _patch:
   - "skaffold.yaml"
@@ -64,7 +61,6 @@ _exclude:
   - ".pytest_cache"
   - "__pycache__"
   - "*-debug.log"
-  - ".skip"
 
 _jinja_extensions:
   - jinja2_time.TimeExtension

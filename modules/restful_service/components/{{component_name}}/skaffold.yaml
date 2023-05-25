@@ -52,7 +52,7 @@ profiles:
     local:
       concurrency: 0
 
-{% if deploy_with_gke == true -%}
+{% if deploy_gke == true -%}
 # Profile for GKE deployment, building images via CloudBuild
 - &gke-profile # YAML anchor used by "default" profile.
   name: gke
@@ -89,7 +89,7 @@ profiles:
     kubectl: {}
 {%- endif %}
 
-{% if deploy_with_cloudrun == true -%}
+{% if deploy_cloudrun == true -%}
 # Profile for Cloud Run deployment, building images via CloudBuild
 - &cloudrun-profile # YAML anchor used by "default" profile.
   name: cloudrun
@@ -107,7 +107,7 @@ profiles:
     localPort: 9001 # Change this when adding other microservice.
 {%- endif %}
 
-{% if default_deploy_profile == "cloudrun" -%}
+{% if default_deploy == "cloudrun" -%}
 - <<: *cloudrun-profile
   name: default
 {%- endif %}

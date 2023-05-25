@@ -5,8 +5,9 @@ import subprocess
 import collections
 
 
-def confirm(msg, default=True):
-  typer.confirm(msg, abort=True, default=default)
+def confirm(msg, skip=False, default=True):
+  if not skip:
+    typer.confirm(msg, abort=True, default=default)
 
 
 # Check if the solution folder has st.yaml file.
@@ -103,6 +104,17 @@ def exec_output(command, working_dir=".", stop_when_error=True):
                                    cwd=working_dir,
                                    shell=True,
                                    text=True)
+  return output
+
+
+def exec_gcloud_output(command, working_dir="."):
+  output = ""
+  try:
+    output = exec_output(command)
+  except:
+    output = ""
+
+  output = output.strip()
   return output
 
 

@@ -64,8 +64,13 @@ def update(solution_path):
 @app.command()
 def init(solution_path: Annotated[Optional[str],
                                   typer.Argument()] = ".",
+         yes: Optional[bool] = False,
          stage=None):
   validate_solution_folder(solution_path)
+  if not yes:
+    auto_approve_flag = ""
+  else:
+    auto_approve_flag = "-auto-approve"
 
   if not stage:
     confirm(f"""
@@ -73,36 +78,39 @@ def init(solution_path: Annotated[Optional[str],
   - Run terraform init and apply in 'bootstrap' stage.
   - Run terraform init and apply in 'foundation' stage.
 
-  This will take a few minutes. Continue?""")
+  This will take a few minutes. Continue?""",
+            skip=yes)
 
-    working_dir = f"{solution_path}/terraform/stages/bootstrap"
-    exec_shell("terraform init", working_dir=working_dir)
-    exec_shell("terraform apply -auto-approve", working_dir=working_dir)
-    exec_shell("terraform output > tf_output.tfvars", working_dir=working_dir)
+    working_dir = f"{solution_path}/terraform/stages/1-bootstrap"
+    exec_shell(f"terraform init", working_dir=working_dir)
+    exec_shell(f"terraform apply {auto_approve_flag}", working_dir=working_dir)
+    exec_shell(f"terraform output > tf_output.tfvars", working_dir=working_dir)
 
-    working_dir = f"{solution_path}/terraform/stages/foundation"
-    exec_shell("terraform init", working_dir=working_dir)
-    exec_shell("terraform apply -auto-approve", working_dir=working_dir)
-    exec_shell("terraform output > tf_output.tfvars", working_dir=working_dir)
+    working_dir = f"{solution_path}/terraform/stages/2-foundation"
+    exec_shell(f"terraform init", working_dir=working_dir)
+    exec_shell(f"terraform apply {auto_approve_flag}", working_dir=working_dir)
+    exec_shell(f"terraform output > tf_output.tfvars", working_dir=working_dir)
 
   else:
     confirm(f"""
   This will initialize the solution with the following steps:
   - Run terraform init and apply in '{stage}' stage.
 
-  This will take a few minutes. Continue?""")
+  This will take a few minutes. Continue?""",
+            skip=yes)
 
     working_dir = f"{solution_path}/terraform/stages/{stage}"
-    exec_shell("terraform init", working_dir=working_dir)
-    exec_shell("terraform apply -auto-approve", working_dir=working_dir)
-    exec_shell("terraform output > tf_output.tfvars", working_dir=working_dir)
+    exec_shell(f"terraform init", working_dir=working_dir)
+    exec_shell(f"terraform apply {auto_approve_flag}", working_dir=working_dir)
+    exec_shell(f"terraform output > tf_output.tfvars", working_dir=working_dir)
 
 
 # Build and deploy services.
 @app.command()
 def deploy(profile: str = "default",
            solution_path: Annotated[Optional[str],
-                                    typer.Argument()] = "."):
+                                    typer.Argument()] = ".",
+           yes: Optional[bool] = False):
   validate_solution_folder(solution_path)
 
   solution_yaml_dict = read_yaml(f"{solution_path}/st.yaml")
@@ -111,7 +119,7 @@ def deploy(profile: str = "default",
   command = f"skaffold run -p {profile} --default-repo=\"gcr.io/{project_id}\""
   print("This will build and deploy all services using the command below:")
   print_highlight(command)
-  confirm("\nThis may take a few minutes. Continue?")
+  confirm("\nThis may take a few minutes. Continue?", skip=yes)
   exec_shell(command, working_dir=solution_path)
 
 
