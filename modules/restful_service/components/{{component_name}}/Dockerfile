@@ -1,5 +1,10 @@
-ARG BASE_IMG
-FROM ${BASE_IMG}
+{% if depend_on_common == true -%}
+ARG COMMON_IMAGE
+FROM ${COMMON_IMAGE}
+{% else %}
+FROM python:3.9-slim
+{%- endif %}
+
 
 WORKDIR /opt
 COPY requirements.txt service_requirements.txt

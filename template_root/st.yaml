@@ -3,6 +3,6 @@ _metadata:
 components: {}
 created_at: "{% now 'utc', '%Y-%b-%d %H:%M:%S UTC' %}"
 modified_at: "{% now 'utc', '%Y-%b-%d %H:%M:%S UTC' %}"
-projdct_number: {{project_number}}
+project_number: {{project_number}}
 project_id: {{project_id}}
 project_name: {{project_name}}

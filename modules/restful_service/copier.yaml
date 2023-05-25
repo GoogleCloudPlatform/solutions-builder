@@ -9,6 +9,11 @@ component_name:
   help: What is the name of this component?
   default: restful_service
 
+resource_name:
+  type: str
+  help: Resource name (lower case, alphanumeric characters, '-')?
+  default: "{{ component_name | convert_resource_name }}"
+
 gcp_region:
   type: str
   help: Which Google Cloud region?
@@ -18,12 +23,6 @@ deploy_cloudrun:
   type: bool
   help: Add Cloud Run to deployment methods (using Skaffold)?
   default: yes
-
-cloudrun_resource_name:
-  type: str
-  help: Cloud Run resource name?
-  default: "{{ component_name | replace('_', '-') }}"
-  when: "{{deploy_cloudrun}}"
 
 deploy_gke:
   type: bool
@@ -42,6 +41,11 @@ depend_on_common:
   type: bool
   help: Does this component require the Common image?
   default: no
+
+local_port:
+  type: str
+  help: What's the port for local port forwarding?
+  default: 9001
 
 use_github_action:
   type: bool

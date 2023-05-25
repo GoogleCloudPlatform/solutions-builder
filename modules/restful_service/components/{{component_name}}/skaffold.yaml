@@ -13,36 +13,41 @@ requires:
 
 build:
   artifacts:
-  - image: {{component_name}}
+  - image: {{resource_name}}
     sync:
       infer:
       - '**/*.py'
       - '**/*.json'
     docker:
       cacheFrom:
-      - {{component_name}}
-      - {{component_name}}:latest
+      - {{resource_name}}
+      - {{resource_name}}:latest
+
+    {% if depend_on_common == true -%}
     requires:
     - image: common
-      alias: BASE_IMG
+      alias: COMMON_IMAGE
+    {%- endif %}
   googleCloudBuild: {}
 
 # Portforwarding when running `skaffold dev` locally.
 portForward:
 - resourceType: service
-  resourceName: {{component_name}}
+  resourceName: {{resource_name}}
   port: 80
-  localPort: 9001 # Change this when adding other microservice.
+  localPort: {{local_port}} # Change this when adding other microservice.
 
 profiles:
 # Profile for building images locally.
 - name: local_build
   build:
     artifacts:
-    - image: {{component_name}}
+    - image: {{resource_name}}
+      {% if depend_on_common == true -%}
       requires:
       - image: common
-        alias: BASE_IMG
+        alias: COMMON_IMAGE
+      {%- endif %}
       sync:
         infer:
         - '**/*.py'
@@ -74,7 +79,12 @@ profiles:
           command: ["sh", "-c", "rm *.rendered.env"]
   # Simple deployment using kubectl.
   deploy:
-    kubectl: {}
+    kubectl:
+      hooks:
+        before:
+        - host:
+            dir: .
+            command: ["sh", "-c", "gcloud container clusters get-credentials 'main-cluster' --region '{{gcp_region}}' --project '{{project_id}}'"]
 
 # Profile for GKE Horizontal Pod Autoscaler.
 # This profile only works with `gke` profile together.
@@ -102,12 +112,19 @@ profiles:
       region: {{gcp_region}}
   portForward:
   - resourceType: service
-    resourceName: {{cloudrun_resource_name}}
+    resourceName: {{resource_name}}
     port: 80
-    localPort: 9001 # Change this when adding other microservice.
+    localPort: {{local_port}} # Change this when adding other microservice.
 {%- endif %}
 
 {% if default_deploy == "cloudrun" -%}
+# The default profile refer to cloudrun profile above.
 - <<: *cloudrun-profile
+  name: default
+{%- endif %}
+
+{% if default_deploy == "gke" -%}
+# The default profile refer to gke profile above.
+- <<: *gke-profile
   name: default
 {%- endif %}

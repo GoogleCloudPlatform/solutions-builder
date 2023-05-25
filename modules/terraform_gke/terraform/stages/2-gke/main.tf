@@ -17,7 +17,6 @@
 
 # project-specific locals
 locals {
-  lh                        = join("", ["local", "host"])
   vpc_network               = data.terraform_remote_state.foundation.outputs.vpc_network
   vpc_subnetwork            = data.terraform_remote_state.foundation.outputs.vpc_subnetwork
   ip_cidr_range             = data.terraform_remote_state.foundation.outputs.ip_cidr_range
@@ -33,7 +32,7 @@ data "terraform_remote_state" "foundation" {
   backend = "gcs"
   config = {
     bucket = "${var.project_id}-tfstate"
-    prefix = "stage/foundation"
+    prefix = "stage/2-foundation"
   }
 }
 
@@ -51,7 +50,7 @@ module "gke" {
   enable_private_nodes      = true
   min_node_count            = 1
   max_node_count            = 10
-  machine_type              = "n1-standard-4"
+  machine_type              = var.machine_type
 
   # This service account will be created in both GCP and GKE, and will be
   # used for workload federation in all microservices.
@@ -59,18 +58,5 @@ module "gke" {
   service_account_name = "gke-sa"
 
   # See latest stable version at https://cloud.google.com/kubernetes-engine/docs/release-notes-stable
-  kubernetes_version = "1.23.16-gke.1400"
-}
-
-module "ingress" {
-  depends_on = [module.gke]
-
-  source            = "../../modules/ingress_nginx"
-  project_id        = var.project_id
-  cert_issuer_email = var.admin_email
-  region            = var.region
-
-  # API domain, excluding protocols. E.g. example.com.
-  api_domain        = var.api_domain
-  cors_allow_origin = "http://${local.lh}:4200,http://${local.lh}:3000,http://${var.web_app_domain},https://${var.web_app_domain}"
+  kubernetes_version = var.kubernetes_version
 }

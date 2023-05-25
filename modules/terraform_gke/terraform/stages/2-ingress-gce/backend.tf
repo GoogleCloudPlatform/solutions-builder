@@ -16,11 +16,8 @@
  */
 
 terraform {
-  {% if terraform_backend_gcs == true -%}
   backend "gcs" {
-    # Uncomment below and specify a GCS bucket for TF state.
     bucket = "{{project_id}}-tfstate"
-    prefix = "stage/3-components"
+    prefix = "stage/2-ingress-gce"
   }
-  {%- endif %}
 }

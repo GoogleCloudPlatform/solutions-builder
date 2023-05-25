@@ -108,6 +108,7 @@ def init(solution_path: Annotated[Optional[str],
 # Build and deploy services.
 @app.command()
 def deploy(profile: str = "default",
+           component: str = None,
            solution_path: Annotated[Optional[str],
                                     typer.Argument()] = ".",
            yes: Optional[bool] = False):
@@ -116,7 +117,12 @@ def deploy(profile: str = "default",
   solution_yaml_dict = read_yaml(f"{solution_path}/st.yaml")
   project_id = solution_yaml_dict["project_id"]
 
-  command = f"skaffold run -p {profile} --default-repo=\"gcr.io/{project_id}\""
+  if component:
+    component_flag = f" -m {component} "
+  else:
+    component_flag = ""
+
+  command = f"skaffold run -p {profile} {component_flag} --default-repo=\"gcr.io/{project_id}\""
   print("This will build and deploy all services using the command below:")
   print_highlight(command)
   confirm("\nThis may take a few minutes. Continue?", skip=yes)

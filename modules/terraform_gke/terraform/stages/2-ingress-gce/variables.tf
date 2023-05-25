@@ -17,25 +17,42 @@
 
 variable "project_id" {
   type        = string
-  description = "project ID"
+  description = "GCP Project ID"
+
+  validation {
+    condition     = length(var.project_id) > 0
+    error_message = "The project_id value must be an non-empty string."
+  }
 }
 
 variable "region" {
   type        = string
-  description = "GCP region"
+  description = "Default GCP region"
+  default     = "us-central1"
+
+  validation {
+    condition     = length(var.region) > 0
+    error_message = "The region value must be an non-empty string."
+  }
 }
 
-variable "external_ip_address" {
+variable "cluster_name" {
   type    = string
-  default = null
+  default = "main-cluster"
+}
+
+variable "kubernetes_version" {
+  type        = string
+  description = "Kubernetes version. See https://cloud.google.com/kubernetes-engine/docs/release-notes-stable"
+}
+
+variable "cert_issuer_email" {
+  type        = string
+  description = "Cert Issuer Email"
 }
 
 variable "api_domain" {
   type        = string
-  description = "API domain, excluding protocol. E.g. api.example.com"
-}
-
-variable "cors_allow_originss" {
-  type        = string
-  description = "CORS allow origins, comma-separated."
+  description = "API endpoint domain, excluding protocol"
+  default     = "localhost"
 }

@@ -15,11 +15,6 @@
  *
  */
 
-variable "env" {
-  type    = string
-  default = "dev"
-}
-
 variable "project_id" {
   type        = string
   description = "GCP Project ID"
@@ -46,37 +41,24 @@ variable "cluster_name" {
   default = "main-cluster"
 }
 
-variable "firestore_region" {
+variable "kubernetes_version" {
   type        = string
-  description = "Firestore Region"
-  default     = "us-central"
+  description = "Kubernetes version. See https://cloud.google.com/kubernetes-engine/docs/release-notes-stable"
 }
 
-variable "bq_dataset_location" {
+variable "machine_type" {
   type        = string
-  description = "BigQuery Dataset location"
-  default     = "US"
+  description = "VM machine time"
+  default     = "n1-standard-4"
 }
 
-variable "storage_multiregion" {
-  type    = string
-  default = "us"
-}
-
-variable "admin_email" {
-  type = string
-  # TODO: replace with your own email
-  default = "admin@google.com"
+variable "cert_issuer_email" {
+  type        = string
+  description = "Cert Issuer Email"
 }
 
 variable "api_domain" {
   type        = string
   description = "API endpoint domain, excluding protocol"
   default     = "localhost"
-}
-
-variable "web_app_domain" {
-  type        = string
-  description = "Web app domain, excluding protocol"
-  default     = "localhost:8080"
 }

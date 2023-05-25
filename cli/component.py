@@ -39,7 +39,7 @@ def update_component_to_root_yaml(component_name, solution_path):
   # Update Solution root YAML with new component name.
   solution_yaml_dict = read_yaml(f"{solution_path}/st.yaml") or {}
   components = solution_yaml_dict["components"] or {}
-  components[component_name] = components[component_name] or {}
+  components[component_name] = components.get("component_name") or {}
   solution_yaml_dict["components"] = components
   write_yaml(f"{solution_path}/st.yaml", solution_yaml_dict)
 
@@ -58,15 +58,22 @@ def process_component(method, component_name, solution_path):
       "destination_path")
   destination_path = destination_path.replace("//", "/")
 
+  # Get basic info from root st.yaml.
+  root_st_yaml = read_yaml(f"{solution_path}/st.yaml")
+
+  print(root_st_yaml)
+  data = {
+      "project_id": root_st_yaml["project_id"],
+      "project_number": root_st_yaml["project_number"]
+  }
+
   # Copy component template to destination.
   if method == "update":
-    run_auto(template_folder,
-             destination_path,
-             data={"component_name": component_name})
+    data["component_name"] = component_name
+    run_auto(template_folder, destination_path, data=data)
     update_component_to_root_yaml(component_name, solution_path)
   else:
-    result = run_auto(template_folder, destination_path)
-    print(result)
+    run_auto(template_folder, destination_path, data=data)
 
   # Patch skaffold.yaml
   for patch_file in copier_dict.get("_patch", []):

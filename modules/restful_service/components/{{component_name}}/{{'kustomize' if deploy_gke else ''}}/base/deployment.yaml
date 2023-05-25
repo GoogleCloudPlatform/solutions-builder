@@ -1,49 +1,49 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sample-service
+  name: {{resource_name}}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: sample-service
+      app: {{resource_name}}
   template:
     metadata:
       labels:
-        app: sample-service
+        app: {{resource_name}}
     spec:
       serviceAccountName: gke-sa
       containers:
-      - name: sample-service
-        image: sample-service
-        imagePullPolicy: IfNotPresent
-        envFrom:
-        - configMapRef:
-            name: env-vars
-        resources:
-          requests:
-            cpu: "250m"
-            memory: "100Mi"
-          limits:
-            memory: "5000Mi"
-            cpu: "2000m"
-        ports:
-        - containerPort: 80
-        livenessProbe:
-          failureThreshold: 5
-          httpGet:
-            path: /ping
-            port: 80
-            scheme: HTTP
-          periodSeconds: 30
-          successThreshold: 1
-          timeoutSeconds: 10
-        readinessProbe:
-          failureThreshold: 5
-          httpGet:
-            path: /ping
-            port: 80
-            scheme: HTTP
-          periodSeconds: 30
-          successThreshold: 1
-          timeoutSeconds: 10
+        - name: {{resource_name}}
+          image: {{resource_name}}
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: env-vars
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "100Mi"
+            limits:
+              memory: "5000Mi"
+              cpu: "2000m"
+          ports:
+            - containerPort: 80
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /ping
+              port: 80
+              scheme: HTTP
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 10
+          readinessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /ping
+              port: 80
+              scheme: HTTP
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 10

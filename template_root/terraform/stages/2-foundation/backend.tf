@@ -20,7 +20,7 @@ terraform {
   backend "gcs" {
     # Uncomment below and specify a GCS bucket for TF state.
     bucket = "{{project_id}}-tfstate"
-    prefix = "stage/foundation"
+    prefix = "stage/2-foundation"
   }
   {%- endif %}
 }
