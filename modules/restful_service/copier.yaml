@@ -16,6 +16,11 @@ resource_name:
   default: "{{ component_name | convert_resource_name }}"
   validator: "{% if not resource_name %}Required{% endif %}"
 
+service_path:
+  type: str
+  help: "The relative path used in http://my-domain/[service_path]"
+  default: "{{resource_name}}"
+
 gcp_region:
   type: str
   help: Which Google Cloud region?

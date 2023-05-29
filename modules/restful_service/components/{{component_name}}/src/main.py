@@ -12,7 +12,7 @@ from routes import {{data_model_plural}}
 
 # Basic API config
 service_title = "{{data_model_plural | capitalize}} RESTful API"
-service_path = "restful_service"
+service_path = "{{service_path}}"
 version = "v1"
 
 # Configurate Firestore and Firedantic

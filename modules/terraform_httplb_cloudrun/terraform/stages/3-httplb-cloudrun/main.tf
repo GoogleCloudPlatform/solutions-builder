@@ -74,6 +74,7 @@ module "lb-http" {
       description            = null
       custom_request_headers = null
       security_policy        = null
-    } {% endif %}{% endfor %}
+    }
+    {% endif %}{% endfor %}
   }
 }
