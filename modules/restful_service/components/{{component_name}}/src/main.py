@@ -1,5 +1,5 @@
 """
-  Todos RESTful Microservice
+  {{data_model_plural | capitalize}} RESTful Microservice
 """
 import uvicorn
 import config
@@ -8,10 +8,10 @@ from fastapi.responses import HTMLResponse
 from firedantic import configure
 from google.cloud.firestore import Client
 
-from routes import todos
+from routes import {{data_model_plural}}
 
 # Basic API config
-service_title = "Todos RESTful API"
+service_title = "{{data_model_plural | capitalize}} RESTful API"
 service_path = "restful_service"
 version = "v1"
 
@@ -37,8 +37,8 @@ def hello():
 
 api = FastAPI(title=service_title, version=version)
 
-# Append Todo CRUD APIs to the app.
-api.include_router(todos.router)
+# Append {{data_model_plural | capitalize}} CRUD APIs to the app.
+api.include_router({{data_model_plural}}.router)
 
 app.mount(f"/{service_path}", api)
 

@@ -1,0 +1,5 @@
+project_id        = "{{project_id}}"
+region            = "{{gcp_region}}"
+domains           = "{{domains}}"
+cloudrun_services = "{{cloudrun_services}}"
+loadbalancer_name = "serverless-default-lb"

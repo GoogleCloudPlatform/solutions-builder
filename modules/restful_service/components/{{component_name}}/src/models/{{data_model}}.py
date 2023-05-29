@@ -1,5 +1,5 @@
 """
-Data model for Todo list.
+Data model for {{data_model | capitalize}} list.
 """
 
 import os
@@ -15,10 +15,10 @@ PROJECT_ID = os.environ.get("PROJECT_ID", "")
 DATABASE_PREFIX = os.getenv("DATABASE_PREFIX", "")
 
 
-# Firebase data model in "todos" collection.
-class Todo(Model):
-  """Todo ORM class"""
-  __collection__ = "todos"
+# Firebase data model in "{{data_model_plural}}" collection.
+class {{data_model | capitalize}}(Model):
+  """{{data_model | capitalize}} ORM class"""
+  __collection__ = "{{data_model_plural}}"
 
   id: str = "1234"
   title: str = "Title"
@@ -30,8 +30,8 @@ class Todo(Model):
   @classmethod
   def find_by_id(cls, id):
     try:
-      todo = Todo.get_by_doc_id(id)
+      {{data_model}} = {{data_model | capitalize}}.get_by_doc_id(id)
     except ModelNotFoundError:
       return None
 
-    return todo
+    return {{data_model}}

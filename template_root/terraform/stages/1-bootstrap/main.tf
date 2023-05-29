@@ -2,6 +2,7 @@ locals {
   services = [
     "cloudresourcemanager.googleapis.com", # Cloud Resource Manager
     "cloudbilling.googleapis.com",         # Cloud Billing
+    "cloudbuild.googleapis.com",           # Cloud Build
     "serviceusage.googleapis.com",         # Service Usage
     "storage.googleapis.com",              # Service Usage
   ]

@@ -39,6 +39,16 @@ def get_current_user(project_id):
   return email
 
 
+def get_cloud_run_services(project_id):
+  """
+    Get current authenticated gcloud user.
+    """
+  command = f"gcloud run services list --format='value(name)'"
+  service_names = exec_gcloud_output(command)
+  service_names = re.sub(r"\n", ",", service_names)
+  return service_names
+
+
 def convert_resource_name(resource_name):
   """
     Convert to valid resource_name: lower case, alpha-numeric, dash.
@@ -51,6 +61,11 @@ def convert_resource_name(resource_name):
   return resource_name
 
 
+def assert_non_empty(value):
+  assert value, "Got empty value in Copier variable."
+  return value
+
+
 class SolutionsTemplateHelpersExtension(Extension):
 
   def __init__(self, environment):
@@ -58,4 +73,6 @@ class SolutionsTemplateHelpersExtension(Extension):
     environment.filters["get_project_number"] = get_project_number
     environment.filters["get_existing_firestore"] = get_existing_firestore
     environment.filters["get_current_user"] = get_current_user
+    environment.filters["get_cloud_run_services"] = get_cloud_run_services
     environment.filters["convert_resource_name"] = convert_resource_name
+    environment.filters["assert_non_empty"] = assert_non_empty

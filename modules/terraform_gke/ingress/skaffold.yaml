@@ -1,0 +1,11 @@
+# skaffold.yaml
+apiVersion: skaffold/v4beta1
+kind: Config
+metadata:
+  name: ingress
+manifests:
+  kustomize:
+    paths:
+      - ./kustomize/base
+deploy:
+  kubectl: {}

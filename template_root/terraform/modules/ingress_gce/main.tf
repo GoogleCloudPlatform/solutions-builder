@@ -43,30 +43,27 @@ resource "google_compute_global_address" "ingress_ip_address" {
   address_type = "EXTERNAL"
 }
 
-resource "kubectl_manifest" "managed_certificate" {
-  yaml_body = <<YAML
-apiVersion: networking.gke.io/v1
-kind: ManagedCertificate
-metadata:
-  name: gclb-managed-cert
-spec:
-  domains:
-    - ${var.api_domain}
-YAML
+resource "google_compute_managed_ssl_certificate" "managed_certificate" {
+  provider = google-beta
+
+  name = "${var.cert-name}"
+  managed {
+    domains = ["${var.domain}"]
+  }
 }
 
-resource "kubectl_manifest" "frontend_config" {
-  yaml_body = <<YAML
-apiVersion: networking.gke.io/v1beta1
-kind: FrontendConfig
-metadata:
-  name: ingress-security-config
-spec:
-  sslPolicy: ${google_compute_ssl_policy.gke-ingress-ssl-policy.name}
-  redirectToHttps:
-    enabled: true
-YAML
-}
+# resource "kubectl_manifest" "frontend_config" {
+#   yaml_body = <<YAML
+# apiVersion: networking.gke.io/v1beta1
+# kind: FrontendConfig
+# metadata:
+#   name: ingress-security-config
+# spec:
+#   sslPolicy: ${google_compute_ssl_policy.gke-ingress-ssl-policy.name}
+#   redirectToHttps:
+#     enabled: true
+# YAML
+# }
 
 resource "google_compute_ssl_policy" "gke-ingress-ssl-policy" {
   name            = "gke-ingress-ssl-policy"
@@ -74,37 +71,37 @@ resource "google_compute_ssl_policy" "gke-ingress-ssl-policy" {
   min_tls_version = "TLS_1_2"
 }
 
-resource "kubernetes_ingress_v1" "default_ingress" {
+# resource "kubernetes_ingress_v1" "default_ingress" {
 
-  metadata {
-    name = "default-ingress"
-    annotations = {
-      "kubernetes.io/ingress.class"                 = "gce"
-      "kubernetes.io/ingress.global-static-ip-name" = local.global_static_ip_name
-      "networking.gke.io/managed-certificates"      = kubectl_manifest.managed_certificate.name
-      "networking.gke.io/v1beta1.FrontendConfig"    = kubectl_manifest.frontend_config.name
-    }
-  }
+#   metadata {
+#     name = "default-ingress"
+#     annotations = {
+#       "kubernetes.io/ingress.class"                 = "gce"
+#       "kubernetes.io/ingress.global-static-ip-name" = local.global_static_ip_name
+#       "networking.gke.io/managed-certificates"      = kubectl_manifest.managed_certificate.name
+#       "networking.gke.io/v1beta1.FrontendConfig"    = kubectl_manifest.frontend_config.name
+#     }
+#   }
 
-  spec {
-    rule {
-      host = var.api_domain
-      http {
-        # Sample Service
-        path {
-          backend {
-            service {
-              name = "sample-service"
-              port {
-                number = 80
-              }
-            }
-          }
-          path_type = "Prefix"
-          path      = "/sample_service"
-        }
-      }
-    }
-  }
+#   spec {
+#     rule {
+#       host = var.api_domain
+#       http {
+#         # Sample Service
+#         path {
+#           backend {
+#             service {
+#               name = "sample-service"
+#               port {
+#                 number = 80
+#               }
+#             }
+#           }
+#           path_type = "Prefix"
+#           path      = "/sample_service"
+#         }
+#       }
+#     }
+#   }
 
 }

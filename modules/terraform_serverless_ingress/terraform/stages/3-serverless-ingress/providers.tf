@@ -15,32 +15,20 @@
  *
  */
 
-variable "project_id" {
-  type        = string
-  description = "project ID"
+# Terraform Block
+terraform {
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+    }
+    google-beta = {
+      source  = "hashicorp/google-beta"
+    }
+  }
 }
 
-variable "region" {
-  type        = string
-  description = "GCP region"
+provider "google" {
+  project = var.project_id
 }
 
-variable "external_ip_address" {
-  type    = string
-  default = null
-}
-
-variable "domain" {
-  type        = string
-  description = "API domain, excluding protocol. E.g. api.example.com"
-}
-
-variable "cert_name" {
-  type        = string
-  description = "SSL certificate name"
-}
-
-variable "cors_allow_originss" {
-  type        = string
-  description = "CORS allow origins, comma-separated."
-}
+data "google_client_config" "default" {}

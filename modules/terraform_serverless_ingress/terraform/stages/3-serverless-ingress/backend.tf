@@ -15,32 +15,12 @@
  *
  */
 
-variable "project_id" {
-  type        = string
-  description = "project ID"
-}
-
-variable "region" {
-  type        = string
-  description = "GCP region"
-}
-
-variable "external_ip_address" {
-  type    = string
-  default = null
-}
-
-variable "domain" {
-  type        = string
-  description = "API domain, excluding protocol. E.g. api.example.com"
-}
-
-variable "cert_name" {
-  type        = string
-  description = "SSL certificate name"
-}
-
-variable "cors_allow_originss" {
-  type        = string
-  description = "CORS allow origins, comma-separated."
+terraform {
+  {% if terraform_backend_gcs == true -%}
+  backend "gcs" {
+    # Uncomment below and specify a GCS bucket for TF state.
+    bucket = "{{project_id}}-tfstate"
+    prefix = "stage/3-ingress-serverless"
+  }
+  {%- endif %}
 }

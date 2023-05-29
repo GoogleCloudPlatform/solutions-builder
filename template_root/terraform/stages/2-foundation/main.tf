@@ -75,6 +75,7 @@ module "vpc_network" {
 }
 
 resource "google_project_iam_member" "cloudbuild-sa-iam" {
+  depends_on = [module.project_services]
   for_each = toset(local.roles_for_default_sa)
   role     = each.key
   member   = "serviceAccount:${var.project_number}@cloudbuild.gserviceaccount.com"
@@ -82,6 +83,7 @@ resource "google_project_iam_member" "cloudbuild-sa-iam" {
 }
 
 resource "google_project_iam_member" "default-compute-sa-iam" {
+  depends_on = [module.project_services]
   for_each = toset(local.roles_for_default_sa)
   role     = each.key
   member   = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"

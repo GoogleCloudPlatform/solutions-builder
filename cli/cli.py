@@ -92,6 +92,8 @@ def init(solution_path: Annotated[Optional[str],
     exec_shell(f"terraform output > tf_output.tfvars", working_dir=working_dir)
 
   else:
+    stage = stage.replace("terraform/stages", "")
+
     confirm(f"""
   This will initialize the solution with the following steps:
   - Run terraform init and apply in '{stage}' stage.

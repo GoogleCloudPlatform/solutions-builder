@@ -17,30 +17,36 @@
 
 variable "project_id" {
   type        = string
-  description = "project ID"
+  description = "GCP Project ID"
+
+  validation {
+    condition     = length(var.project_id) > 0
+    error_message = "The project_id value must be an non-empty string."
+  }
 }
 
 variable "region" {
   type        = string
-  description = "GCP region"
+  description = "Default GCP region"
+
+  validation {
+    condition     = length(var.region) > 0
+    error_message = "The region value must be an non-empty string."
+  }
 }
 
-variable "external_ip_address" {
-  type    = string
-  default = null
+variable "loadbalancer_name" {
+  type = string
+  default = "serverless-default-lb"
 }
 
-variable "domain" {
-  type        = string
-  description = "API domain, excluding protocol. E.g. api.example.com"
+variable "domains" {
+  type = string
+  description = "List of domains attached to the LB, comma-separated."
 }
 
-variable "cert_name" {
-  type        = string
-  description = "SSL certificate name"
+variable "cloudrun_services" {
+  type = string
+  description = "List of Cloud Run service names, comma-separated."
 }
 
-variable "cors_allow_originss" {
-  type        = string
-  description = "CORS allow origins, comma-separated."
-}

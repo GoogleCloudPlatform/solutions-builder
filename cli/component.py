@@ -61,7 +61,6 @@ def process_component(method, component_name, solution_path):
   # Get basic info from root st.yaml.
   root_st_yaml = read_yaml(f"{solution_path}/st.yaml")
 
-  print(root_st_yaml)
   data = {
       "project_id": root_st_yaml["project_id"],
       "project_number": root_st_yaml["project_number"]
