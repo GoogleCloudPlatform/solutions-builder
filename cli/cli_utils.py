@@ -111,7 +111,8 @@ def exec_gcloud_output(command, working_dir="."):
   output = ""
   try:
     output = exec_output(command)
-  except:
+  except Exception as e:
+    print(f"Error: {e}")
     output = ""
 
   output = output.strip()

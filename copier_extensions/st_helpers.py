@@ -43,6 +43,7 @@ def get_cloud_run_services(project_id):
   """
     Get current authenticated gcloud user.
     """
+  print(f"    (Retrieving existing Cloud Run services for {project_id}...)")
   command = f"gcloud run services list --format='value(name)'"
   service_names = exec_gcloud_output(command)
   service_names = re.sub(r"\n", ",", service_names)

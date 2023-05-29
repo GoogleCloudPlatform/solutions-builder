@@ -37,7 +37,7 @@ variable "region" {
 
 variable "loadbalancer_name" {
   type = string
-  default = "serverless-default-lb"
+  default = "http-lb"
 }
 
 variable "domains" {
