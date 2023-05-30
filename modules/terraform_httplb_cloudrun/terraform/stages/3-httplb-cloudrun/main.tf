@@ -22,7 +22,10 @@ resource "google_compute_url_map" "httplb_urlmap" {
     default_service = "${var.loadbalancer_name}-backend-{{service_names[0]}}"
 
     {% for service_name in cloudrun_services.split(",") %}{% if service_name != "" %}path_rule {
-      paths   = ["/{{service_name}}"]
+      paths   = [
+        "/{{service_name}}",
+        "/{{service_name}}/*",
+      ]
       service = "${var.loadbalancer_name}-backend-{{service_name}}"
     }
     {% endif %}{% endfor %}
