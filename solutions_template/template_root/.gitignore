@@ -1,0 +1,40 @@
+__pycache__
+keys
+test
+.vscode
+.venv
+.tmp
+.pytest_cache
+.coverage*
+pytest-coverage.txt
+.python-version
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+dist
+node_modules
+
+# macOS file
+.DS_Store
+
+# Local .terraform directories
+.terraform
+.terraform.lock.hcl
+**/.terraform/*
+**/.terraform
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+.!*
+
+# test artifacts
+.e2e_test_output
+.test_output
+.angular
+
+# Ignore rendered yaml files.
+*.rendered.env
+
+# VSCode related
+*.code-workspace

@@ -1,2 +1,2 @@
 #!/bin/sh
-python cli/cli.py $@
+PYTHONPATH=./solutions_template python solutions_template/cli.py $@
