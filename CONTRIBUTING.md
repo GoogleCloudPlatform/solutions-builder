@@ -39,23 +39,26 @@ Here's the high-level steps of the development flow:
   git checkout -b new-feature
   ```
 
+### Preparation
+
+Install `solutions-template` as local package.
+```
+cd solutions-template
+poetry install
+```
+
+At this moment, you shall see the `solutions-template` is installed with local package.
+```
+pip freeze | grep solutions-template
+-e git+ssh://git@github.com/GoogleCloudPlatform/solutions-template.git@[HASH]#egg=solutions_template
+```
+
+
 ### Test code changes in the Template
 
 Once you made a few code changes locally, you'd want to test with a real Google Cloud project to ensure all steps run correctly.
 
 > We will add more details of how to run end-to-end testing with your own test project.
-
-### Build cookiecutter template folder
-
-The key of making this codebase as a cookiecutter template is to generate `{{cookiecutter.project_id}}` folder.
-
-For every code change, make sure to run the following to automatically re-generate the folder:
-```
-bash build_tools/build_template.sh
-```
-
-- This will scan all files and folders (with selection) and re-generate the `{{cookiecutter.project_id}}`.
-- In addition, if you want to include a few more files in the `{{cookiecutter.project_id}}` folder, you can add more files and path defined in the [build_tools/build_template.sh](build_tools/build_template.sh)
 
 ### Commit code changes
 

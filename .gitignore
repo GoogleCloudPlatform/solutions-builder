@@ -11,21 +11,22 @@ pytest-coverage.txt
 firebase-debug.log
 firestore-debug.log
 ui-debug.log
+dist
+node_modules
 
 # macOS file
 .DS_Store
 
 # Local .terraform directories
+.terraform
+.terraform.lock.hcl
 **/.terraform/*
+**/.terraform
 
 # .tfstate files
 *.tfstate
 *.tfstate.*
 .!*
-
-# tf lock files
-.terraform
-.terraform.lock.hcl
 
 # test artifacts
 .e2e_test_output

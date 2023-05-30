@@ -1,6 +1,6 @@
 # Google Cloud Solutions Template
 
-**A template to generate a new project with built-in structure and features
+**A solution framework to generate a new project with built-in structure and modules
 to accelerate your project setup.**
 
 ## TL;DR
@@ -9,11 +9,11 @@ Solutions Template is a boilerplate template for building repeatable
 solutions with the best practices in architecture on Google Cloud, including GKE
 clusters, Cloud Run, Test Automation, CI/CD, as well as development process.
 
-This template provides built-in and ready-to-ship sample features including:
+This template provides built-in and ready-to-ship modules including:
+* Easy-to-deploy [Terraform](https://www.terraform.io/) boilerplate modules
 * Container-based microservices, can be deployed to a Kubernetes cluster or Cloud Run.
-* Simplified deployment using Skaffold and Kustomize ([Blog](https://cloud.google.com/blog/topics/developers-practitioners/simplify-your-devops-using-skaffold)).
-* Google Cloud foundation automation using [Terraform](https://www.terraform.io/).
-* Automatically generated API documentation (via [FastAPI](https://fastapi.tiangolo.com/)).
+* Unified deployment using Skaffold.
+* Automatically generated API documentation with Swagger UI.
 * CI/CD deployment (with Github Actions).
 * Cloud Run templates.
 
@@ -21,139 +21,75 @@ This template provides built-in and ready-to-ship sample features including:
 
 Please see [Feature Requests in the Github issue list](https://github.com/GoogleCloudPlatform/solutions-template/issues?q=is%3Aopen+is%3Aissue+label%3A%22feature+request%22).
 
-## Prerequisites
-
-### Understanding Google Cloud
-
-We recommend the following resources to get familiar with Google Cloud and microservices.
-
-- What is [Microservice Architecture](https://cloud.google.com/learn/what-is-microservices-architecture)
-- Learn about the [basics of Kubernetes](https://kubernetes.io/docs/concepts/overview/)
-- [Google Kubernetes Engine (GKE)](https://cloud.google.com/kubernetes-engine/docs/concepts/kubernetes-engine-overview) overview
-- Serverless container deployment and execution with [Cloud Run](https://cloud.google.com/run/docs/overview/what-is-cloud-run)
-- [Skaffold](https://skaffold.dev/docs/), a command line tool that facilitates continuous development for container based applications (support both GKE and Cloud Run):
-
-### Tool requirements:
+## Prerequisite
 
 | Tool  | Required Version | Documentation site |
 |---|---------------|---|
+| Python              | &gt;= 3.9              | https://www.python.org/downloads/release/python-390/ |
 | gcloud CLI          | Latest                 | https://cloud.google.com/sdk/docs/install |
 | Terraform           | &gt;= v1.3.7           | https://developer.hashicorp.com/terraform/downloads |
-| Skaffold (for GKE)  | &gt;= v2.1.0           | https://skaffold.dev/ |
-| Kustomize (for GKE) | &gt;= v4.3.1 (< v5.x)  | https://kustomize.io/ |
-| Cookiecutter        | &gt;= v2.1.1           | https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter |
 
-### Install tools & dependencies:
-- For Google CloudShell or Linux/Ubuntu:
-  ```
-  # Cookiecutter
-  python3 -m pip install --user cookiecutter
 
-  # Skaffold
-  curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/LATEST/skaffold-linux-amd64 && \
-  sudo install skaffold /usr/local/bin/
+## Installing Solutions Template CLI
 
-  # Kustomize
-  wget https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh
-  sudo rm /usr/local/bin/kustomize
-  sudo ./install_kustomize.sh 4.5.7 /usr/local/bin
-  ```
-- For MacOS:
-  ```
-  brew install skaffold kustomize cookiecutter
-  ```
-- For Windows:
-  ```
-  # Using pipx to install packages: https://pypa.github.io/pipx/
-  pipx install -y gcloudsdk skaffold kustomize cookiecutter
-  ```
-
-### Other dependencies (Optional)
-- Apple M1 Chip Support for Terraform
-
-  If you are running commands on an Apple M1 chip Macbook, make sure run the following to add M1 support for Terraform:
-  ```
-  brew install kreuzwerker/taps/m1-terraform-provider-helper
-  m1-terraform-provider-helper activate
-  m1-terraform-provider-helper install hashicorp/template -v v2.2.0
-  ```
-
-## Getting Started - Creating Solution Skeleton
-
-> If you wish to run the setup in Cloud Shell, please refer to this [Cloud Shell cookbook](/docs/cookbook/cloudshell.md).
-
-### Create a new Google Cloud project (Optional):
-
-> It is recommended to start with a brand new Google Cloud project to have a clean start.
-
-Run the following commands to create a new Google Cloud project, or [create a new project](https://console.cloud.google.com/projectcreate) on Google Cloud Console.
 ```
-export PROJECT_ID=<my-project-id>
-gcloud projects create $PROJECT_ID
-gcloud beta billing projects link $PROJECT_ID --billing-account $BILLING_ACCOUNT --quiet
-gcloud config set project $PROJECT_ID
-gcloud auth application-default login # for Terraform to able to run gcloud with correct config.
-gcloud auth application-default set-quota-project $PROJECT_ID
+pipx install solutions-template
 ```
 
-### Create skeleton code in a new folder
+## Getting Started
 
-Run the following to generate skeleton code in a new folder using Cookiecutter:
+Generate a new solution folder.
 ```
-cookiecutter https://github.com/GoogleCloudPlatform/solutions-template.git
-```
-
-Provide the required variables to Cookiecutter prompt, e.g.:
-```
-project_id: my-project-id
-project_name [My Awesome Project]:
-project_short_description [My Awesome Project]:
-project_slug [my_project]:
-Google Cloud_region [us-central1]:
-version [0.1.0]:
-admin_email [admin@example.com]:
-```
-- The `project_id` is your Google Cloud project ID.
-- You may leave variables as blank if you'd like to use the default value (except projdct_id).
-- Notes: If you run into any issues with `cookiecutter`, please add `--verbose` at
-the end of the command to show detailed errors.
-
-Once `cookiecutter` completes, you will see `<my-project-id>` folder created in
-the path where you ran `cookiecutter` command.
-
-### Deploy the Sample Solution to Google Cloud project
-
-Go to the project folder generated from Cookiecutter:
-```
-cd <my-project-id>
-export BASE_DIR=$(pwd)
+st new my-solution .
 ```
 
-Log in to Google Cloud.
+This will prompt options and variables:
 ```
-# Login to Google Cloud (if not on Cloud Shell)
-gcloud auth login
-gcloud config set project $PROJECT_ID
-```
-
-Choose the microservice deployment options:
-```
-# Template feature options:
-# "gke": to deploy services to GKE
-# "cloudrun": to deploy services to Cloud Run
-# "gke|cloudrun": to deploy services to both GKE and Cloud Run
-export TEMPLATE_FEATURES="gke"
+🎤 What is your project name? (Spaces are allowed.)
+   my-solutions
+🎤 What is your Google Cloud project ID?
+   my-solutions
+🎤 What is your Google Cloud project number?
+   12345678
+🎤 Which Google Cloud region?
+   us-central1
+🎤 Use GCS Bucket for Terraform backend?
+   Yes
 ```
 
-Run all setup steps.
+Go to the newly created project folder and initialize the solution.
 ```
-bash setup/setup_all.sh
+cd my-solution
+st init
 ```
 
-Once microservice deployed successfully, you will see the message below:
+Add a RESTful API component with **Todo** data model to this solution.
 ```
-The API endpoints are ready. See the auto-generated API docs at this URL: https://<your-sample-domain>/sample_service/docs
+st component add restful_service
 ```
+
+Fill details in the prompt:
+- Component name: **todo_service**
+- Resource name: **todo-service**
+- Relative path: **todo-service**
+- GCP region: **us-central1**
+- Data model name: **todo**
+- Add Cloud Run to deployment methods: **yes**
+- Create network endpoint group (NEG) for serverless ingress: **yes**
+- Default deploy method? (cloudrun or gke): **Cloud Run**
+
+Add a HTTP Load Balancer for Cloud Run service(s)
+```
+st add component terraform_httplb_cloudrun
+st init --stage=3-httplb-cloudrun
+```
+
+Build and deploy
+```
+st deploy
+```
+- See other deployment options in ____.
+
 
 ## Additional Documentations
 
