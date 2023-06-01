@@ -85,6 +85,7 @@ This will prompt options and variables:
 Once filled, it will generate a new folder `my-solution` with the following file structure:
 
 ```
+├── .github
 ├── README.md
 ├── components
 │   └── common
@@ -302,6 +303,17 @@ This component creates a stage `3-httplb-cloudrun`, which you can find in `terra
 To apply the infra terraform code:
 ```
 st infra apply 3-httplb-cloudrun
+
+... (terraform execution)
+
+lb_https_ip_address = "12.34.56.78"
 ```
 - This will create a HTTP load balancer with managed-cert using the given domain name.
+
+Lastly, update your DNS with an **A record** to
+match the external IP address returned value. You'd need to wait for a few minutes
+for the DNS to refresh with new value.
+
+Once the DNS is updated, you can open up the domain with a browser to see the full stack
+in action.
 
