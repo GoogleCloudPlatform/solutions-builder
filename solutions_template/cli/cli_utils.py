@@ -131,6 +131,13 @@ def exec_gcloud_output(command, working_dir="."):
   return output
 
 
+def list_subfolders(path):
+  modules = get_immediate_subdirectories(path)
+  for module_name in sorted(modules):
+    print_highlight(f"- {module_name}")
+  print()
+
+
 def check_git_url(url):
   regex_str = "((git|ssh|http(s)?)|(git@[\w\.]+))(:(//)?)([\w\.@\:/\-~]+)(\.git)(/)?"
   regex = re.compile(regex_str)

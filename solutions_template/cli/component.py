@@ -72,7 +72,7 @@ def process_component(method, component_name, solution_path):
   # Otherwise, try to locate the component in local modules/ folder.
   else:
     current_dir = os.path.dirname(__file__)
-    template_path = f"{current_dir}/modules/{component_name}"
+    template_path = f"{current_dir}/../modules/{component_name}"
     if not os.path.exists(template_path):
       raise FileNotFoundError(
           f"Component {component_name} does not exist in modules folder.")
@@ -112,10 +112,6 @@ def process_component(method, component_name, solution_path):
 @component_app.command()
 def list():
   current_dir = os.path.dirname(__file__)
-  path = current_dir + "/modules"
-  modules = get_immediate_subdirectories(path)
-
-  print("Available module names:\n")
-  for module_name in sorted(modules):
-    print_highlight(f"- {module_name}")
-  print()
+  path = current_dir + "/../modules"
+  print("Available modules:\n")
+  list_subfolders(path)

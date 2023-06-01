@@ -1,14 +1,25 @@
 [tool.poetry]
 name = "solutions-template"
-version = "0.1.0"
+version = "0.1.14"
 description = "A solution framework to generate a project with built-in structure and modules"
 authors = ["Jon Chen <jonchen@google.com>"]
-license = "Apache License"
+license = "Apache"
 readme = "README.md"
-packages = [{include = "solutions_template"}]
+homepage = "https://github.com/GoogleCloudPlatform/solutions-template"
+repository = "https://github.com/GoogleCloudPlatform/solutions-template"
+packages = [
+  { include = "solutions_template" }
+]
+exclude = [
+  "**/node_modules/**/*",
+  "**/.terraform/**/*",
+  "**/.terraform/providers/**/*",
+  "**/.terraform.lock.hcl",
+  "**/__pycache__/**/*"
+]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = ">=3.9,<4.0"
 copier = "^7.2.0"
 pyyaml = "^6.0"
 typer = "^0.9.0"
@@ -18,7 +29,7 @@ pathlib = "^1.0.1"
 jinja2 = "^3.1.2"
 
 [tool.poetry.group.dev.dependencies]
-python = "^3.9"
+python = ">=3.9,<4.0"
 copier-templates-extensions = "^0.3.0"
 copier = "^7.2.0"
 PyYAML = "^6.0"
@@ -26,7 +37,7 @@ jinja2-time = "^0.2.0"
 typer = "^0.9.0"
 
 [tool.poetry.scripts]
-st = "solutions_template.cli:main"
+st = "solutions_template.cli.cli:main"
 
 [build-system]
 requires = ["poetry-core"]

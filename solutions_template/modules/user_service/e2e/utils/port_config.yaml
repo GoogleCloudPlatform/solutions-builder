@@ -1,6 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: config-port-config
-data:
-  user-service.PORT: "9001"

@@ -269,39 +269,4 @@ Once updated, open the browser to the Cloud Run service's URL, and you'll see th
 
 ## Add an Infra component
 
-An infra component is nothing but another component. Some component contains just infra pieces in `terraform/modules` or `terraform/stages` folders. Other component may contain both `component/service_name` as a microservice **AND** required infra resources in `terraform/stages`.
-
-To add an infra component, run the same command like adding a regular component.
-```
-st component add [COMPONENT_NAME]
-```
-
-### Example: Add a HTTP load balancer
-
-Run the following to add a HTTP load balancer that supports Google-managed cert and a domain name.
-```
-st component add terraform_httplb_cloudrun
-```
-
-Fill in the answers in the prompt.
-```
-This will add component 'terraform_httplb_cloudrun' to '.'. Continue? [Y/n]:
-🎤 What is the name of this component?
-   terraform_serverless_ingress
-🎤 GCP region
-   us-central1
-🎤 DNS domains (comma-separated string)?
-   my-solution-domain.com
-    (Retrieving existing Cloud Run services for jonchenst-0530...)
-🎤 Cloud Run service names as the LB backend? (comma-separated string)
-   todo-service
-```
-
-This component creates a stage `3-httplb-cloudrun`, which you can find in `terraform/stages` folder.
-
-To apply the infra terraform code:
-```
-st infra apply 3-httplb-cloudrun
-```
-- This will create a HTTP load balancer with managed-cert using the given domain name.
-
+An infra component is nothing but another component. Some component contains a

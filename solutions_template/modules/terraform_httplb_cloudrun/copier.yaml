@@ -9,6 +9,11 @@ component_name:
   help: What is the name of this component?
   default: terraform_serverless_ingress
 
+loadbalancer_name:
+  type: str
+  help: Name of the HTTP load balancer?
+  default: httplb-cloudrun
+
 region:
   type: str
   help: GCP region

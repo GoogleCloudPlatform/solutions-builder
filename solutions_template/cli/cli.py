@@ -16,19 +16,23 @@ limitations under the License.
 
 import typer
 import traceback
+import importlib.metadata
 from typing import Optional
 from typing_extensions import Annotated
 from copier import run_auto
 from pathlib import Path
 from .component import component_app
 from .tool import tool_app
+from .infra import infra_app
 from .cli_utils import *
 
+__version__ = importlib.metadata.version("solutions-template")
 state = {"debug": False}
 
-app = typer.Typer()
+app = typer.Typer(add_completion=False)
 app.add_typer(component_app, name="component")
 app.add_typer(tool_app, name="tool")
+app.add_typer(infra_app, name="infra")
 
 
 # Create a new solution
@@ -39,7 +43,7 @@ def new(folder_name, output_dir, template_path=None):
 
   if not template_path:
     current_dir = os.path.dirname(__file__)
-    template_path = f"{current_dir}/template_root"
+    template_path = f"{current_dir}/../template_root"
 
   if os.path.exists(output_path):
     raise FileExistsError(f"Solution folder {output_path} already exists.")
@@ -55,7 +59,12 @@ def new(folder_name, output_dir, template_path=None):
 
 # Update a solution
 @app.command()
-def update(solution_path, template_path="./template_root"):
+def update(solution_path: Annotated[Optional[str],
+                                    typer.Argument()] = ".",
+           template_path=None):
+  if not solution_path:
+    solution_path = "."
+
   validate_solution_folder(solution_path)
 
   if not os.path.exists(solution_path):
@@ -66,6 +75,12 @@ def update(solution_path, template_path="./template_root"):
 
   # Copy template_root to destination, excluding skaffold.yaml.
   orig_st_yaml = read_yaml(f"{solution_path}/st.yaml")
+
+  if not template_path:
+    current_dir = os.path.dirname(__file__)
+    template_path = f"{current_dir}/../template_root"
+    if not os.path.exists(template_path):
+      raise FileNotFoundError(f"{template_path} does not exist.")
   run_auto(template_path, solution_path, exclude=["skaffold.yaml"])
 
   # Restore some fields in st.yaml.
@@ -75,53 +90,6 @@ def update(solution_path, template_path="./template_root"):
   write_yaml(f"{solution_path}/st.yaml", st_yaml)
 
   print_success(f"Complete. Solution folder updated at {solution_path}.\n")
-
-
-# Project bootstrap and foundation.
-@app.command()
-def init(solution_path: Annotated[Optional[str],
-                                  typer.Argument()] = ".",
-         yes: Optional[bool] = False,
-         stage=None):
-  validate_solution_folder(solution_path)
-  if not yes:
-    auto_approve_flag = ""
-  else:
-    auto_approve_flag = "-auto-approve"
-
-  if not stage:
-    confirm(f"""
-  This will initialize the solution with the following steps:
-  - Run terraform init and apply in 'bootstrap' stage.
-  - Run terraform init and apply in 'foundation' stage.
-
-  This will take a few minutes. Continue?""",
-            skip=yes)
-
-    working_dir = f"{solution_path}/terraform/stages/1-bootstrap"
-    exec_shell(f"terraform init", working_dir=working_dir)
-    exec_shell(f"terraform apply {auto_approve_flag}", working_dir=working_dir)
-    exec_shell(f"terraform output > tf_output.tfvars", working_dir=working_dir)
-
-    working_dir = f"{solution_path}/terraform/stages/2-foundation"
-    exec_shell(f"terraform init", working_dir=working_dir)
-    exec_shell(f"terraform apply {auto_approve_flag}", working_dir=working_dir)
-    exec_shell(f"terraform output > tf_output.tfvars", working_dir=working_dir)
-
-  else:
-    stage = stage.replace("terraform/stages", "")
-
-    confirm(f"""
-  This will initialize the solution with the following steps:
-  - Run terraform init and apply in '{stage}' stage.
-
-  This will take a few minutes. Continue?""",
-            skip=yes)
-
-    working_dir = f"{solution_path}/terraform/stages/{stage}"
-    exec_shell(f"terraform init", working_dir=working_dir)
-    exec_shell(f"terraform apply {auto_approve_flag}", working_dir=working_dir)
-    exec_shell(f"terraform output > tf_output.tfvars", working_dir=working_dir)
 
 
 # Build and deploy services.
@@ -149,9 +117,24 @@ def deploy(profile: str = "default",
 
 
 @app.callback()
-def callback(debug: bool = False):
+def overall(debug: bool = False):
   if debug:
     state["debug"] = True
+
+
+@app.callback()
+def main_callback(verbose: bool = False, debug: bool = False):
+  if verbose:
+    state["verbose"] = True
+
+  if debug:
+    state["debug"] = True
+
+
+@app.command()
+def version():
+  print(f"v{__version__}")
+  raise typer.Exit()
 
 
 def main():
@@ -160,8 +143,8 @@ def main():
     print()
 
   except Exception as e:
-    if state["debug"]:
-      traceback.print_exc()
+    # if state["debug"]:
+    traceback.print_exc()
     print_error(e)
 
 

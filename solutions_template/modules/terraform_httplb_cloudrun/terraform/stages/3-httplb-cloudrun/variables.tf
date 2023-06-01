@@ -50,3 +50,20 @@ variable "cloudrun_services" {
   description = "List of Cloud Run service names, comma-separated."
 }
 
+variable "security_policy" {
+  description = "The resource URL for the security policy to associate with the backend service"
+  type        = string
+  default     = null
+}
+
+variable "edge_security_policy" {
+  description = "The resource URL for the edge security policy to associate with the backend service"
+  type        = string
+  default     = null
+}
+
+variable "load_balancing_scheme" {
+  description = "Load balancing scheme type (EXTERNAL for classic external load balancer, EXTERNAL_MANAGED for Envoy-based load balancer, and INTERNAL_SELF_MANAGED for traffic director)"
+  type        = string
+  default     = "EXTERNAL"
+}

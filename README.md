@@ -23,20 +23,42 @@ Please see [Feature Requests in the Github issue list](https://github.com/Google
 
 ## Prerequisite
 
-| Tool  | Required Version | Documentation site |
-|---|---------------|---|
-| Python              | &gt;= 3.9              | https://www.python.org/downloads/release/python-390/ |
-| gcloud CLI          | Latest                 | https://cloud.google.com/sdk/docs/install |
-| Terraform           | &gt;= v1.3.7           | https://developer.hashicorp.com/terraform/downloads |
+| Tool | Required Version | Installation |
+|---|---|---|
+| Python     | &gt;= 3.9     | |
+| gcloud CLI | Latest        | https://cloud.google.com/sdk/docs/install |
+| Terraform  | &gt;= v1.3.7  | https://developer.hashicorp.com/terraform/downloads |
+| Skaffold   | &gt;= v2.4.0  | https://skaffold.dev/docs/install/ |
 
+[Optional] If you plan to deploy services on a GKE cluster, please install the following:
+
+| Tool | Required Version | Installation |
+|---|---|---|
+| Kustomize   | &gt;= v5.0.0 | https://kubectl.docs.kubernetes.io/installation/kustomize/ |
 
 ## Installing Solutions Template CLI
 
+With `pip`:
 ```
+pip install solutions-template
+```
+
+With `pipx`:
+```
+pip install --user pipx
 pipx install solutions-template
 ```
 
 ## Getting Started
+
+Set up GCP project
+```
+# Optional: create a new GCP project. You can also use an existing GCP project.
+gcloud projects create my-solution-gcp-id
+
+# Set gcloud CLI to the GCP project.
+gcloud config set project my-solutions-gcp-id
+```
 
 Generate a new solution folder.
 ```
@@ -46,9 +68,9 @@ st new my-solution .
 This will prompt options and variables:
 ```
 🎤 What is your project name? (Spaces are allowed.)
-   my-solutions
+   my-solution
 🎤 What is your Google Cloud project ID?
-   my-solutions
+   my-solution-gcp-id
 🎤 What is your Google Cloud project number?
    12345678
 🎤 Which Google Cloud region?
@@ -60,7 +82,7 @@ This will prompt options and variables:
 Go to the newly created project folder and initialize the solution.
 ```
 cd my-solution
-st init
+st infra init
 ```
 
 Add a RESTful API component with **Todo** data model to this solution.
@@ -81,14 +103,14 @@ Fill details in the prompt:
 Add a HTTP Load Balancer for Cloud Run service(s)
 ```
 st add component terraform_httplb_cloudrun
-st init --stage=3-httplb-cloudrun
+st infra apply 3-httplb-cloudrun
 ```
 
 Build and deploy
 ```
 st deploy
 ```
-- See other deployment options in ____.
+- See other deployment options in [solutions_template/modules](solutions_template/modules).
 
 
 ## Additional Documentations
