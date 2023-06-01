@@ -52,7 +52,7 @@ resource "google_compute_url_map" "httplb_urlmap" {
     module.compute_backend_services
   ]
 
-  name        = "httplb-urlmap"
+  name        = "${var.loadbalancer_name}-urlmap"
   description = "URL map for CloudRun services"
   default_service = "${var.loadbalancer_name}-backend-{{service_names[0]}}"
 
@@ -92,7 +92,7 @@ module "lb-http" {
   ssl            = true
   https_redirect = true
   create_url_map = false
-  url_map        = "httplb-urlmap"
+  url_map        = "${var.loadbalancer_name}-urlmap"
 
   # Create LB without backends to avoid cicular dep.
   backends = {}
