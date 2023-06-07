@@ -21,7 +21,7 @@ env:
   SKAFFOLD_VERSION: 2.0.3
   SKAFFOLD_CACHE_GCS: gs://{{project_id}}.appspot.com/skaffold/cache
 
-# cookiecutter:raw {% raw %}
+# copoier:raw {% raw %}
 jobs:
   deploy_backends:
     name: Deploy microservices to GKE cluster
@@ -82,4 +82,4 @@ jobs:
         run: |
           gsutil cp ~/.skaffold/cache $SKAFFOLD_CACHE_GCS
 
-# cookiecutter:endraw {% endraw %}
+# copoier:endraw {% endraw %}

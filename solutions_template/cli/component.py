@@ -44,24 +44,24 @@ def update(component_name,
                                     typer.Argument()] = "."):
   validate_solution_folder(solution_path)
   confirm(
-      f"This will update component '{component_name}' to '{solution_path}'. " +
-      "Continue?")
+      f"This will update the existing component '{component_name}' in '{solution_path}'. "
+      + "Continue?")
   process_component("update", component_name, solution_path)
   print_success(
       f"Complete. Component {component_name} updated to solution at {solution_path}\n"
   )
 
 
-def update_component_to_root_yaml(component_name, solution_path):
+def update_component_to_root_yaml(component_name, details, solution_path):
   # Update Solution root YAML with new component name.
   solution_yaml_dict = read_yaml(f"{solution_path}/st.yaml") or {}
   components = solution_yaml_dict["components"] or {}
-  components[component_name] = components.get("component_name") or {}
+  components[component_name] = details
   solution_yaml_dict["components"] = components
   write_yaml(f"{solution_path}/st.yaml", solution_yaml_dict)
 
 
-def process_component(method, component_name, solution_path):
+def process_component(method, component_name, solution_path, answers={}):
   destination_path = "."
 
   # If the component name is a Git URL, use the URL as-is in copier.
@@ -92,12 +92,22 @@ def process_component(method, component_name, solution_path):
   }
 
   # Copy component template to destination.
-  if method == "update":
-    data["component_name"] = component_name
-    run_auto(template_path, destination_path, data=data)
-    update_component_to_root_yaml(component_name, solution_path)
+  if method == "add":
+    worker = run_auto(template_path, destination_path)
   else:
-    run_auto(template_path, destination_path, data=data)
+    data["component_name"] = component_name
+    worker = run_auto(template_path, destination_path, data=data)
+
+  answers = worker.answers.user
+  for key, value in worker.answers.default.items():
+    if key not in answers:
+      answers[key] = value
+
+  answers["component_template"] = component_name
+  answers["destination_path"] = copier_dict["_metadata"].get(
+      "destination_path")
+  update_component_to_root_yaml(answers["component_name"], answers,
+                                solution_path)
 
   # Patch skaffold.yaml
   for patch_file in copier_dict.get("_patch", []):

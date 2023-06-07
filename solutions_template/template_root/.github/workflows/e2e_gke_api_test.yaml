@@ -25,7 +25,7 @@ env:
   SKAFFOLD_VERSION: 2.0.3
   SKAFFOLD_CACHE_GCS: gs://{{project_id}}.appspot.com/skaffold/cache
 
-# cookiecutter:raw {% raw %}
+# copoier:raw {% raw %}
 jobs:
   deploy:
     name: Deploy all microservices in PR namespace
@@ -228,4 +228,4 @@ jobs:
           skaffold delete --namespace $NAMESPACE
           kubectl delete namespace $NAMESPACE
 
-# cookiecutter:endraw {% endraw %}
+# copoier:endraw {% endraw %}

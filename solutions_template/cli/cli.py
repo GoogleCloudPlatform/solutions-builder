@@ -14,8 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import typer
-import traceback
+import typer, traceback, os
 import importlib.metadata
 from typing import Optional
 from typing_extensions import Annotated
@@ -27,7 +26,6 @@ from .infra import infra_app
 from .cli_utils import *
 
 __version__ = importlib.metadata.version("solutions-template")
-state = {"debug": False}
 
 app = typer.Typer(add_completion=False)
 app.add_typer(component_app, name="component")
@@ -81,7 +79,10 @@ def update(solution_path: Annotated[Optional[str],
     template_path = f"{current_dir}/../template_root"
     if not os.path.exists(template_path):
       raise FileNotFoundError(f"{template_path} does not exist.")
-  run_auto(template_path, solution_path, exclude=["skaffold.yaml"])
+  worker = run_auto(template_path,
+                    solution_path,
+                    exclude=["skaffold.yaml", "st.yaml"])
+  answers = worker.answers.last
 
   # Restore some fields in st.yaml.
   st_yaml = read_yaml(f"{solution_path}/st.yaml")
@@ -116,24 +117,9 @@ def deploy(profile: str = "default",
   exec_shell(command, working_dir=solution_path)
 
 
-@app.callback()
-def overall(debug: bool = False):
-  if debug:
-    state["debug"] = True
-
-
-@app.callback()
-def main_callback(verbose: bool = False, debug: bool = False):
-  if verbose:
-    state["verbose"] = True
-
-  if debug:
-    state["debug"] = True
-
-
 @app.command()
 def version():
-  print(f"v{__version__}")
+  print(f"Solutions Template v{__version__}")
   raise typer.Exit()
 
 
@@ -143,8 +129,8 @@ def main():
     print()
 
   except Exception as e:
-    # if state["debug"]:
-    traceback.print_exc()
+    if os.getenv("ST_DEBUG", False):
+      traceback.print_exc()
     print_error(e)
 
 

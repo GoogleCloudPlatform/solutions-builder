@@ -94,6 +94,38 @@ def apply(stage,
   exec_shell(f"terraform output > tf_output.tfvars", working_dir=working_dir)
 
 
+# Project bootstrap and foundation.
+@infra_app.command()
+def destroy(stage,
+            solution_path: Annotated[Optional[str],
+                                     typer.Argument()] = ".",
+            yes: Optional[bool] = False):
+  validate_solution_folder(solution_path)
+  if not yes:
+    auto_approve_flag = ""
+  else:
+    auto_approve_flag = "-auto-approve"
+
+  if not stage:
+    print(f"Missing argument 'STAGE'. Available stages:")
+    path = solution_path + "/terraform/stages"
+    print("Available infra stagse:\n")
+    list_subfolders(path)
+    return
+
+  stage = stage.replace("terraform/stages", "")
+
+  confirm(f"""
+  WARNING! This will destory all resources created by 'terraform/{stage}'.
+
+  This will take a few minutes. Continue?""",
+          skip=yes)
+
+  working_dir = f"{solution_path}/terraform/stages/{stage}"
+  exec_shell(f"terraform init", working_dir=working_dir)
+  exec_shell(f"terraform destroy {auto_approve_flag}", working_dir=working_dir)
+
+
 @infra_app.command()
 def list(solution_path: Annotated[Optional[str], typer.Argument()] = "."):
   print("Available infra stagse:\n")

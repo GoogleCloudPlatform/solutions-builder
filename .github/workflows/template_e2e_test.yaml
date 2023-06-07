@@ -10,9 +10,9 @@ env:
   ORGANIZATION_ID: ${{ secrets.ORGANIZATION_ID }}
   BILLING_ACCOUNT: ${{ secrets.BILLING_ACCOUNT }}
   GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.E2E_TEST_SA_KEY }}
-  KUSTOMIZE_VERSION: 4.5.7
-  SKAFFOLD_VERSION: 2.1.0
-  TERRAFORM_VERSION: 1.4.5
+  KUSTOMIZE_VERSION: 5.0.1
+  SKAFFOLD_VERSION: 2.4.1
+  TERRAFORM_VERSION: 1.4.6
   JOB_ID: ${{ fromJSON(toJSON(github.run_id)) }}
   E2E_RUNNER_SA: ${{ vars.E2E_RUNNER_SA }}
 
@@ -27,79 +27,78 @@ jobs:
     environment: e2e
     name: Template E2E tests
     steps:
+      - name: Check out repository with main branch
+        uses: actions/checkout@v3
+        if: ${{ github.event_name == 'workflow_dispatch' }}
 
-    - name: Check out repository with main branch
-      uses: actions/checkout@v3
-      if: ${{ github.event_name == 'workflow_dispatch' }}
+      - name: Check out repository with Pull Request HEAD
+        uses: actions/checkout@v3
+        if: ${{ github.event_name == 'issue_comment' && contains(github.event.comment.body, '/run-e2e-test') }}
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
-    - name: Check out repository with Pull Request HEAD
-      uses: actions/checkout@v3
-      if: ${{ github.event_name == 'issue_comment' && contains(github.event.comment.body, '/run-e2e-test') }}
-      with:
-        ref: ${{ github.event.pull_request.head.sha }}
+      - name: Comment on pull request for run start.
+        uses: actions/github-script@v3
+        if: ${{ github.event.issue.pull_request }}
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "[E2E Test Start] Github Action run started at https://github.com/${{ github.repository }}/actions/runs/${{ env.JOB_ID }}"
+            })
 
-    - name: Comment on pull request for run start.
-      uses: actions/github-script@v3
-      if: ${{ github.event.issue.pull_request }}
-      with:
-        github-token: ${{secrets.GITHUB_TOKEN}}
-        script: |
-          github.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: "[E2E Test Start] Github Action run started at https://github.com/${{ github.repository }}/actions/runs/${{ env.JOB_ID }}"
-          })
+      - name: Install gcloud
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{env.PROJECT_ID}}
+          credentials_json: ${{ secrets.E2E_TEST_SA_KEY }}
+          export_default_credentials: true
 
-    - name: Install gcloud
-      uses: google-github-actions/setup-gcloud@v1
-      with:
-        project_id: ${{env.PROJECT_ID}}
-        credentials_json: ${{ secrets.E2E_TEST_SA_KEY }}
-        export_default_credentials: true
+      - name: Install Kustomize
+        run: |
+          wget -O kustomize.tar.gz https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v$KUSTOMIZE_VERSION/kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz
 
-    - name: Install Kustomize
-      run: |
-        wget -O kustomize.tar.gz https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v$KUSTOMIZE_VERSION/kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz
+      - name: Install Skaffold release binary
+        run: |
+          curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/v$SKAFFOLD_VERSION/skaffold-linux-amd64
+          sudo install skaffold /usr/local/bin/skaffold
 
-    - name: Install Skaffold release binary
-      run: |
-        curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/v$SKAFFOLD_VERSION/skaffold-linux-amd64
-        sudo install skaffold /usr/local/bin/skaffold
+      - name: Set default repo for Skaffold
+        run: |
+          skaffold config set default-repo "$SKAFFOLD_DEFAULT_REPO"
 
-    - name: Set default repo for Skaffold
-      run: |
-        skaffold config set default-repo "$SKAFFOLD_DEFAULT_REPO"
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{env.TERRAFORM_VERSION}}
 
-    - uses: hashicorp/setup-terraform@v1
-      with:
-        terraform_version: ${{env.TERRAFORM_VERSION}}
+      # https://github.com/google-github-actions/auth
+      - name: Auth with Service Account
+        uses: "google-github-actions/auth@v1"
+        with:
+          credentials_json: "${{ secrets.E2E_TEST_SA_KEY }}"
 
-    # https://github.com/google-github-actions/auth
-    - name: Auth with Service Account
-      uses: 'google-github-actions/auth@v1'
-      with:
-        credentials_json: '${{ secrets.E2E_TEST_SA_KEY }}'
+      - name: Check current path
+        run: |
+          echo "Current path: $(pwd)"
+          ls -l
+          echo
 
-    - name: Check current path
-      run: |
-        echo "Current path: $(pwd)"
-        ls -l
-        echo
+      - name: Run e2e test script
+        run: |
+          bash e2e/template_e2e_tests/run_e2e_test.sh
 
-    - name: Run e2e test script
-      run: |
-        bash e2e/template_e2e_tests/run_e2e_test.sh
-
-    - name: Comment on pull request for run complete.
-      uses: actions/github-script@v3
-      if: ${{ github.event.issue.pull_request }}
-      with:
-        github-token: ${{secrets.GITHUB_TOKEN}}
-        script: |
-          github.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: "[E2E Test Complete] Github Action run completed at https://github.com/${{ github.repository }}/actions/runs/${{ env.JOB_ID }}"
-          })
+      - name: Comment on pull request for run complete.
+        uses: actions/github-script@v3
+        if: ${{ github.event.issue.pull_request }}
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "[E2E Test Complete] Github Action run completed at https://github.com/${{ github.repository }}/actions/runs/${{ env.JOB_ID }}"
+            })
