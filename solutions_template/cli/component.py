@@ -27,12 +27,17 @@ component_app = typer.Typer()
 @component_app.command()
 def add(component_name,
         solution_path: Annotated[Optional[str],
-                                 typer.Argument()] = "."):
+                                 typer.Argument()] = ".",
+        yes: Optional[bool] = False,
+        answers=None):
   validate_solution_folder(solution_path)
   confirm(
       f"This will add component '{component_name}' to '{solution_path}'. " +
-      "Continue?")
-  process_component("add", component_name, solution_path)
+      "Continue?",
+      skip=yes)
+
+  answers_dict = get_answers_dict(answers)
+  process_component("add", component_name, solution_path, data=answers_dict)
   print_success(
       f"Complete. Component {component_name} added to solution at {solution_path}\n"
   )
@@ -41,12 +46,17 @@ def add(component_name,
 @component_app.command()
 def update(component_name,
            solution_path: Annotated[Optional[str],
-                                    typer.Argument()] = "."):
+                                    typer.Argument()] = ".",
+           yes: Optional[bool] = False,
+           answers=None):
   validate_solution_folder(solution_path)
   confirm(
       f"This will update the existing component '{component_name}' in '{solution_path}'. "
-      + "Continue?")
-  process_component("update", component_name, solution_path)
+      + "Continue?",
+      skip=yes)
+
+  answers_dict = get_answers_dict(answers)
+  process_component("update", component_name, solution_path, data=answers_dict)
   print_success(
       f"Complete. Component {component_name} updated to solution at {solution_path}\n"
   )
@@ -61,8 +71,13 @@ def update_component_to_root_yaml(component_name, details, solution_path):
   write_yaml(f"{solution_path}/st.yaml", solution_yaml_dict)
 
 
-def process_component(method, component_name, solution_path, answers={}):
+def process_component(method, component_name, solution_path, data={}):
   destination_path = "."
+  current_dir = os.path.dirname(__file__)
+  answers_file = None
+
+  # Get basic info from root st.yaml.
+  root_st_yaml = read_yaml(f"{solution_path}/st.yaml")
 
   # If the component name is a Git URL, use the URL as-is in copier.
   if check_git_url(component_name):
@@ -71,11 +86,29 @@ def process_component(method, component_name, solution_path, answers={}):
 
   # Otherwise, try to locate the component in local modules/ folder.
   else:
-    current_dir = os.path.dirname(__file__)
-    template_path = f"{current_dir}/../modules/{component_name}"
-    if not os.path.exists(template_path):
-      raise FileNotFoundError(
-          f"Component {component_name} does not exist in modules folder.")
+
+    if method == "update":
+      data["component_name"] = component_name
+      component_path = f"{solution_path}/components/{component_name}"
+      if not os.path.exists(component_path):
+        raise FileNotFoundError(
+            f"Component {component_name} does not exist in './components' folder."
+        )
+      if component_name not in root_st_yaml["components"]:
+        raise NameError(
+            f"Component {component_name} is not defined in the root yaml 'st.yaml' file."
+        )
+      component_answers = root_st_yaml["components"][component_name]
+      component_template = component_answers["component_template"]
+      template_path = f"{current_dir}/../modules/{component_template}"
+      answers_file = f".st/module_answers/{component_name}.yaml"
+
+    else:
+      component_template = component_name
+      template_path = f"{current_dir}/../modules/{component_template}"
+      if not os.path.exists(template_path):
+        raise FileNotFoundError(
+            f"Component {component_name} does not exist in modules folder.")
 
     # Get destination_path defined in copier.yaml
     copier_dict = get_copier_yaml(template_path)
@@ -83,29 +116,25 @@ def process_component(method, component_name, solution_path, answers={}):
         "destination_path")
     destination_path = destination_path.replace("//", "/")
 
-  # Get basic info from root st.yaml.
-  root_st_yaml = read_yaml(f"{solution_path}/st.yaml")
+  data["project_id"] = root_st_yaml["project_id"]
+  data["project_number"] = root_st_yaml["project_number"]
 
-  data = {
-      "project_id": root_st_yaml["project_id"],
-      "project_number": root_st_yaml["project_number"]
-  }
+  # Run copier with data.
+  worker = run_auto(template_path,
+                    destination_path,
+                    data=data,
+                    answers_file=answers_file)
 
-  # Copy component template to destination.
-  if method == "add":
-    worker = run_auto(template_path, destination_path)
-  else:
-    data["component_name"] = component_name
-    worker = run_auto(template_path, destination_path, data=data)
-
+  # Get answer values inputed by user.
   answers = worker.answers.user
   for key, value in worker.answers.default.items():
     if key not in answers:
       answers[key] = value
-
-  answers["component_template"] = component_name
+  answers["component_template"] = component_template
   answers["destination_path"] = copier_dict["_metadata"].get(
       "destination_path")
+
+  # Update component's answer back to st.yaml.
   update_component_to_root_yaml(answers["component_name"], answers,
                                 solution_path)
 

@@ -77,7 +77,7 @@ use_github_action:
   help: Use Github Action as the default CI/CD?
   default: yes
 
-_answers_file: "components/{{component_name}}/st_module.yaml"
+_answers_file: ".st/module_answers/{{component_name}}.yaml"
 
 _templates_suffix: ""
 

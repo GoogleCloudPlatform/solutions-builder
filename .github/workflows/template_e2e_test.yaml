@@ -8,7 +8,7 @@ on:
 env:
   PROJECT_ID: ${{ vars.E2E_TEST_PROJECT_ID }}
   ORGANIZATION_ID: ${{ secrets.ORGANIZATION_ID }}
-  BILLING_ACCOUNT: ${{ secrets.BILLING_ACCOUNT }}
+  REGION: us-central1
   GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.E2E_TEST_SA_KEY }}
   KUSTOMIZE_VERSION: 5.0.1
   SKAFFOLD_VERSION: 2.4.1
@@ -24,7 +24,7 @@ jobs:
         || github.event_name == 'workflow_dispatch'
         }}
     runs-on: ubuntu-latest
-    environment: e2e
+    environment: e2e-v2
     name: Template E2E tests
     steps:
       - name: Check out repository with main branch
@@ -88,7 +88,10 @@ jobs:
 
       - name: Run e2e test script
         run: |
-          bash e2e/template_e2e_tests/run_e2e_test.sh
+          poetry install
+          which st
+          st version
+          bash e2e/run_template_e2e.sh
 
       - name: Comment on pull request for run complete.
         uses: actions/github-script@v3

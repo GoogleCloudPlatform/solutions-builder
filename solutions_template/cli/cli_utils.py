@@ -145,6 +145,13 @@ def check_git_url(url):
   return match is not None
 
 
+def get_answers_dict(data):
+  if data:
+    return dict(s.split("=") for s in data.split(","))
+  else:
+    return {}
+
+
 # Print success message with styling.
 def print_success(msg):
   typer.echo(typer.style(msg, fg=typer.colors.GREEN, bold=True))

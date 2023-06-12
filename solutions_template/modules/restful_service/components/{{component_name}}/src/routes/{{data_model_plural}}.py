@@ -90,7 +90,7 @@ async def put({{data_model}}: {{data_model | capitalize}}):
     [JSON]: {'status': 'Succeed'} if the {{data_model}} is updated
   """
   id = {{data_model}}.id
-  existing_{{data_model}} = {{data_model | capitalize}}.find_by_id(d)
+  existing_{{data_model}} = {{data_model | capitalize}}.find_by_id(id)
 
   if existing_{{data_model}}:
     {{data_model}}.created_at = existing_{{data_model}}.created_at

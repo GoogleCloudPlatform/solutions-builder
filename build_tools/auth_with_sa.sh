@@ -1,4 +1,4 @@
-# #!/bin/bash
+#!/bin/bash
 # Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,9 +15,20 @@
 
 #!/bin/bash
 
-pip install -r solutions_template/requirements.txt
+set -f
 
-poetry install .
+# Hardcoded the project ID for all local development.
+declare -a EnvVars=(
+  "SA_EMAIL"
+)
+for variable in "${EnvVars[@]}"; do
+  if [[ -z "${!variable}" ]]; then
+    printf "$variable is not set.\n"
+    exit 1
+  fi
+done
 
-st version
+mkdir -p .tmp
+gcloud iam service-accounts keys create .tmp/sa-key.json --iam-account=$SA_EMAIL
 
+gcloud auth activate-service-account --key-file=.tmp/sa-key.json

@@ -29,7 +29,7 @@ cert_issuer_email:
   help: Cert Issuer Email
   default: "{{project_id | get_current_user}}"
 
-_answers_file: "terraform/stage/{{component_name}}/st_module.yaml"
+_answers_file: ".st/module_answers/{{component_name}}.yaml"
 
 _templates_suffix: ""
 

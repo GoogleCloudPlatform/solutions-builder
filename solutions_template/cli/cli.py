@@ -35,9 +35,13 @@ app.add_typer(infra_app, name="infra")
 
 # Create a new solution
 @app.command()
-def new(folder_name, output_dir, template_path=None):
+def new(folder_name,
+        output_dir: Annotated[Optional[str], typer.Argument()] = ".",
+        template_path=None,
+        answers=None):
   output_path = f"{output_dir}/{folder_name}"
   output_path = output_path.replace("//", "/")
+  answers_dict = get_answers_dict(answers)
 
   if not template_path:
     current_dir = os.path.dirname(__file__)
@@ -48,9 +52,8 @@ def new(folder_name, output_dir, template_path=None):
 
   # Copy template_root to destination.
   print(f"template_path = {template_path}")
-  run_auto(template_path, output_path, data={
-      "folder_name": folder_name,
-  })
+  answers_dict["folder_name"] = folder_name
+  run_auto(template_path, output_path, data=answers_dict)
 
   print_success(f"Complete. New solution folder created at {output_path}.\n")
 
@@ -69,7 +72,8 @@ def update(solution_path: Annotated[Optional[str],
     raise FileNotFoundError(f"Solution folder {solution_path} does not exist.")
 
   confirm(
-      f"\nThis will update solution folder at '{solution_path}'. Continue?")
+      f"\nThis will update solution root folder at '{solution_path}'. Continue?"
+  )
 
   # Copy template_root to destination, excluding skaffold.yaml.
   orig_st_yaml = read_yaml(f"{solution_path}/st.yaml")
@@ -129,7 +133,7 @@ def main():
     print()
 
   except Exception as e:
-    if os.getenv("ST_DEBUG", False):
+    if os.getenv("DEBUG", False):
       traceback.print_exc()
     print_error(e)
 
