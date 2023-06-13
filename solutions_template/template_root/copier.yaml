@@ -28,6 +28,53 @@ terraform_backend_gcs:
   help: Use GCS Bucket for Terraform backend?
   default: true
 
+advanced_settings:
+  type: bool
+  help: Show advanced settings (VPC, Storage region, etc)?
+  default: false
+
+create_vpc_network:
+  type: bool
+  help: Create a default VPC Network?
+  default: false
+  when: "{{advanced_settings}}"
+
+vpc_network:
+  type: str
+  help: VPC Network ID?
+  default: default-vpc
+  when: "{{advanced_settings and create_vpc_network}}"
+
+vpc_subnetwork:
+  type: str
+  help: VPC Subnetwork ID?
+  default: default-vpc-subnet
+  when: "{{advanced_settings and create_vpc_network}}"
+
+ip_cidr_range:
+  type: str
+  help: IP CIDR range?
+  default: 10.0.0.0/16
+  when: "{{advanced_settings and create_vpc_network}}"
+
+master_ipv4_cidr_block:
+  type: str
+  help: Master IPv4 CIDR block?
+  default: 172.16.0.0/28
+  when: "{{advanced_settings and create_vpc_network}}"
+
+secondary_pod_ip_cidr_range:
+  type: str
+  help: Secondary pod ranges?
+  default: 10.1.0.0/16
+  when: "{{advanced_settings and create_vpc_network}}"
+
+secondary_service_ip_cidr_range:
+  type: str
+  help: Secondary service ranges?
+  default: 10.2.0.0/16
+  when: "{{advanced_settings and create_vpc_network}}"
+
 _templates_suffix: ""
 
 _exclude:
