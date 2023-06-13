@@ -76,18 +76,18 @@ module "vpc_network" {
 
 resource "google_project_iam_member" "cloudbuild-sa-iam" {
   depends_on = [module.project_services]
-  for_each = toset(local.roles_for_default_sa)
-  role     = each.key
-  member   = "serviceAccount:${var.project_number}@cloudbuild.gserviceaccount.com"
-  project  = var.project_id
+  for_each   = toset(local.roles_for_default_sa)
+  role       = each.key
+  member     = "serviceAccount:${var.project_number}@cloudbuild.gserviceaccount.com"
+  project    = var.project_id
 }
 
 resource "google_project_iam_member" "default-compute-sa-iam" {
   depends_on = [module.project_services]
-  for_each = toset(local.roles_for_default_sa)
-  role     = each.key
-  member   = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
-  project  = var.project_id
+  for_each   = toset(local.roles_for_default_sa)
+  role       = each.key
+  member     = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+  project    = var.project_id
 }
 
 module "deployment_service_account" {
@@ -118,14 +118,3 @@ module "deployment_service_account" {
     "roles/viewer",
   ]
 }
-
-# resource "google_org_policy_policy" "allowedPolicyMemberDomains" {
-#   name   = "projects/${var.project_id}/constraints/iam.allowedPolicyMemberDomains"
-#   parent = "projects/${var.project_id}"
-
-#   spec {
-#     rules {
-#       enforce = "FALSE"
-#     }
-#   }
-# }

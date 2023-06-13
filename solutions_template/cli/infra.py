@@ -23,10 +23,22 @@ from .cli_utils import *
 infra_app = typer.Typer()
 
 
+def get_impersonate_clause(impersonate, impersonate_email, project_id):
+  impersonate_clause = ""
+  if impersonate:
+    if not impersonate_email:
+      impersonate_email = f"terraform-runner@{project_id}.iam.gserviceaccount.com"
+    impersonate_clause = f"GOOGLE_IMPERSONATE_SERVICE_ACCOUNT={impersonate_email}"
+
+  return impersonate_clause
+
+
 # Project bootstrap and foundation.
 @infra_app.command()
 def init(solution_path: Annotated[Optional[str],
                                   typer.Argument()] = ".",
+         impersonate: Optional[bool] = False,
+         impersonate_email: Optional[str] = None,
          yes: Optional[bool] = False):
   validate_solution_folder(solution_path)
 
@@ -35,6 +47,7 @@ def init(solution_path: Annotated[Optional[str],
   else:
     auto_approve_flag = "-auto-approve"
 
+  # Get project ID from the existing root yaml.
   st_yaml = read_yaml(f"{solution_path}/st.yaml")
   project_id = st_yaml["project_id"]
 
@@ -54,10 +67,14 @@ def init(solution_path: Annotated[Optional[str],
   exec_shell(f"terraform apply {auto_approve_flag}", working_dir=working_dir)
   exec_shell(f"terraform output > tf_output.tfvars", working_dir=working_dir)
 
+  env_var_cluase = get_impersonate_clause(impersonate, impersonate_email,
+                                          project_id)
   working_dir = f"{solution_path}/terraform/stages/2-foundation"
-  exec_shell(f"terraform init", working_dir=working_dir)
-  exec_shell(f"terraform apply {auto_approve_flag}", working_dir=working_dir)
-  exec_shell(f"terraform output > tf_output.tfvars", working_dir=working_dir)
+  exec_shell(f"{env_var_cluase} terraform init", working_dir=working_dir)
+  exec_shell(f"{env_var_cluase} terraform apply {auto_approve_flag}",
+             working_dir=working_dir)
+  exec_shell(f"{env_var_cluase} terraform output > tf_output.tfvars",
+             working_dir=working_dir)
 
 
 # Project bootstrap and foundation.
@@ -65,6 +82,8 @@ def init(solution_path: Annotated[Optional[str],
 def apply(stage,
           solution_path: Annotated[Optional[str],
                                    typer.Argument()] = ".",
+          impersonate_email: Optional[str] = None,
+          impersonate: Optional[bool] = False,
           yes: Optional[bool] = False):
   validate_solution_folder(solution_path)
   if not yes:
@@ -88,10 +107,19 @@ def apply(stage,
   This will take a few minutes. Continue?""",
           skip=yes)
 
+  # Get project_id
+  st_yaml = read_yaml(f"{solution_path}/st.yaml")
+  project_id = st_yaml["project_id"]
+
+  # Get impersonate service account email
+  env_var_cluase = get_impersonate_clause(impersonate, impersonate_email,
+                                          project_id)
   working_dir = f"{solution_path}/terraform/stages/{stage}"
-  exec_shell(f"terraform init", working_dir=working_dir)
-  exec_shell(f"terraform apply {auto_approve_flag}", working_dir=working_dir)
-  exec_shell(f"terraform output > tf_output.tfvars", working_dir=working_dir)
+  exec_shell(f"{env_var_cluase} terraform init", working_dir=working_dir)
+  exec_shell(f"{env_var_cluase} terraform apply {auto_approve_flag}",
+             working_dir=working_dir)
+  exec_shell(f"{env_var_cluase} terraform output > tf_output.tfvars",
+             working_dir=working_dir)
 
 
 # Project bootstrap and foundation.
@@ -99,6 +127,8 @@ def apply(stage,
 def destroy(stage,
             solution_path: Annotated[Optional[str],
                                      typer.Argument()] = ".",
+            impersonate_email: Optional[str] = None,
+            impersonate: Optional[bool] = False,
             yes: Optional[bool] = False):
   validate_solution_folder(solution_path)
   if not yes:
@@ -121,9 +151,17 @@ def destroy(stage,
   This will take a few minutes. Continue?""",
           skip=yes)
 
+  # Get project ID from the existing root yaml.
+  st_yaml = read_yaml(f"{solution_path}/st.yaml")
+  project_id = st_yaml["project_id"]
+
+  # Get impersonate service account email
+  env_var_cluase = get_impersonate_clause(impersonate, impersonate_email,
+                                          project_id)
   working_dir = f"{solution_path}/terraform/stages/{stage}"
-  exec_shell(f"terraform init", working_dir=working_dir)
-  exec_shell(f"terraform destroy {auto_approve_flag}", working_dir=working_dir)
+  exec_shell(f"{env_var_cluase} terraform init", working_dir=working_dir)
+  exec_shell(f"{env_var_cluase} terraform destroy {auto_approve_flag}",
+             working_dir=working_dir)
 
 
 @infra_app.command()

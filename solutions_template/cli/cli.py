@@ -121,6 +121,30 @@ def deploy(profile: str = "default",
   exec_shell(command, working_dir=solution_path)
 
 
+# Destory services.
+@app.command()
+def destroy(profile: str = "default",
+            component: str = None,
+            solution_path: Annotated[Optional[str],
+                                     typer.Argument()] = ".",
+            yes: Optional[bool] = False):
+  validate_solution_folder(solution_path)
+
+  solution_yaml_dict = read_yaml(f"{solution_path}/st.yaml")
+  project_id = solution_yaml_dict["project_id"]
+
+  if component:
+    component_flag = f" -m {component} "
+  else:
+    component_flag = ""
+
+  command = f"skaffold delete -p {profile} {component_flag} --default-repo=\"gcr.io/{project_id}\""
+  print("This will DESTROY deployed services using the command below:")
+  print_highlight(command)
+  confirm("\nThis may take a few minutes. Continue?", default=False, skip=yes)
+  exec_shell(command, working_dir=solution_path)
+
+
 @app.command()
 def version():
   print(f"Solutions Template v{__version__}")

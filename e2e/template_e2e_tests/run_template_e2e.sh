@@ -56,7 +56,7 @@ local_port=9001,\
 use_github_action=Y \
 --yes
 
-# Initialize infra.
+# Initialize infra, but skipping the bootstrap stage.
 # st infra apply 1-boostrap --yes
 st infra apply 2-foundation --yes
 
@@ -65,9 +65,13 @@ st deploy --yes
 
 # Run Pytest for E2E API calls.
 pytest tests/e2e/
+PYTEST_STATUS=${PIPESTATUS[0]}
+
+# Clean up
+st destroy --yes
+st infra destroy 2-foundation --yes
 
 # Return error status if pytest not passed.
-PYTEST_STATUS=${PIPESTATUS[0]}
 if [[ $PYTEST_STATUS != 0 ]]; then
   exit 1
 fi
