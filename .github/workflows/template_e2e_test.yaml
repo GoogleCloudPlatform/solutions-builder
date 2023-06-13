@@ -88,10 +88,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install poetry
+          pip install poetry pytest
 
       - name: Run e2e test script
         run: |
+          poetry install
           bash e2e/template_e2e_tests/run_template_e2e.sh
 
       - name: Comment on pull request for run complete.

@@ -15,8 +15,6 @@
 
 #!/bin/bash
 
-poetry install
-
 declare -a EnvVars=(
   "PROJECT_ID"
   "REGION"
