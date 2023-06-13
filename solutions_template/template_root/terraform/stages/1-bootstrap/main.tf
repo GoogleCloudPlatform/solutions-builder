@@ -30,6 +30,7 @@ module "terraform_runner_service_account" {
   display_name = "terraform-runner"
   description  = "Service Account for Terraform"
   roles = [
+    "roles/appengine.appAdmin",
     "roles/aiplatform.admin",
     "roles/artifactregistry.admin",
     "roles/cloudbuild.builds.builder",

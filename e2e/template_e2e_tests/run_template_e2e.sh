@@ -15,11 +15,11 @@
 
 #!/bin/bash
 
-poetry install .
+poetry install
 
 declare -a EnvVars=(
   "PROJECT_ID"
-  "REGOIN"
+  "REGION"
 )
 for variable in "${EnvVars[@]}"; do
   if [[ -z "${!variable}" ]]; then
@@ -35,8 +35,9 @@ st new $PROJECT_ID --answers=\
 project_id=$PROJECT_ID,\
 project_name=$PROJECT_ID,\
 project_number=$PROJECT_NUMBER,\
-gcp_region=$REGOIN,\
-terraform_backend_gcs=Y
+gcp_region=$REGION,\
+terraform_backend_gcs=Y,\
+advanced_settings=n
 
 # Add RESTful service component
 cd $PROJECT_ID
@@ -44,7 +45,7 @@ st component add restful_service --answers=\
 component_name=todo_service,\
 resource_name=todo-service,\
 service_path=todo-service,\
-gcp_region=$REGOIN,\
+gcp_region=$REGION,\
 data_model=todo,\
 data_model_plural=todos,\
 deploy_cloudrun=Y,\
