@@ -86,9 +86,12 @@ jobs:
           ls -l
           echo
 
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
       - name: Install dependencies
         run: |
-          pip install poetry pytest
+          pip install pytest
 
       - name: Run e2e test script
         run: |
