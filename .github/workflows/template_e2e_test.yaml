@@ -86,8 +86,14 @@ jobs:
           ls -l
           echo
 
-      - name: Install Poetry
+      - name: Install and configure Poetry
         uses: snok/install-poetry@v1
+        with:
+          version: 1.5.1
+          virtualenvs-create: true
+          virtualenvs-in-project: false
+          virtualenvs-path: ~/.venv
+          installer-parallel: true
 
       - name: Install dependencies
         run: |
@@ -95,7 +101,6 @@ jobs:
 
       - name: Run e2e test script
         run: |
-          poetry install
           bash e2e/template_e2e_tests/run_template_e2e.sh
 
       - name: Comment on pull request for run complete.
