@@ -88,9 +88,6 @@ jobs:
 
       - name: Run e2e test script
         run: |
-          poetry install
-          which st
-          st version
           bash e2e/run_template_e2e.sh
 
       - name: Comment on pull request for run complete.
