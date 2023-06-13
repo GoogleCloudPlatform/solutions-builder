@@ -86,6 +86,10 @@ jobs:
           ls -l
           echo
 
+      - name: Install dependencies
+        run: |
+          pip install poetry
+
       - name: Run e2e test script
         run: |
           bash e2e/template_e2e_tests/run_template_e2e.sh
