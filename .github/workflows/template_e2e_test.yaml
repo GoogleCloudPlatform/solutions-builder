@@ -13,6 +13,7 @@ env:
   KUSTOMIZE_VERSION: 5.0.1
   SKAFFOLD_VERSION: 2.4.1
   TERRAFORM_VERSION: 1.4.6
+  PYTHON_VERSION: 3.9
   JOB_ID: ${{ fromJSON(toJSON(github.run_id)) }}
   E2E_RUNNER_SA: ${{ vars.E2E_RUNNER_SA }}
 
@@ -80,24 +81,16 @@ jobs:
         with:
           credentials_json: "${{ secrets.E2E_TEST_SA_KEY }}"
 
-      - name: Install and configure Poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: 1.5.1
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          virtualenvs-path: .venv
-          installer-parallel: true
-
       - name: Install dependencies
         run: |
-          pip install pytest
+          pip install poetry pytest
 
       - name: Check poetry env
         run: |
           echo "Current path: $(pwd)"
           ls -al
           echo
+          poetry env use python${{env.PYTHON_VERSION}}
           poetry env list
           poetry env info
 
