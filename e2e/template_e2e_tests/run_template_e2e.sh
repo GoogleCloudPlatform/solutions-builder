@@ -26,51 +26,43 @@ for variable in "${EnvVars[@]}"; do
   fi
 done
 
-export PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')
-
-# Create new solution folder
-st new $PROJECT_ID --answers=\
-project_id=$PROJECT_ID,\
-project_name=$PROJECT_ID,\
-project_number=$PROJECT_NUMBER,\
-gcp_region=$REGION,\
-terraform_backend_gcs=Y,\
-advanced_settings=n
-
-# Add RESTful service component
-cd $PROJECT_ID
-st component add restful_service --answers=\
-component_name=todo_service,\
-resource_name=todo-service,\
-service_path=todo-service,\
-gcp_region=$REGION,\
-data_model=todo,\
-data_model_plural=todos,\
-deploy_cloudrun=Y,\
-cloudrun_neg=Y,\
-deploy_gke=n,\
-default_deploy=cloudrun,\
-depend_on_common=n,\
-local_port=9001,\
-use_github_action=Y \
---yes
-
-# Initialize infra, but skipping the bootstrap stage.
-# st infra apply 1-boostrap --yes
-st infra apply 2-foundation --yes
-
-# Deploy to Cloud Run
-st deploy --yes
-
-# Run Pytest for E2E API calls.
-pytest tests/e2e/
-PYTEST_STATUS=${PIPESTATUS[0]}
-
-# Clean up
-st destroy --yes
-st infra destroy 2-foundation --yes
-
-# Return error status if pytest not passed.
-if [[ $PYTEST_STATUS != 0 ]]; then
-  exit 1
+if [[ $1 = "prepare" ]]
+then
+  PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')
+  
+  # Create new solution folder
+  st new $PROJECT_ID --answers=project_id=$PROJECT_ID,project_name=$PROJECT_ID,project_number=$PROJECT_NUMBER,gcp_region=$REGION,terraform_backend_gcs=Y,advanced_settings=n
+  
+  # Add RESTful service component
+  cd $PROJECT_ID
+  st component add restful_service --answers=component_name=todo_service,resource_name=todo-service,service_path=todo-service,gcp_region=$REGION,data_model=todo,data_model_plural=todos,deploy_cloudrun=Y,cloudrun_neg=Y,deploy_gke=n,default_deploy=cloudrun,depend_on_common=n,local_port=9001,use_github_action=Y --yes
+  
+  # Initialize infra, but skipping the bootstrap stage.
+  # st infra apply 1-boostrap --yes
+  st infra apply 2-foundation --yes
+  
+elif [[ $1 = "deploy" ]]
+then
+  # Deploy to Cloud Run
+  st deploy --yes
+  
+elif [[ $1 = "test" ]]
+then
+  # Run Pytest for E2E API calls.
+  pytest tests/e2e/
+  PYTEST_STATUS=${PIPESTATUS[0]}
+  
+elif [[ $1 = "cleanup" ]]
+then
+  # Clean up
+  st destroy --yes
+  st infra destroy 2-foundation --yes
+  
+  # Return error status if pytest not passed.
+  if [[ $PYTEST_STATUS != 0 ]]; then
+    exit 1
+  fi
+  
+else
+  echo "Usage: bash run_template_e2e.sh [prepare|deploy|test|cleanup]"
 fi
