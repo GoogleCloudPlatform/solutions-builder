@@ -95,14 +95,11 @@ jobs:
           echo "Current path: $(pwd)"
           ls -al
           echo
-          poetry env use python${{ env.PYTHON_VERSION }}
-          poetry env list
-          poetry env info
 
       - name: Run e2e test script
         run: |
-          poetry shell
-          poetry install
+          poetry config virtualenvs.create false
+          poetry install --no-dev
           which st
           bash e2e/template_e2e_tests/run_template_e2e.sh
 
