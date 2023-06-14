@@ -41,9 +41,6 @@ Please see [Feature Requests in the Github issue list](https://github.com/Google
 With `pip`:
 ```
 pip install solutions-template
-
-# Alternatively, to install from PyPI-Test, run:
-pip install --index-url https://test.pypi.org/simple/ solutions-template
 ```
 
 With `pipx`:

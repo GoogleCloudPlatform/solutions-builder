@@ -27,7 +27,6 @@ poetry version minor
 
 # For a major bump:
 poetry version major
-
 ```
 
 Build package
@@ -40,15 +39,16 @@ Test package upload to Test-PyPI:
 ```
 # Publish
 poetry config repositories.test-pypi https://test.pypi.org/legacy/
-poetry config pypi-token.test-pypi <your-token>
+poetry config pypi-token.test-pypi $PYPI_TOKEN
 poetry publish -r test-pypi
 
 # Install and test
 python3 -m pip install --index-url https://test.pypi.org/simple/ solutions-template
 ```
 
-Publish to PyPI
+Publish to official PyPI:
 ```
-poetry config pypi-token <your-token>
+# Publish to Test-PyPI
+poetry config pypi-token.pypi $PYPI_TOKEN
 poetry publish
 ```
