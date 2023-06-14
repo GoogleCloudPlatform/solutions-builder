@@ -93,11 +93,13 @@ jobs:
         run: |
           pip install pytest
 
-      - name: Check current path
+      - name: Check poetry env
         run: |
           echo "Current path: $(pwd)"
           ls -al
           echo
+          poetry env list
+          poetry env info
 
       - name: Run e2e test script
         run: |
