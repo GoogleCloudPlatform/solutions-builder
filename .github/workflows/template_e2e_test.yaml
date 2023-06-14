@@ -81,6 +81,11 @@ jobs:
         with:
           credentials_json: "${{ secrets.E2E_TEST_SA_KEY }}"
 
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
       - name: Install dependencies
         run: |
           pip install poetry pytest
@@ -90,7 +95,7 @@ jobs:
           echo "Current path: $(pwd)"
           ls -al
           echo
-          poetry env use python${{env.PYTHON_VERSION}}
+          poetry env use python${{ env.PYTHON_VERSION }}
           poetry env list
           poetry env info
 
