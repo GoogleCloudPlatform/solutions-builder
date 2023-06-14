@@ -101,6 +101,7 @@ jobs:
 
       - name: Run e2e test script
         run: |
+          poetry shell
           poetry install
           which st
           bash e2e/template_e2e_tests/run_template_e2e.sh
