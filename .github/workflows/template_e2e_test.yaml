@@ -91,8 +91,8 @@ jobs:
         with:
           version: 1.5.1
           virtualenvs-create: true
-          virtualenvs-in-project: false
-          virtualenvs-path: ~/.venv
+          virtualenvs-in-project: true
+          virtualenvs-path: .venv
           installer-parallel: true
 
       - name: Install dependencies
