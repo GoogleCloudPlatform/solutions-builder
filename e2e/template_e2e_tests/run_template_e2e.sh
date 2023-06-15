@@ -44,17 +44,20 @@ then
 elif [[ $1 = "deploy" ]]
 then
   # Deploy to Cloud Run
+  cd $PROJECT_ID
   st deploy --yes
   
 elif [[ $1 = "test" ]]
 then
   # Run Pytest for E2E API calls.
+  cd $PROJECT_ID
   pytest tests/e2e/
   PYTEST_STATUS=${PIPESTATUS[0]}
   
 elif [[ $1 = "cleanup" ]]
 then
   # Clean up
+  cd $PROJECT_ID
   st destroy --yes
   st infra destroy 2-foundation --yes
   
