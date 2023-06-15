@@ -55,8 +55,19 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1
         with:
           project_id: ${{env.PROJECT_ID}}
-          credentials_json: ${{ secrets.E2E_TEST_SA_KEY }}
+
+      # https://github.com/google-github-actions/auth
+      - name: Auth with Service Account
+        uses: "google-github-actions/auth@v1"
+        with:
+          project_id: ${{env.PROJECT_ID}}
+          credentials_json: "${{ secrets.E2E_TEST_SA_KEY }}"
           export_default_credentials: true
+
+      - name: Set gcloud to project
+        run: |
+          gcloud config set project ${{ env.PROJECT_ID }}
+          gcloud config list
 
       - name: Install Kustomize
         run: |
