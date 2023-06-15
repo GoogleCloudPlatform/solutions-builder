@@ -80,10 +80,12 @@ jobs:
         uses: "google-github-actions/auth@v1"
         with:
           credentials_json: "${{ secrets.E2E_TEST_SA_KEY }}"
+          export_environment_variables: false
 
       - name: Set gcloud to project
         run: |
           gcloud config set project ${{ env.PROJECT_ID }}
+          gcloud config list
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v4
