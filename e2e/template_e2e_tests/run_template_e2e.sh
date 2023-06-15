@@ -53,10 +53,6 @@ then
   cd $PROJECT_ID
   PYTHONPATH=. pytest tests/e2e/
   
-  # Return error status if pytest not passed.
-  PYTEST_STATUS=${PIPESTATUS[0]}
-  exit $PYTEST_STATUS
-  
 elif [[ $1 = "cleanup" ]]
 then
   # Clean up
