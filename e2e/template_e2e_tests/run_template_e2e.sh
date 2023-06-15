@@ -51,8 +51,11 @@ elif [[ $1 = "test" ]]
 then
   # Run Pytest for E2E API calls.
   cd $PROJECT_ID
-  pytest tests/e2e/
+  PYTHONPATH=. pytest tests/e2e/
+  
+  # Return error status if pytest not passed.
   PYTEST_STATUS=${PIPESTATUS[0]}
+  exit $PYTEST_STATUS
   
 elif [[ $1 = "cleanup" ]]
 then
@@ -60,11 +63,6 @@ then
   cd $PROJECT_ID
   st destroy --yes
   st infra destroy 2-foundation --yes
-  
-  # Return error status if pytest not passed.
-  if [[ $PYTEST_STATUS != 0 ]]; then
-    exit 1
-  fi
   
 else
   echo "Usage: bash run_template_e2e.sh [prepare|deploy|test|cleanup]"
