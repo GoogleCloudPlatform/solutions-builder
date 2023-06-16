@@ -34,8 +34,6 @@ def test_restful_create_get(auth_token, service_url):
       "title": "Title",
       "description": "Description",
       "status": "New",
-      "created_at": "2023-06-12T19:37:58.151Z",
-      "modified_at": "2023-06-12T19:37:58.151Z"
   }
 
   # Create a new item
@@ -75,8 +73,6 @@ def test_restful_put_delete(auth_token, service_url):
       "title": "Title",
       "description": "Description",
       "status": "New",
-      "created_at": "2023-06-12T19:37:58.151Z",
-      "modified_at": "2023-06-12T19:37:58.151Z"
   }
 
   # Create a new item
@@ -89,9 +85,7 @@ def test_restful_put_delete(auth_token, service_url):
       "id": test_id,
       "title": "Updated Title",
       "description": "Updated description",
-      "status": "New",
-      "created_at": "2023-06-12T19:37:58.151Z",
-      "modified_at": "2023-06-12T19:37:58.151Z"
+      "status": "In Progress",
   }
   url = service_url + f"/{{resource_name}}/{{data_model}}"
   res = requests.put(url, json=data, headers=headers)
@@ -108,6 +102,7 @@ def test_restful_put_delete(auth_token, service_url):
   assert res_data["id"] == test_id
   assert res_data["title"] == "Updated Title"
   assert res_data["description"] == "Updated description"
+  assert res_data["status"] == "In Progress"
 
   # Clean up
   url = service_url + f"/{{resource_name}}/{{data_model}}/{test_id}"
