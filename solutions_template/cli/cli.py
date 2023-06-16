@@ -27,7 +27,11 @@ from .cli_utils import *
 
 __version__ = importlib.metadata.version("solutions-template")
 
-app = typer.Typer(add_completion=False)
+app = typer.Typer(
+    add_completion=False,
+    help=
+    "Solutions Template CLI. See https://github.com/GoogleCloudPlatform/solutions-template for details."
+)
 app.add_typer(component_app, name="component")
 app.add_typer(tool_app, name="tool")
 app.add_typer(infra_app, name="infra")
@@ -39,6 +43,9 @@ def new(folder_name,
         output_dir: Annotated[Optional[str], typer.Argument()] = ".",
         template_path=None,
         answers=None):
+  """
+  Create a new solution folder.
+  """
   output_path = f"{output_dir}/{folder_name}"
   output_path = output_path.replace("//", "/")
   answers_dict = get_answers_dict(answers)
@@ -63,6 +70,9 @@ def new(folder_name,
 def update(solution_path: Annotated[Optional[str],
                                     typer.Argument()] = ".",
            template_path=None):
+  """
+  Update an existing solution folder.
+  """
   if not solution_path:
     solution_path = "."
 
@@ -99,11 +109,14 @@ def update(solution_path: Annotated[Optional[str],
 
 # Build and deploy services.
 @app.command()
-def deploy(profile: str = "default",
+def deploy(profile: str = "default-deploy",
            component: str = None,
            solution_path: Annotated[Optional[str],
                                     typer.Argument()] = ".",
            yes: Optional[bool] = False):
+  """
+  Build and deploy services.
+  """
   validate_solution_folder(solution_path)
 
   solution_yaml_dict = read_yaml(f"{solution_path}/st.yaml")
@@ -121,13 +134,16 @@ def deploy(profile: str = "default",
   exec_shell(command, working_dir=solution_path)
 
 
-# Destory services.
+# Destory deployment.
 @app.command()
 def destroy(profile: str = "default",
             component: str = None,
             solution_path: Annotated[Optional[str],
                                      typer.Argument()] = ".",
             yes: Optional[bool] = False):
+  """
+  Destory deployment.
+  """
   validate_solution_folder(solution_path)
 
   solution_yaml_dict = read_yaml(f"{solution_path}/st.yaml")
@@ -147,12 +163,18 @@ def destroy(profile: str = "default",
 
 @app.command()
 def version():
+  """
+  Print version.
+  """
   print(f"Solutions Template v{__version__}")
   raise typer.Exit()
 
 
 def main():
   try:
+    print_highlight(f"Solutions Template (version " +
+                    typer.style(__version__, fg=typer.colors.CYAN, bold=True) +
+                    ")\n")
     app()
     print()
 

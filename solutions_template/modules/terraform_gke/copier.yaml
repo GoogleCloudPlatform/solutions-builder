@@ -6,6 +6,11 @@ _metadata:
 # questions
 component_name:
   type: str
+  help: What is the name of this component (snake_case)?
+  default: terraform_gke
+
+terraform_stage_name:
+  type: str
   help: What is the name of this terraform stage?
   default: 2-gke
 
@@ -43,6 +48,7 @@ _exclude:
   - "__pycache__"
   - "*-debug.log"
   - ".skip"
+  - "README.md"
 
 _jinja_extensions:
   - jinja2_time.TimeExtension

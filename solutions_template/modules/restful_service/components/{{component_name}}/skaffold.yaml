@@ -118,13 +118,13 @@ profiles:
 {%- endif %}
 
 {% if default_deploy == "cloudrun" -%}
-# The default profile refer to cloudrun profile above.
+# The default-deploy profile refer to cloudrun profile above.
 - <<: *cloudrun-profile
-  name: default
+  name: default-deploy
 {%- endif %}
 
 {% if default_deploy == "gke" -%}
-# The default profile refer to gke profile above.
+# The default-deploy profile refer to gke profile above.
 - <<: *gke-profile
-  name: default
+  name: default-deploy
 {%- endif %}

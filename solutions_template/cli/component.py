@@ -147,9 +147,24 @@ def process_component(method, component_name, solution_path, data={}):
     os.remove(f"{solution_path}/{patch_file}.patch")
 
 
-# Add specific component to the destination solution folder.
+# List installed components.
 @component_app.command()
-def list():
+def list(solution_path: Annotated[Optional[str], typer.Argument()] = ".", ):
+  root_st_yaml = read_yaml(f"{solution_path}/st.yaml")
+  components = root_st_yaml.get("components", [])
+  print("Installed components:\n")
+  for component_name, properties in components.items():
+    typer.echo(
+        typer.style(f"- {component_name} ", fg=typer.colors.WHITE, bold=True) +
+        typer.style(f"(module: {properties['component_template']})",
+                    fg=typer.colors.BLACK,
+                    bold=True))
+  print()
+
+
+# List available components to add.
+@component_app.command()
+def available():
   current_dir = os.path.dirname(__file__)
   path = current_dir + "/../modules"
   print("Available modules:\n")
