@@ -33,7 +33,7 @@ def test_restful_create_get(auth_token, service_url):
       "id": test_id,
       "title": "Title",
       "description": "Description",
-      "is_done": False,
+      "status": "New",
       "created_at": "2023-06-12T19:37:58.151Z",
       "modified_at": "2023-06-12T19:37:58.151Z"
   }
@@ -74,7 +74,7 @@ def test_restful_put_delete(auth_token, service_url):
       "id": test_id,
       "title": "Title",
       "description": "Description",
-      "is_done": False,
+      "status": "New",
       "created_at": "2023-06-12T19:37:58.151Z",
       "modified_at": "2023-06-12T19:37:58.151Z"
   }
@@ -89,7 +89,7 @@ def test_restful_put_delete(auth_token, service_url):
       "id": test_id,
       "title": "Updated Title",
       "description": "Updated description",
-      "is_done": False,
+      "status": "New",
       "created_at": "2023-06-12T19:37:58.151Z",
       "modified_at": "2023-06-12T19:37:58.151Z"
   }
