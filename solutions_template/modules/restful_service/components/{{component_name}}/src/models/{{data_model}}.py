@@ -15,13 +15,14 @@ limitations under the License.
 """
 
 """
-Data model for {{data_model | capitalize}} list.
+Data model for {{data_model | capitalize}}. See https://octabyte.io/FireO/ for details.
 """
 
 import os
 
-from firedantic import Model
-from firedantic.exceptions import ModelNotFoundError
+from fireo.models import Model
+from fireo.fields import IDField, TextField, BooleanField, DateTime
+from fireo.queries.errors import ReferenceDocNotExist
 from datetime import datetime
 
 # GCP project_id from system's environment variable.
@@ -34,20 +35,23 @@ DATABASE_PREFIX = os.getenv("DATABASE_PREFIX", "")
 # Firebase data model in "{{data_model_plural}}" collection.
 class {{data_model | capitalize}}(Model):
   """{{data_model | capitalize}} ORM class"""
-  __collection__ = "{{data_model_plural}}"
 
-  id: str = "1234"
-  title: str = "Title"
-  description: str = "Description"
-  is_done: bool = False
-  created_at: datetime = None
-  modified_at: datetime = None
+  class Meta:
+    ignore_none_field = False
+    collection_name = DATABASE_PREFIX + "{{data_model_plural}}"
+
+  id = IDField()
+  title = TextField()
+  description = TextField()
+  status = TextField()
+  created_at = DateTime()
+  modified_at = DateTime()
 
   @classmethod
   def find_by_id(cls, id):
     try:
-      {{data_model}} = {{data_model | capitalize}}.get_by_doc_id(id)
-    except ModelNotFoundError:
+      {{data_model}} = {{data_model | capitalize}}.collection.get(id)
+    except ReferenceDocNotExist:
       return None
 
     return {{data_model}}

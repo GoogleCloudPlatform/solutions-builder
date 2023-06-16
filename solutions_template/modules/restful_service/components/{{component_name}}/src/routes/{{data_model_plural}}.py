@@ -16,6 +16,7 @@ limitations under the License.
 
 from fastapi import APIRouter, HTTPException
 from models.{{data_model}} import {{data_model | capitalize}}
+from schemas.{{data_model}} import {{data_model | capitalize}}Schema
 import datetime
 
 # disabling for linting to pass
@@ -26,7 +27,7 @@ router = APIRouter(prefix="/{{data_model}}", tags=["{{data_model}}"])
 SUCCESS_RESPONSE = {"status": "Success"}
 
 
-@router.get("/{id}", response_model={{data_model | capitalize}})
+@router.get("/{id}", response_model={{data_model | capitalize}}Schema)
 async def get(id: str):
   """Get a {{data_model | capitalize}}
 
@@ -48,7 +49,7 @@ async def get(id: str):
 
 
 @router.post("")
-async def post({{data_model}}: {{data_model | capitalize}}):
+async def post(data: {{data_model | capitalize}}Schema):
   """Create a {{data_model | capitalize}}
 
   Args:
@@ -60,24 +61,24 @@ async def post({{data_model}}: {{data_model | capitalize}}):
   Returns:
     [JSON]: {{data_model}} ID of the {{data_model}} if the {{data_model}} is successfully created
   """
-  try:
-    id = {{data_model}}.id
-    existing_{{data_model}} = {{data_model | capitalize}}.find_by_id(id)
+  id = data.id
+  existing_{{data_model}} = {{data_model | capitalize}}.find_by_id(id)
 
-    if existing_{{data_model}}:
-      raise HTTPException(status_code=409,
-                          detail=f"{{data_model | capitalize}} {id} already exists.")
-    {{data_model}}.created_at = datetime.datetime.utcnow()
-    {{data_model}}.modified_at = datetime.datetime.utcnow()
-    {{data_model}}.save()
-    return {{data_model}}
+  if existing_{{data_model}}:
+    raise HTTPException(status_code=409,
+                        detail=f"{{data_model | capitalize}} {id} already exists.")
 
-  except Exception as e:
-    raise HTTPException(status_code=500, detail=e) from e
+  new_{{data_model}} = {{data_model | capitalize}}()
+  new_{{data_model}} = new_{{data_model}}.from_dict({**data.dict()})
+  new_{{data_model}}.created_at = datetime.datetime.utcnow()
+  new_{{data_model}}.modified_at = datetime.datetime.utcnow()
+  new_{{data_model}}.save()
+
+  return SUCCESS_RESPONSE
 
 
 @router.put("")
-async def put({{data_model}}: {{data_model | capitalize}}):
+async def put(data: {{data_model | capitalize}}Schema):
   """Update a {{data_model | capitalize}}
 
   Args:
@@ -89,11 +90,11 @@ async def put({{data_model}}: {{data_model | capitalize}}):
   Returns:
     [JSON]: {'status': 'Succeed'} if the {{data_model}} is updated
   """
-  id = {{data_model}}.id
-  existing_{{data_model}} = {{data_model | capitalize}}.find_by_id(id)
+  id = data.id
+  {{data_model}} = {{data_model | capitalize}}.find_by_id(id)
 
-  if existing_{{data_model}}:
-    {{data_model}}.created_at = existing_{{data_model}}.created_at
+  if {{data_model}}:
+    {{data_model}} = {{data_model}}.from_dict({**data.dict()})
     {{data_model}}.modified_at = datetime.datetime.utcnow()
     {{data_model}}.save()
 
@@ -121,6 +122,6 @@ async def delete(id: str):
   if {{data_model}} is None:
     raise HTTPException(status_code=404, detail=f"{{data_model | capitalize}} {id} not found.")
 
-  {{data_model}}.delete()
+  {{data_model | capitalize}}.collection.delete({{data_model}}.key)
 
   return SUCCESS_RESPONSE
