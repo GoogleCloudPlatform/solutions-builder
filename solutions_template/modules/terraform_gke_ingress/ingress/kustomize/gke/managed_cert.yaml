@@ -1,0 +1,8 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: default-managed-cert
+spec:
+  domains: {% for domain in domains.split(",") %}
+    - {{domain}}
+  {% endfor %}

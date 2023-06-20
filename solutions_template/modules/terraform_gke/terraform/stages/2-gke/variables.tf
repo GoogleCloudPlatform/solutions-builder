@@ -46,19 +46,14 @@ variable "kubernetes_version" {
   description = "Kubernetes version. See https://cloud.google.com/kubernetes-engine/docs/release-notes-stable"
 }
 
-variable "machine_type" {
+variable "node_machine_type" {
   type        = string
   description = "VM machine time"
   default     = "n1-standard-4"
 }
 
-variable "cert_issuer_email" {
-  type        = string
-  description = "Cert Issuer Email"
-}
-
-variable "api_domain" {
-  type        = string
-  description = "API endpoint domain, excluding protocol"
-  default     = "localhost"
+variable "private_cluster" {
+  type        = bool
+  description = "Whether to use private nodes"
+  default     = true
 }

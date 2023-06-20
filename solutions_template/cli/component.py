@@ -62,11 +62,11 @@ def update(component_name,
   )
 
 
-def update_component_to_root_yaml(component_name, details, solution_path):
+def update_component_to_root_yaml(component_name, answers, solution_path):
   # Update Solution root YAML with new component name.
   solution_yaml_dict = read_yaml(f"{solution_path}/st.yaml") or {}
   components = solution_yaml_dict["components"] or {}
-  components[component_name] = details
+  components[component_name] = answers
   solution_yaml_dict["components"] = components
   write_yaml(f"{solution_path}/st.yaml", solution_yaml_dict)
 
@@ -78,6 +78,7 @@ def process_component(method, component_name, solution_path, data={}):
 
   # Get basic info from root st.yaml.
   root_st_yaml = read_yaml(f"{solution_path}/st.yaml")
+  component_answers = {}
 
   # If the component name is a Git URL, use the URL as-is in copier.
   if check_git_url(component_name):
@@ -89,11 +90,6 @@ def process_component(method, component_name, solution_path, data={}):
 
     if method == "update":
       data["component_name"] = component_name
-      component_path = f"{solution_path}/components/{component_name}"
-      if not os.path.exists(component_path):
-        raise FileNotFoundError(
-            f"Component {component_name} does not exist in './components' folder."
-        )
       if component_name not in root_st_yaml["components"]:
         raise NameError(
             f"Component {component_name} is not defined in the root yaml 'st.yaml' file."
@@ -118,6 +114,7 @@ def process_component(method, component_name, solution_path, data={}):
 
   data["project_id"] = root_st_yaml["project_id"]
   data["project_number"] = root_st_yaml["project_number"]
+  data["solution_path"] = solution_path
 
   # Run copier with data.
   worker = run_auto(template_path,
@@ -129,7 +126,7 @@ def process_component(method, component_name, solution_path, data={}):
   answers = worker.answers.user
   for key, value in worker.answers.default.items():
     if key not in answers:
-      answers[key] = value
+      answers[key] = component_answers.get(key) or value
   answers["component_template"] = component_template
   answers["destination_path"] = copier_dict["_metadata"].get(
       "destination_path")

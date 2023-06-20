@@ -26,6 +26,7 @@ from .infra import infra_app
 from .cli_utils import *
 
 __version__ = importlib.metadata.version("solutions-template")
+DEFAULT_DEPLOY_PROFILE = "default-deploy"
 
 app = typer.Typer(
     add_completion=False,
@@ -109,8 +110,9 @@ def update(solution_path: Annotated[Optional[str],
 
 # Build and deploy services.
 @app.command()
-def deploy(profile: str = "default-deploy",
+def deploy(profile: str = DEFAULT_DEPLOY_PROFILE,
            component: str = None,
+           dev: Optional[bool] = False,
            solution_path: Annotated[Optional[str],
                                     typer.Argument()] = ".",
            yes: Optional[bool] = False):
@@ -119,15 +121,20 @@ def deploy(profile: str = "default-deploy",
   """
   validate_solution_folder(solution_path)
 
-  solution_yaml_dict = read_yaml(f"{solution_path}/st.yaml")
-  project_id = solution_yaml_dict["project_id"]
+  st_yaml = read_yaml(f"{solution_path}/st.yaml")
+  project_id = st_yaml["project_id"]
 
   if component:
     component_flag = f" -m {component} "
   else:
     component_flag = ""
 
-  command = f"skaffold run -p {profile} {component_flag} --default-repo=\"gcr.io/{project_id}\""
+  if dev:
+    skaffold_command = "skaffold dev"
+  else:
+    skaffold_command = "skaffold run"
+
+  command = f"{skaffold_command} -p {profile} {component_flag} --default-repo=\"gcr.io/{project_id}\""
   print("This will build and deploy all services using the command below:")
   print_highlight(command)
   confirm("\nThis may take a few minutes. Continue?", skip=yes)
@@ -136,18 +143,18 @@ def deploy(profile: str = "default-deploy",
 
 # Destory deployment.
 @app.command()
-def destroy(profile: str = "default",
-            component: str = None,
-            solution_path: Annotated[Optional[str],
-                                     typer.Argument()] = ".",
-            yes: Optional[bool] = False):
+def delete(profile: str = DEFAULT_DEPLOY_PROFILE,
+           component: str = None,
+           solution_path: Annotated[Optional[str],
+                                    typer.Argument()] = ".",
+           yes: Optional[bool] = False):
   """
-  Destory deployment.
+  Delete deployment.
   """
   validate_solution_folder(solution_path)
 
-  solution_yaml_dict = read_yaml(f"{solution_path}/st.yaml")
-  project_id = solution_yaml_dict["project_id"]
+  st_yaml = read_yaml(f"{solution_path}/st.yaml")
+  project_id = st_yaml["project_id"]
 
   if component:
     component_flag = f" -m {component} "
@@ -155,7 +162,7 @@ def destroy(profile: str = "default",
     component_flag = ""
 
   command = f"skaffold delete -p {profile} {component_flag} --default-repo=\"gcr.io/{project_id}\""
-  print("This will DESTROY deployed services using the command below:")
+  print("This will DELETE deployed services using the command below:")
   print_highlight(command)
   confirm("\nThis may take a few minutes. Continue?", default=False, skip=yes)
   exec_shell(command, working_dir=solution_path)

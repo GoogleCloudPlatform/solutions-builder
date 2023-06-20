@@ -1,0 +1,8 @@
+apiVersion: networking.gke.io/v1beta1
+kind: FrontendConfig
+metadata:
+  name: default-frontend-config
+spec:
+  sslPolicy: gke-ingress-ssl-policy
+  redirectToHttps:
+    enabled: true

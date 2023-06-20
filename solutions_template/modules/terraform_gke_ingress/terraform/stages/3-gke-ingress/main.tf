@@ -37,14 +37,10 @@ data "terraform_remote_state" "foundation" {
 }
 
 module "ingress_gce" {
-  depends_on = [module.gke]
-
-  source            = "../../modules/ingress_gce"
-  project_id        = var.project_id
-  cert_issuer_email = var.cert_issuer_email
-  region            = var.region
-
-  # API domain, excluding protocols. E.g. example.com.
-  api_domain         = var.api_domain
-  cors_allow_origins = var.cors_allow_origins
+  source               = "../../modules/ingress_gce"
+  project_id           = var.project_id
+  region               = var.region
+  domains              = var.domains
+  managed_cert_name    = var.managed_cert_name
+  frontend_config_name = var.frontend_config_name
 }

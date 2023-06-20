@@ -18,7 +18,7 @@ resource_name:
 
 service_path:
   type: str
-  help: "The relative path used in http://my-domain/[service_path]"
+  help: "The relative path used in ingress as http://my-domain/[service_path]"
   default: "{{resource_name}}"
 
 gcp_region:

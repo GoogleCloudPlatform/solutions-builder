@@ -1,0 +1,19 @@
+# skaffold.yaml
+apiVersion: skaffold/v4beta1
+kind: Config
+metadata:
+  name: ingress
+
+profiles:
+  - &gke-profile # YAML anchor used by "default" profile.
+    name: gke
+    manifests:
+      kustomize:
+        paths:
+          - ./kustomize/gke
+    deploy:
+      kubectl: {}
+
+  # The default-deploy profile refer to gke profile above.
+  - <<: *gke-profile
+    name: default-deploy

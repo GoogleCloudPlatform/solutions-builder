@@ -30,17 +30,20 @@ variable "external_ip_address" {
   default = null
 }
 
-variable "domain" {
-  type        = string
-  description = "API domain, excluding protocol. E.g. api.example.com"
+variable "domains" {
+  type        = list(string)
+  description = "DNS domain list, excluding protocol. E.g. api.example.com"
+  default     = []
 }
 
-variable "cert_name" {
+variable "managed_cert_name" {
   type        = string
-  description = "SSL certificate name"
+  description = "Managed certificate name"
+  default     = "managed-cert"
 }
 
-variable "cors_allow_originss" {
+variable "frontend_config_name" {
   type        = string
-  description = "CORS allow origins, comma-separated."
+  description = "HTTP Load balancer frontend config name"
+  default     = "default-frontend-config"
 }

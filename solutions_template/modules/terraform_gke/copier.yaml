@@ -11,28 +11,38 @@ component_name:
 
 terraform_stage_name:
   type: str
-  help: What is the name of this terraform stage?
+  help: Terraform stage name?
   default: 2-gke
+
+resource_name:
+  type: str
+  help: Resource name (lower case, alphanumeric characters, '-')?
+  default: gke-ingress
 
 gcp_region:
   type: str
   help: Which Google Cloud region?
   default: us-central1
 
+cluster_name:
+  type: str
+  help: GKE cluster name?
+  default: main-cluster
+
 kubernetes_version:
   type: str
   help: Kubernetes version?
   default: 1.24.11-gke.1000
 
-cors_allow_origins:
+node_machine_type:
   type: str
-  help: Allow domains for CORS? (comma-seperated)
-  default: "http://localhost:4200,http://localhost:3000"
+  help: GKE Node machine type (Compute Engine)?
+  default: n1-standard-4
 
-cert_issuer_email:
-  type: str
-  help: Cert Issuer Email
-  default: "{{project_id | get_current_user}}"
+private_cluster:
+  type: bool
+  help: Private cluster?
+  default: true
 
 _answers_file: ".st/module_answers/{{component_name}}.yaml"
 

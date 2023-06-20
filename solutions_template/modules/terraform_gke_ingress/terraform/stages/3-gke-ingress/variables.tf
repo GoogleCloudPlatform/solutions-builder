@@ -41,18 +41,30 @@ variable "cluster_name" {
   default = "main-cluster"
 }
 
-variable "kubernetes_version" {
+variable "cluster_external_endpoint" {
   type        = string
-  description = "Kubernetes version. See https://cloud.google.com/kubernetes-engine/docs/release-notes-stable"
+  description = "Cluster external endpoint IP address"
 }
 
-variable "cert_issuer_email" {
+variable "cluster_ca_certificate" {
   type        = string
-  description = "Cert Issuer Email"
+  description = "Cluster CA certificate"
 }
 
-variable "api_domain" {
+variable "domains" {
+  type        = list(string)
+  description = "DNS domain list, excluding protocol. E.g. api.example.com"
+  default     = []
+}
+
+variable "managed_cert_name" {
   type        = string
-  description = "API endpoint domain, excluding protocol"
-  default     = "localhost"
+  description = "Managed certificate name"
+  default     = "managed-cert"
+}
+
+variable "frontend_config_name" {
+  type        = string
+  description = "HTTP Load balancer frontend config name"
+  default     = "default-frontend-config"
 }
