@@ -47,10 +47,10 @@ module "gke" {
   secondary_ranges_pods     = local.secondary_ranges_pods
   secondary_ranges_services = local.secondary_ranges_services
   master_ipv4_cidr_block    = local.master_ipv4_cidr_block
-  enable_private_nodes      = true
+  enable_private_nodes      = var.private_cluster
   min_node_count            = 1
   max_node_count            = 10
-  machine_type              = var.machine_type
+  machine_type              = var.node_machine_type
 
   # This service account will be created in both GCP and GKE, and will be
   # used for workload federation in all microservices.

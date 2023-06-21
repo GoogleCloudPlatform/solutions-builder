@@ -1,5 +1,5 @@
 _metadata:
-  module_name: terraform_serverless_ingress
+  module_name: terraform_httplb_cloudrun
   version: 1.0.0
   destination_path: .
 
@@ -7,7 +7,7 @@ _metadata:
 component_name:
   type: str
   help: What is the name of this component?
-  default: terraform_serverless_ingress
+  default: terraform_httplb_cloudrun
 
 loadbalancer_name:
   type: str

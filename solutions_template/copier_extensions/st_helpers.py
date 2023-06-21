@@ -14,9 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import re
+import re, os, yaml
 import subprocess
 from jinja2.ext import Extension
+
+
+# Read YAML file and convert to a dict.
+def read_yaml(filepath):
+  with open(filepath) as f:
+    data = yaml.safe_load(f)
+  return data
 
 
 # Execute shell commands
@@ -60,6 +67,7 @@ def get_existing_firestore(project_id):
   """
     Get boolean whether to initialize Firestore.
     """
+  print(f"   (Retrieving Firestore databases list...)")
   command = f"gcloud alpha firestore databases list --format='value(databases[0].name)' --project='{project_id}' --quiet"
   database_name = exec_gcloud_output(command)
   return database_name
@@ -69,6 +77,7 @@ def get_current_user(project_id):
   """
     Get current authenticated gcloud user.
     """
+  print(f"   (Retrieving current authenticated gcloud user...)")
   command = f"gcloud config list account --format 'value(core.account)' | head -n 1"
   email = exec_gcloud_output(command)
   return email
@@ -76,13 +85,36 @@ def get_current_user(project_id):
 
 def get_cloud_run_services(project_id):
   """
-    Get current authenticated gcloud user.
+    Get all deployed Cloud Run services.
     """
-  print(f"    (Retrieving existing Cloud Run services for {project_id}...)")
+  print(f"   (Retrieving existing Cloud Run services for {project_id}...)")
   command = f"gcloud run services list --format='value(name)'"
   service_names = exec_gcloud_output(command)
   service_names = re.sub(r"\n", ",", service_names)
   return service_names
+
+
+def get_cluster_value(arguments):
+  """
+    Get a specific GKE cluster value from describe.
+    """
+  key, cluster_name, region = arguments
+  print(f"   (Retrieving {key} from cluster {cluster_name}...)")
+  command = f"gcloud container clusters describe {cluster_name} --region={region} --format='value({key})'"
+  return exec_gcloud_output(command)
+
+
+def get_services_from_yaml(solution_path):
+  """
+    Get the service list from root yaml.
+    """
+  st_yaml = read_yaml(f"{solution_path}/st.yaml")
+  services = []
+  components = st_yaml.get("components", {})
+  for component_name, properties in components.items():
+    if properties.get("service_path"):
+      services.append(properties["resource_name"])
+  return ",".join(services)
 
 
 def convert_resource_name(resource_name):
@@ -110,5 +142,7 @@ class SolutionsTemplateHelpersExtension(Extension):
     environment.filters["get_existing_firestore"] = get_existing_firestore
     environment.filters["get_current_user"] = get_current_user
     environment.filters["get_cloud_run_services"] = get_cloud_run_services
+    environment.filters["get_cluster_value"] = get_cluster_value
+    environment.filters["get_services_from_yaml"] = get_services_from_yaml
     environment.filters["convert_resource_name"] = convert_resource_name
     environment.filters["assert_non_empty"] = assert_non_empty

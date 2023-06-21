@@ -39,31 +39,18 @@ locals {
 resource "google_compute_global_address" "ingress_ip_address" {
   count        = var.external_ip_address == null ? 1 : 0
   project      = var.project_id
-  name         = "ingress-ip"
+  name         = "gke-ingress-ip"
   address_type = "EXTERNAL"
 }
 
 resource "google_compute_managed_ssl_certificate" "managed_certificate" {
   provider = google-beta
 
-  name = "${var.cert-name}"
+  name = var.managed_cert_name
   managed {
-    domains = ["${var.domain}"]
+    domains = var.domains
   }
 }
-
-# resource "kubectl_manifest" "frontend_config" {
-#   yaml_body = <<YAML
-# apiVersion: networking.gke.io/v1beta1
-# kind: FrontendConfig
-# metadata:
-#   name: ingress-security-config
-# spec:
-#   sslPolicy: ${google_compute_ssl_policy.gke-ingress-ssl-policy.name}
-#   redirectToHttps:
-#     enabled: true
-# YAML
-# }
 
 resource "google_compute_ssl_policy" "gke-ingress-ssl-policy" {
   name            = "gke-ingress-ssl-policy"
@@ -78,14 +65,14 @@ resource "google_compute_ssl_policy" "gke-ingress-ssl-policy" {
 #     annotations = {
 #       "kubernetes.io/ingress.class"                 = "gce"
 #       "kubernetes.io/ingress.global-static-ip-name" = local.global_static_ip_name
-#       "networking.gke.io/managed-certificates"      = kubectl_manifest.managed_certificate.name
-#       "networking.gke.io/v1beta1.FrontendConfig"    = kubectl_manifest.frontend_config.name
+#       "networking.gke.io/managed-certificates"      = var.managed_cert_name
+#       "networking.gke.io/v1beta1.FrontendConfig"    = var.frontend_config_name
 #     }
 #   }
 
 #   spec {
 #     rule {
-#       host = var.api_domain
+#       host = var.domains[0]
 #       http {
 #         # Sample Service
 #         path {
@@ -103,5 +90,4 @@ resource "google_compute_ssl_policy" "gke-ingress-ssl-policy" {
 #       }
 #     }
 #   }
-
-}
+# }

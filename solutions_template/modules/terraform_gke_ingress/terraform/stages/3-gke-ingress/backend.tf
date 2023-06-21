@@ -18,6 +18,6 @@
 terraform {
   backend "gcs" {
     bucket = "{{project_id}}-tfstate"
-    prefix = "stage/2-ingress-gce"
+    prefix = "stage/3-gke-ingress"
   }
 }

@@ -40,7 +40,7 @@ module "gke_cluster" {
 
   node_pools = [
     {
-      name               = "default-pool"
+      name               = var.node_pool_name
       machine_type       = var.machine_type
       min_count          = var.min_node_count
       max_count          = var.max_node_count

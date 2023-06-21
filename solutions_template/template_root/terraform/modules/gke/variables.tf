@@ -40,6 +40,11 @@ variable "region" {
   description = "cluster region"
 }
 
+variable "node_pool_name" {
+  type    = str
+  default = "default-pool"
+}
+
 variable "enable_private_nodes" {
   type        = bool
   description = "Whether nodes have internal IP addresses only"

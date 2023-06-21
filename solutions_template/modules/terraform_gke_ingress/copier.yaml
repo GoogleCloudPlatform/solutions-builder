@@ -1,0 +1,96 @@
+_metadata:
+  module_name: terraform_gke_ingress
+  version: 1.0.0
+  destination_path: .
+
+# questions
+component_name:
+  type: str
+  help: What is the name of this component?
+  default: terraform_gke_ingress
+  validator: "{% if not component_name %}Required{% endif %}"
+
+resource_name:
+  type: str
+  help: Resource name for ingress configs?
+  default: gke-ingress
+  validator: "{% if not resource_name %}Required{% endif %}"
+
+loadbalancer_name:
+  type: str
+  help: Name of the HTTP load balancer?
+  default: httplb-gke
+
+gcp_region:
+  type: str
+  help: GCP region
+  default: us-central1
+
+cluster_name:
+  type: str
+  help: GKE cluster name?
+  default: main-cluster
+
+cluster_external_endpoint:
+  type: str
+  help: Cluster external endpoint IP address?
+  default: "{{('privateClusterConfig.publicEndpoint', cluster_name, gcp_region) | get_cluster_value}}"
+
+kubernetes_services:
+  type: str
+  help: Kubernetes service names in ingress? (comma-separated string)
+  default: "{{solution_path | get_services_from_yaml}}"
+
+domains:
+  type: str
+  help: DNS domains (comma-separated string)?
+
+cors_allow_origins:
+  type: str
+  help: Allow domains for CORS? (comma-seperated)
+  default: "http://localhost:4200,http://localhost:3000"
+
+cert_issuer_email:
+  type: str
+  help: Cert Issuer Email
+  default: "{{project_id | get_current_user}}"
+
+advanced_settings:
+  type: bool
+  help: Show advanced settings (Managed Cert, FrontendConfig, etc)?
+  default: false
+
+managed_cert_name:
+  type: str
+  help: Managed certificate name?
+  default: managed-cert
+  when: "{{advanced_settings}}"
+
+frontend_config_name:
+  type: str
+  help: HTTP Load balancer frontend config name?
+  default: default-frontend-config
+  when: "{{advanced_settings}}"
+
+_answers_file: ".st/module_answers/{{component_name}}.yaml"
+
+_templates_suffix: ""
+
+_patch:
+  - "skaffold.yaml"
+
+_exclude:
+  - "copier.yaml"
+  - "copier_extensions"
+  - ".terraform*"
+  - ".tmp"
+  - ".venv"
+  - ".pytest_cache"
+  - "__pycache__"
+  - "*-debug.log"
+  - ".skip"
+
+_jinja_extensions:
+  - jinja2_time.TimeExtension
+  - copier_templates_extensions.TemplateExtensionLoader
+  - ../../copier_extensions/st_helpers.py:SolutionsTemplateHelpersExtension
