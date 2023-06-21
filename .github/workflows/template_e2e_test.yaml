@@ -38,19 +38,6 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Comment on pull request for run start.
-        uses: actions/github-script@v3
-        if: ${{ github.event.issue.pull_request }}
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: "[E2E Test Start] Github Action run started at https://github.com/${{ github.repository }}/actions/runs/${{ env.JOB_ID }}"
-            })
-
       - name: Install gcloud
         uses: google-github-actions/setup-gcloud@v1
         with:
@@ -118,16 +105,3 @@ jobs:
       - name: Run E2E Test - cleanup
         run: |
           bash e2e/template_e2e_tests/run_template_e2e.sh cleanup
-
-      - name: Comment on pull request for run complete.
-        uses: actions/github-script@v3
-        if: ${{ github.event.issue.pull_request }}
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: "[E2E Test Complete] Github Action run completed at https://github.com/${{ github.repository }}/actions/runs/${{ env.JOB_ID }}"
-            })
