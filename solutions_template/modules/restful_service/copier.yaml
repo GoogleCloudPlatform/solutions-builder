@@ -13,7 +13,7 @@ component_name:
 resource_name:
   type: str
   help: Resource name (lower case, alphanumeric characters, '-')?
-  default: "{{ component_name | convert_resource_name }}"
+  default: "{{ component_name | to_kebab }}"
   validator: "{% if not resource_name %}Required{% endif %}"
 
 service_path:
@@ -85,6 +85,7 @@ _patch:
   - "skaffold.yaml"
 
 _exclude:
+  - "README.md"
   - "copier.yaml"
   - "copier_extensions"
   - ".terraform*"
@@ -97,5 +98,6 @@ _exclude:
 
 _jinja_extensions:
   - jinja2_time.TimeExtension
+  - jinja2_strcase.StrcaseExtension
   - copier_templates_extensions.TemplateExtensionLoader
   - ../../copier_extensions/st_helpers.py:SolutionsTemplateHelpersExtension
