@@ -34,8 +34,8 @@ app = typer.Typer(
     help=
     "Solutions Template CLI. See https://github.com/GoogleCloudPlatform/solutions-template for details."
 )
-app.add_typer(component_app, name="module")
 app.add_typer(component_app, name="component")
+app.add_typer(component_app, name="components")
 app.add_typer(tool_app, name="tool")
 app.add_typer(infra_app, name="infra")
 app.add_typer(template_app, name="template")

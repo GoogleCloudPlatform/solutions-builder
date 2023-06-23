@@ -87,7 +87,7 @@ st infra init
 
 Add a RESTful API service with **Todo** data model to this solution.
 ```
-st module add restful_service
+st components add restful_service
 ```
 
 Fill details in the prompt:

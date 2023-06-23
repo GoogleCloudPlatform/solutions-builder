@@ -13,7 +13,7 @@ TODO: List features of this module. Examples below.
 
 To add a new {{module_name}}:
 ```
-st module add {{module_name}}
+st components add {{module_name}}
 ```
 
 Fill details in the prompt:
