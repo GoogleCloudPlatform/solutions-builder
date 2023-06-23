@@ -7,10 +7,10 @@ Main components after setup:
 
 ## Setup
 
-Run `st component add [COMPONENT_NAME]` to add this module.
+Run `st components add [COMPONENT_NAME]` to add this module.
 ```
 cd my-solution-folder
-st component add terraform_gke .
+st components add terraform_gke .
 ```
 
 Fill in the variables.

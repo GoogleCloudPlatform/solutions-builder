@@ -102,7 +102,7 @@ Once filled, it will generate a new folder `my-solution` with the following file
 ```
 
 - **README.md**: The default empty README for your project.
-- **components/**: List of component/service folders. When adding components by running `st component add [COMPONENT_NAME]`, it will add a component subfolder here.
+- **components/**: List of component/service folders. When adding components by running `st components add [COMPONENT_NAME]`, it will add a component subfolder here.
 - **setup.cfg**: yapf python formatter.
 - **skaffold.yaml**: Root skaffold YAML that manages deployment to Cloud Run and GKE.
 - **st.yaml**: Root Solutions Template YAML that contains metadata for this solution folder.
@@ -162,7 +162,7 @@ In Solutions Template, a component is a module provided with templated service (
 
 You can see the list of available component modules by run the following:
 ```
-$ st component list
+$ st components list
 
 Available module names:
 
@@ -174,7 +174,7 @@ Available module names:
 
 To add a component to a solution:
 ```
-st component add [COMPONENT_NAME]
+st components add [COMPONENT_NAME]
 ```
 
 This will show the prompt quesitons from this particular component.
@@ -185,7 +185,7 @@ This section shows an example of adding RESTful API service component that manag
 
 For example, to add a RESTful microservice:
 ```
-st component add restful_service
+st components add restful_service
 ```
 
 In the prompt, rename the component as `todo_service` (snake_case) and `todo-service` as resource name. (lower case with dash)
@@ -274,14 +274,14 @@ An infra component is nothing but another component. Some component contains jus
 
 To add an infra component, run the same command like adding a regular component.
 ```
-st component add [COMPONENT_NAME]
+st components add [COMPONENT_NAME]
 ```
 
 ### Example: Add a HTTP load balancer
 
 Run the following to add a HTTP load balancer that supports Google-managed cert and a domain name.
 ```
-st component add terraform_httplb_cloudrun
+st components add terraform_httplb_cloudrun
 ```
 
 Fill in the answers in the prompt.

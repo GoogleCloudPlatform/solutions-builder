@@ -35,7 +35,7 @@ then
   
   # Add RESTful service component
   cd $PROJECT_ID
-  st component add restful_service --answers=component_name=todo_service,resource_name=todo-service,service_path=todo-service,gcp_region=$REGION,data_model=todo,data_model_plural=todos,deploy_cloudrun=Y,cloudrun_neg=Y,deploy_gke=n,default_deploy=cloudrun,depend_on_common=n,local_port=9001,use_github_action=Y --yes
+  st components add restful_service --answers=component_name=todo_service,resource_name=todo-service,service_path=todo-service,gcp_region=$REGION,data_model=todo,data_model_plural=todos,deploy_cloudrun=Y,cloudrun_neg=Y,deploy_gke=n,default_deploy=cloudrun,depend_on_common=n,local_port=9001,use_github_action=Y --yes
   
   # Initialize infra, but skipping the bootstrap stage.
   # st infra apply 1-boostrap --yes
