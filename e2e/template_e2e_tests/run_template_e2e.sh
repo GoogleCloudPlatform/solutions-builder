@@ -58,6 +58,7 @@ then
   # Run Pytest for E2E API calls.
   cd $OUTPUT_FOLDER/$PROJECT_ID
   ls -al .
+  ls -al tests/e2e/
   PYTHONPATH=. pytest tests/e2e/
   
 elif [[ $1 = "cleanup" ]]
