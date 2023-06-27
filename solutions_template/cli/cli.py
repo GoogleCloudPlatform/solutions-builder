@@ -21,7 +21,6 @@ from typing_extensions import Annotated
 from copier import run_auto
 from pathlib import Path
 from .component import component_app
-from .tool import tool_app
 from .infra import infra_app
 from .template import template_app
 from .cli_utils import *
@@ -34,11 +33,15 @@ app = typer.Typer(
     help=
     "Solutions Template CLI. See https://github.com/GoogleCloudPlatform/solutions-template for details."
 )
-app.add_typer(component_app, name="component")
-app.add_typer(component_app, name="components")
-app.add_typer(tool_app, name="tool")
-app.add_typer(infra_app, name="infra")
-app.add_typer(template_app, name="template")
+app.add_typer(component_app,
+              name="components",
+              help="Add or update components.")
+app.add_typer(infra_app,
+              name="infra",
+              help="Manage infrastructure (terraform).")
+app.add_typer(template_app,
+              name="template",
+              help="Create or update module templates.")
 
 
 # Create a new solution
