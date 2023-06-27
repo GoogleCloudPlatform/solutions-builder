@@ -17,6 +17,12 @@ resource_name:
   default: "{{ component_name | convert_resource_name }}"
   validator: "{% if not resource_name %}Required{% endif %}"
 
+gcp_region:
+  type: str
+  help: Which Google Cloud region?
+  default: us-central1
+  validator: "{% if not gcp_region %}Required{% endif %}"
+
 terraform_stage:
   type: str
   help: Name of the terraform stage?
