@@ -15,18 +15,4 @@
  *
  */
 
-# Terraform Block
-terraform {
-  required_providers {
-    google = {
-      source  = "hashicorp/google"
-      version = ">= 4.65.2"
-    }
-  }
-}
-
-provider "google" {
-  project = var.project_id
-}
-
-data "google_client_config" "default" {}
+# TODO: Add Terraform blocks below.

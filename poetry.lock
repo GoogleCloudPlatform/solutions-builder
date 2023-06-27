@@ -140,6 +140,20 @@ PyYAML = "*"
 test = ["pytest", "pytest-cov"]
 
 [[package]]
+name = "jinja2-strcase"
+version = "0.0.2"
+description = "A python package for converting string case in jinja2 templates"
+optional = false
+python-versions = "*"
+files = [
+    {file = "jinja2-strcase-0.0.2.tar.gz", hash = "sha256:d90c37f7bd40d345aacc8f78b087f66e6c5aa4c968ab23a791573fcf756c3379"},
+    {file = "jinja2_strcase-0.0.2-py2.py3-none-any.whl", hash = "sha256:e3067062f6158cd836ab495f805fc0d1d83cf92049e180509b004db86f6b745c"},
+]
+
+[package.dependencies]
+jinja2 = "*"
+
+[[package]]
 name = "jinja2-time"
 version = "0.2.0"
 description = "Jinja2 Extension for Dates and Times"
@@ -523,4 +537,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "b3147e8bf9392b7c9dc82349f0e95a95acda8c14d8962b86781bce008bfacaa7"
+content-hash = "8d89e37cd3b3069a0ffd59a1cb2874a3fc6c9ca6805632ab73e76beec2237312"

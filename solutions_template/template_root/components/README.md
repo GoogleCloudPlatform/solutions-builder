@@ -6,13 +6,13 @@ This is the folder for backend microservice modules.
 
 Run the command to add component:
 ```
-st component add [component_name] .
+st components add [component_name] .
 ```
 
 ## Update a component
 
 ```
-st component update [path/to/installed/component]
+st components update [path/to/installed/component]
 ```
 
 ## Deploy

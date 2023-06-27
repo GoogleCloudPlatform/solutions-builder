@@ -26,16 +26,21 @@ for variable in "${EnvVars[@]}"; do
   fi
 done
 
+if [[ -z "$OUTPUT_FOLDER" ]]
+then
+  OUTPUT_FOLDER="."
+fi
+
 if [[ $1 = "prepare" ]]
 then
   PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')
   
   # Create new solution folder
-  st new $PROJECT_ID --answers=project_id=$PROJECT_ID,project_name=$PROJECT_ID,project_number=$PROJECT_NUMBER,gcp_region=$REGION,terraform_backend_gcs=Y,advanced_settings=n
+  st new $PROJECT_ID $OUTPUT_FOLDER --answers=project_id=$PROJECT_ID,project_name=$PROJECT_ID,project_number=$PROJECT_NUMBER,gcp_region=$REGION,terraform_backend_gcs=Y,advanced_settings=n
   
   # Add RESTful service component
-  cd $PROJECT_ID
-  st component add restful_service --answers=component_name=todo_service,resource_name=todo-service,service_path=todo-service,gcp_region=$REGION,data_model=todo,data_model_plural=todos,deploy_cloudrun=Y,cloudrun_neg=Y,deploy_gke=n,default_deploy=cloudrun,depend_on_common=n,local_port=9001,use_github_action=Y --yes
+  cd $OUTPUT_FOLDER/$PROJECT_ID
+  st components add restful_service --answers=component_name=todo_service,resource_name=todo-service,service_path=todo-service,gcp_region=$REGION,data_model=todo,data_model_plural=todos,deploy_cloudrun=Y,cloudrun_neg=Y,deploy_gke=n,default_deploy=cloudrun,depend_on_common=n,local_port=9001,use_github_action=Y --yes
   
   # Initialize infra, but skipping the bootstrap stage.
   # st infra apply 1-boostrap --yes
@@ -44,19 +49,22 @@ then
 elif [[ $1 = "deploy" ]]
 then
   # Deploy to Cloud Run
-  cd $PROJECT_ID
+  cd $OUTPUT_FOLDER/$PROJECT_ID
+  ls -al .
   st deploy --yes
   
 elif [[ $1 = "test" ]]
 then
   # Run Pytest for E2E API calls.
-  cd $PROJECT_ID
+  cd $OUTPUT_FOLDER/$PROJECT_ID
+  ls -al .
+  ls -al tests/e2e/
   PYTHONPATH=. pytest tests/e2e/
   
 elif [[ $1 = "cleanup" ]]
 then
   # Clean up
-  cd $PROJECT_ID
+  cd $OUTPUT_FOLDER/$PROJECT_ID
   st destroy --yes
   st infra destroy 2-foundation --yes
   

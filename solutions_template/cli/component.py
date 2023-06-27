@@ -153,7 +153,7 @@ def list(solution_path: Annotated[Optional[str], typer.Argument()] = ".", ):
   for component_name, properties in components.items():
     typer.echo(
         typer.style(f"- {component_name} ", fg=typer.colors.WHITE, bold=True) +
-        typer.style(f"(module: {properties['component_template']})",
+        typer.style(f"(from: {properties['component_template']})",
                     fg=typer.colors.BLACK,
                     bold=True))
   print()
@@ -164,5 +164,5 @@ def list(solution_path: Annotated[Optional[str], typer.Argument()] = ".", ):
 def available():
   current_dir = os.path.dirname(__file__)
   path = current_dir + "/../modules"
-  print("Available modules:\n")
+  print("Available components to add:\n")
   list_subfolders(path)

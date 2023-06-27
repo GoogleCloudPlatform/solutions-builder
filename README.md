@@ -85,9 +85,9 @@ cd my-solution
 st infra init
 ```
 
-Add a RESTful API component with **Todo** data model to this solution.
+Add a RESTful API service with **Todo** data model to this solution.
 ```
-st component add restful_service
+st components add restful_service
 ```
 
 Fill details in the prompt:
