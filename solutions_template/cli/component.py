@@ -56,7 +56,11 @@ def update(component_name,
       skip=yes)
 
   answers_dict = get_answers_dict(answers)
-  process_component("update", component_name, solution_path, data=answers_dict)
+  process_component("update",
+                    component_name,
+                    solution_path,
+                    data=answers_dict,
+                    use_existing_answers=yes)
   print_success(
       f"Complete. Component {component_name} updated to solution at {solution_path}\n"
   )
@@ -71,7 +75,11 @@ def update_component_to_root_yaml(component_name, answers, solution_path):
   write_yaml(f"{solution_path}/st.yaml", solution_yaml_dict)
 
 
-def process_component(method, component_name, solution_path, data={}):
+def process_component(method,
+                      component_name,
+                      solution_path,
+                      data={},
+                      use_existing_answers=False):
   destination_path = "."
   current_dir = os.path.dirname(__file__)
   answers_file = None
@@ -98,6 +106,12 @@ def process_component(method, component_name, solution_path, data={}):
       component_template = component_answers["component_template"]
       template_path = f"{current_dir}/../modules/{component_template}"
       answers_file = f".st/module_answers/{component_name}.yaml"
+
+      # Use existing answer values in data, skipping the prompt.
+      if use_existing_answers:
+        answers_yaml = read_yaml(answers_file)
+        for key, value in answers_yaml.items():
+          data[key] = value
 
     else:
       component_template = component_name

@@ -1,4 +1,4 @@
-{% raw %}apiVersion: skaffold/v4beta1
+apiVersion: skaffold/v4beta1
 kind: Config
 metadata:
   name: {{component_name}}
@@ -57,7 +57,7 @@ profiles:
     local:
       concurrency: 0
 
-{% if deploy_gke == true -%}
+{% if default_deploy == "gke" -%}
 # Profile for GKE deployment, building images via CloudBuild
 - &gke-profile # YAML anchor used by "default" profile.
   name: gke
@@ -99,7 +99,7 @@ profiles:
     kubectl: {}
 {%- endif %}
 
-{% if deploy_cloudrun == true -%}
+{% if default_deploy == "cloudrun" -%}
 # Profile for Cloud Run deployment, building images via CloudBuild
 - &cloudrun-profile # YAML anchor used by "default" profile.
   name: cloudrun
@@ -128,4 +128,4 @@ profiles:
 - <<: *gke-profile
   name: default-deploy
 {%- endif %}
-{% endraw %}
+

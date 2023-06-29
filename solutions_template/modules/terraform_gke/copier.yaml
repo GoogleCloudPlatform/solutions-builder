@@ -49,6 +49,7 @@ _answers_file: ".st/module_answers/{{component_name}}.yaml"
 _templates_suffix: ""
 
 _exclude:
+  - "README.md"
   - "copier.yaml"
   - "copier_extensions"
   - ".terraform*"
