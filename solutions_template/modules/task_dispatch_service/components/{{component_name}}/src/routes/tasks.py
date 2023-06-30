@@ -14,17 +14,24 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import requests
 import datetime
-from fastapi import APIRouter, HTTPException
+import base64
+import json
+import ast
+from fastapi import APIRouter, HTTPException, Request
 from models.task import Task
 from schemas.task import TaskSchema
 from utils.workflow_helper import *
+from google.cloud import pubsub_v1
+from config import PROJECT_ID, TASK_TOPIC
 
 # disabling for linting to pass
 # pylint: disable = broad-except
 
 router = APIRouter(prefix="/task", tags=["task"])
+publisher = pubsub_v1.PublisherClient()
+topic_path = publisher.topic_path(PROJECT_ID, TASK_TOPIC)
+print(f"topic_path = {topic_path}")
 
 SUCCESS_RESPONSE = {"status": "Success"}
 
@@ -71,9 +78,13 @@ async def post(data: TaskSchema):
 
   new_task = Task()
   new_task = new_task.from_dict({**data.dict()})
-  new_task.created_at = datetime.datetime.utcnow()
-  new_task.modified_at = datetime.datetime.utcnow()
+  new_task.created_at = str(datetime.datetime.utcnow())
+  new_task.modified_at = str(datetime.datetime.utcnow())
   new_task.save()
+
+  message_data = str(new_task.to_dict()).encode("utf-8")
+  future = publisher.publish(topic_path, message_data)
+  print(f"Pub/sub message published. ID: " + future.result())
 
   return SUCCESS_RESPONSE
 
@@ -105,8 +116,8 @@ async def put(data: TaskSchema):
   return SUCCESS_RESPONSE
 
 
-@router.post("/{id}")
-async def complete(id: str):
+@router.delete("/{id}")
+async def delete(id: str):
   """Mark a Task as completed.
 
   Args:
@@ -131,8 +142,8 @@ async def complete(id: str):
   return SUCCESS_RESPONSE
 
 
-@router.post("/{id}")
-async def dispatch(id: str, workflow_path: str):
+@router.post("/dispatch")
+async def dispatch(request: Request):
   """Dispatch a Task to the next service.
 
   Args:
@@ -144,17 +155,31 @@ async def dispatch(id: str, workflow_path: str):
   Returns:
     [JSON]: {'status': 'Succeed'} if the task is deleted
   """
-  task = Task.find_by_id(id)
-  workflow_path = ""
+  print("Received Pub/Sub message:")
+  message_data = await request.json()
+  message = message_data.get("message")
 
-  workflow_steps = get_workflow_steps(task, workflow_path)
-  service_url = get_service_url(workflow_steps)
-  parameters = get_parameters(workflow_steps)
+  if message:
+    byte_str = base64.b64decode(str(message.get("data")))
+    dict_str = byte_str.decode("UTF-8")
+    data = repr(ast.literal_eval(dict_str))
+    print(data)
 
-  # base_url = "http://classification-service/classification_service/v1/"\
-  #   "classification/classification_api"
-  # req_url = f"{base_url}?case_id={case_id}&uid={uid}" \
-  #   f"&gcs_url={gcs_url}"
+  else:
+    raise ValueError("Invalid pub/sub message received: no message field.")
 
-  response = requests.post(service_url, json=parameters)
-  return response
+  # task = Task.find_by_id(id)
+  # workflow_path = ""
+
+  # workflow_steps = get_workflow_steps(task, workflow_path)
+  # service_url = get_service_url(workflow_steps)
+  # parameters = get_parameters(workflow_steps)
+
+  # # base_url = "http://classification-service/classification_service/v1/"\
+  # #   "classification/classification_api"
+  # # req_url = f"{base_url}?case_id={case_id}&uid={uid}" \
+  # #   f"&gcs_url={gcs_url}"
+
+  # response = requests.post(service_url, json=parameters)
+
+  return SUCCESS_RESPONSE

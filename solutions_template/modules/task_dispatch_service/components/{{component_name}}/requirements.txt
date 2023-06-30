@@ -4,5 +4,6 @@ firedantic
 fireo
 google-cloud-bigquery
 google-cloud-storage
+google-cloud-pubsub
 python-multipart
 uvicorn

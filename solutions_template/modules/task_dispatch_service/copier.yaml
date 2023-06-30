@@ -17,6 +17,11 @@ resource_name:
   default: "{{ component_name | convert_resource_name }}"
   validator: "{% if not resource_name %}Required{% endif %}"
 
+service_path:
+  type: str
+  help: "The relative path used in ingress as http://my-domain/[service_path]"
+  default: "{{resource_name}}"
+
 gcp_region:
   type: str
   help: Which Google Cloud region?
@@ -60,31 +65,31 @@ destination_cloudrun_service:
   type: str
   help: Destination Cloud Run service name?
   default: ""
-  when: "{{eventarc_destination == 'cloudrun'}}"
+  when: "{{default_deploy == 'cloudrun'}}"
 
 eventarc_gke_cluster:
   type: str
   help: Destination GKE cluster name?
   default: "main-cluster"
-  when: "{{eventarc_destination == 'gke'}}"
+  when: "{{default_deploy == 'gke'}}"
 
 eventarc_gke_namespace:
   type: str
   help: Destination GKE namespace?
   default: "default"
-  when: "{{eventarc_destination == 'gke'}}"
+  when: "{{default_deploy == 'gke'}}"
 
 eventarc_gke_path:
   type: str
   help: Destination GKE service path?
-  default: "/"
-  when: "{{eventarc_destination == 'gke'}}"
+  default: "/{{service_path}}/task/dispatch"
+  when: "{{default_deploy == 'gke'}}"
 
 eventarc_gke_service:
   type: str
   help: Destination GKE Run service name?
   default: "task-dispatch-service"
-  when: "{{eventarc_destination == 'gke'}}"
+  when: "{{default_deploy == 'gke'}}"
 
 terraform_stage:
   type: str

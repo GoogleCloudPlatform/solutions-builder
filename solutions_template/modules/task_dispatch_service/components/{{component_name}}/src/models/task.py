@@ -20,33 +20,28 @@ Data model for Task. See https://octabyte.io/FireO/ for details.
 import os
 
 from fireo.models import Model
-from fireo.fields import IDField, TextField, DateTime, BooleanField, Field
+from fireo.fields import IDField, TextField, TextField, BooleanField, Field
 from fireo.queries.errors import ReferenceDocNotExist
 from datetime import datetime
-
-# GCP project_id from system's environment variable.
-PROJECT_ID = os.environ.get("PROJECT_ID", "")
-
-# Database prefix for integration and e2e test purpose.
-DATABASE_PREFIX = os.getenv("DATABASE_PREFIX", "")
+from config import PROJECT_ID, DATABASE_PREFIX
 
 
-# Firebase data model in "{{data_model_plural}}" collection.
+# Firebase data model in "tasks" collection.
 class Task(Model):
   """Task ORM class"""
 
   class Meta:
     ignore_none_field = False
-    collection_name = DATABASE_PREFIX + "{{data_model_plural}}"
+    collection_name = DATABASE_PREFIX + "tasks"
 
   id = IDField()
   title = TextField()
   description = TextField()
-  stage = TextField()
+  step = TextField()
   status = TextField()
   complete = BooleanField()
-  created_at = DateTime()
-  modified_at = DateTime()
+  created_at = Field()
+  modified_at = Field()
 
   # Arbitrary data in JSON format.
   data = Field()

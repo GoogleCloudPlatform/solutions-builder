@@ -18,29 +18,30 @@ Pydantic Model for Task API's
 """
 from typing import Optional
 from pydantic import BaseModel
-from datetime import datetime
+import time
 
 
 class TaskSchema(BaseModel):
   """Task Pydantic Model"""
 
   # This is the reference API spec for Task data model.
-  id: str
+  id: Optional[str]
   title: str
   description: str
-  stage: str
+  step: str
   status: str
   data: object
-  created_at: Optional[datetime]
-  modified_at: Optional[datetime]
+  created_at: Optional[str]
+  modified_at: Optional[str]
 
   class Config():
     orm_mode = True
     schema_extra = {
         "example": {
-            "id": "1234",
             "title": "Title",
             "description": "Description",
-            "status": "New"
+            "step": "step-1",
+            "status": "New",
+            "data": "test data",
         }
     }

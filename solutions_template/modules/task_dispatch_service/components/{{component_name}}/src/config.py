@@ -13,7 +13,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-
 """
   Sample Service config file
 """
@@ -24,3 +23,4 @@ PROJECT_ID = os.environ.get("PROJECT_ID") or \
     os.environ.get("GOOGLE_CLOUD_PROJECT")
 DATABASE_PREFIX = os.getenv("DATABASE_PREFIX", "")
 SERVICE_NAME = os.getenv("SERVICE_NAME")
+TASK_TOPIC = "{{task_pubsub_topic}}"
