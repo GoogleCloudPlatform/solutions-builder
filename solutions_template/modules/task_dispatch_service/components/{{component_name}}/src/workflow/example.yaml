@@ -1,0 +1,23 @@
+{% raw %}
+
+name: sample-linear-workflow
+apiVersion: 1.0
+type: pubsub-dispatch
+steps:
+  - name: step-1
+    endpoint:
+      url: "http://upload-service/upload"
+
+  - name: step-2
+    endpoint:
+      url: "http://todo-service/todo"
+      method: POST
+    outputs:
+      artifacts:
+        - type: gcs
+          path: gs://something
+    callback:
+      url: "http://task-dispatch-service/complete"
+      method: POST
+
+{% endraw %}

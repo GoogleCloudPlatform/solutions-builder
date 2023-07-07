@@ -24,3 +24,4 @@ PROJECT_ID = os.environ.get("PROJECT_ID") or \
 DATABASE_PREFIX = os.getenv("DATABASE_PREFIX", "")
 SERVICE_NAME = os.getenv("SERVICE_NAME")
 TASK_TOPIC = "{{task_pubsub_topic}}"
+WORKFLOW_PATH = os.getenv("WORKFLOW_PATH")

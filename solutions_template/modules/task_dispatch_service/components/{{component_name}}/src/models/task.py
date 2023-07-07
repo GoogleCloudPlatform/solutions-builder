@@ -23,7 +23,14 @@ from fireo.models import Model
 from fireo.fields import IDField, TextField, TextField, BooleanField, Field
 from fireo.queries.errors import ReferenceDocNotExist
 from datetime import datetime
+from enum import Enum
 from config import PROJECT_ID, DATABASE_PREFIX
+
+
+class TaskStatus(Enum):
+  NEW = "new"
+  IN_PROGRESS = "in_progress"
+  COMPLETE = "complete"
 
 
 # Firebase data model in "tasks" collection.
@@ -39,7 +46,6 @@ class Task(Model):
   description = TextField()
   step = TextField()
   status = TextField()
-  complete = BooleanField()
   created_at = Field()
   modified_at = Field()
 

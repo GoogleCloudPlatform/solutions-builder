@@ -41,7 +41,7 @@ class TaskSchema(BaseModel):
             "title": "Title",
             "description": "Description",
             "step": "step-1",
-            "status": "New",
+            "status": "new",
             "data": "test data",
         }
     }

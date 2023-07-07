@@ -16,14 +16,16 @@ limitations under the License.
 
 import datetime
 import base64
-import json
+import requests
 import ast
+import json
 from fastapi import APIRouter, HTTPException, Request
-from models.task import Task
+from models.task import Task, TaskStatus
 from schemas.task import TaskSchema
 from utils.workflow_helper import *
+from workflow.workflow import Workflow
 from google.cloud import pubsub_v1
-from config import PROJECT_ID, TASK_TOPIC
+from config import PROJECT_ID, TASK_TOPIC, WORKFLOW_PATH
 
 # disabling for linting to pass
 # pylint: disable = broad-except
@@ -34,6 +36,7 @@ topic_path = publisher.topic_path(PROJECT_ID, TASK_TOPIC)
 print(f"topic_path = {topic_path}")
 
 SUCCESS_RESPONSE = {"status": "Success"}
+workflow = Workflow(WORKFLOW_PATH)
 
 
 @router.get("/{id}", response_model=TaskSchema)
@@ -116,8 +119,8 @@ async def put(data: TaskSchema):
   return SUCCESS_RESPONSE
 
 
-@router.delete("/{id}")
-async def delete(id: str):
+@router.post("/complete/{id}")
+async def complete(id: str):
   """Mark a Task as completed.
 
   Args:
@@ -147,7 +150,7 @@ async def dispatch(request: Request):
   """Dispatch a Task to the next service.
 
   Args:
-    id (str): unique id of the task
+    Pub/sub message of a Task model.
 
   Raises:
     HTTPException: 500 Internal Server Error if something fails
@@ -160,26 +163,26 @@ async def dispatch(request: Request):
   message = message_data.get("message")
 
   if message:
+    # Parse string message into python dict.
     byte_str = base64.b64decode(str(message.get("data")))
     dict_str = byte_str.decode("UTF-8")
-    data = repr(ast.literal_eval(dict_str))
-    print(data)
+    task_data = ast.literal_eval(dict_str)
+    print("Received task_data:")
+    print(task_data)
 
   else:
     raise ValueError("Invalid pub/sub message received: no message field.")
 
-  # task = Task.find_by_id(id)
-  # workflow_path = ""
+  task = Task.find_by_id(task_data["id"])
 
-  # workflow_steps = get_workflow_steps(task, workflow_path)
-  # service_url = get_service_url(workflow_steps)
-  # parameters = get_parameters(workflow_steps)
+  next_step = workflow.get_next_step(task)
+  print(f"next_step: {next_step}")
 
-  # # base_url = "http://classification-service/classification_service/v1/"\
-  # #   "classification/classification_api"
-  # # req_url = f"{base_url}?case_id={case_id}&uid={uid}" \
-  # #   f"&gcs_url={gcs_url}"
+  if next_step:
+    service_url = workflow.get_service_url(next_step)
+    parameters = workflow.get_parameters(task, next_step)
+    response = requests.post(service_url, json=parameters)
+    return response
 
-  # response = requests.post(service_url, json=parameters)
-
-  return SUCCESS_RESPONSE
+  else:
+    raise ValueError(f"Next step not found for task id: {id}")
