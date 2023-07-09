@@ -179,10 +179,24 @@ async def dispatch(request: Request):
   print(f"next_step: {next_step}")
 
   if next_step:
-    service_url = workflow.get_service_url(next_step)
-    parameters = workflow.get_parameters(task, next_step)
-    response = requests.post(service_url, json=parameters)
-    return response
+    payload = workflow.get_payload(next_step, task)
+    url = next_step["endpoint"]["url"]
+    method = next_step["endpoint"]["method"]
+    print(f"url = {url}")
+    print(f"method = {method}")
+    print(f"payload = {payload}")
+
+    headers = {"Content-Type": "application/json"}
+    response = requests.request(method, url, headers=headers, data=payload)
+    response_content = json.loads(response.content)
+
+    print("response:")
+    print(response_content)
+
+    if response.status_code != 200:
+      raise Exception(response_content)
+
+    return {"status": "Success", "content": response_content}
 
   else:
-    raise ValueError(f"Next step not found for task id: {id}")
+    raise ValueError(f"Next step not found for task id: {task_data['id']}")

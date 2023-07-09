@@ -1,4 +1,4 @@
-import yaml
+import yaml, json
 from yaml.loader import SafeLoader
 from jinja2 import Template
 from models.task import Task, TaskStatus
@@ -36,8 +36,7 @@ class Workflow:
     # there's no next step.
     return None
 
-  def get_service_url(self, step):
-    return step["endpoint"]["url"]
-
-  def get_parameters(self, task, step):
-    return {}
+  def get_payload(self, step, task):
+    payload_str = json.dumps(step["endpoint"].get("payload"))
+    payload = Template(payload_str).render(task=task.to_dict())
+    return payload

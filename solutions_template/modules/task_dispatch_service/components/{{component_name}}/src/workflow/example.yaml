@@ -6,18 +6,14 @@ type: pubsub-dispatch
 steps:
   - name: step-1
     endpoint:
-      url: "http://upload-service/upload"
+      url: "http://upload-service/upload-service/upload"
 
   - name: step-2
     endpoint:
-      url: "http://todo-service/todo"
+      url: "http://extract-service/extract-service/extract"
       method: POST
-    outputs:
-      artifacts:
-        - type: gcs
-          path: gs://something
-    callback:
-      url: "http://task-dispatch-service/complete"
-      method: POST
+      payload:
+        task: "{{task}}"
+        callback: "http://task-dispatch-service/task-dispatch-service/complete/{{task.id}}"
 
 {% endraw %}
