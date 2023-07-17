@@ -21,7 +21,6 @@ import uvicorn
 import config
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
-from firedantic import configure
 from google.cloud.firestore import Client
 
 from routes import {{data_model_plural}}
@@ -30,10 +29,6 @@ from routes import {{data_model_plural}}
 service_title = "{{data_model_plural | capitalize}} RESTful API"
 service_path = "{{service_path}}"
 version = "v1"
-
-# Configurate Firestore and Firedantic
-firestore_client = Client()
-configure(firestore_client, prefix=config.DATABASE_PREFIX)
 
 # Init FastAPI app
 app = FastAPI(title=service_title)
