@@ -1,0 +1,52 @@
+apiVersion: skaffold/v4beta1
+kind: Config
+metadata:
+  name: 
+
+
+
+build:
+  artifacts:
+  - image: 
+    sync:
+      infer:
+      - '**/*.py'
+      - '**/*.json'
+    docker:
+      cacheFrom:
+      - 
+      - :latest
+
+    
+  googleCloudBuild: {}
+
+# Portforwarding when running `skaffold dev` locally.
+portForward:
+- resourceType: service
+  resourceName: 
+  port: 80
+  localPort:  # Change this when adding other microservice.
+
+profiles:
+# Profile for building images locally.
+- name: local_build
+  build:
+    artifacts:
+    - image: 
+      
+      sync:
+        infer:
+        - '**/*.py'
+        - '**/*.json'
+    tagPolicy:
+      gitCommit: {}
+    local:
+      concurrency: 0
+
+
+
+
+
+
+
+

@@ -1,0 +1,6 @@
+# Changes below will be overwritten by Copier
+_src_path: /Users/jonchen/workspace/solutions-template/solutions_template/cli/../module_template
+has_component: true
+has_terraform_stage: true
+module_name: blank_service
+terraform_stage: 3-blank-service

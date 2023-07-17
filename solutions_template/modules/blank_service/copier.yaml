@@ -1,0 +1,47 @@
+# questions
+_metadata:
+  module_name: blank_service
+  version: 1.0.0
+  destination_path: .
+
+# questions
+component_name:
+  type: str
+  help: What is the name of this component (snake_case)?
+  default: blank_service
+  validator: "{% if not component_name %}Required{% endif %}"
+
+resource_name:
+  type: str
+  help: Resource name (lower case, alphanumeric characters, '-')?
+  default: "{{ component_name | convert_resource_name }}"
+  validator: "{% if not resource_name %}Required{% endif %}"
+
+gcp_region:
+  type: str
+  help: Which Google Cloud region?
+  default: us-central1
+  validator: "{% if not gcp_region %}Required{% endif %}"
+
+terraform_stage:
+  type: str
+  help: Name of the terraform stage?
+  default: "3-{{component_name | to_kebab}}"
+
+_templates_suffix: ""
+
+_exclude:
+  - "copier.yaml"
+  - ".terraform*"
+  - ".tmp"
+  - ".venv"
+  - ".pytest_cache"
+  - "__pycache__"
+  - "*-debug.log"
+
+_jinja_extensions:
+  - jinja2_time.TimeExtension
+  - jinja2_strcase.StrcaseExtension
+  - copier_templates_extensions.TemplateExtensionLoader
+  - ../../copier_extensions/st_helpers.py:SolutionsTemplateHelpersExtension
+
