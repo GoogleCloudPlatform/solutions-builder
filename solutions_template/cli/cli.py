@@ -142,8 +142,6 @@ def deploy(profile: str = DEFAULT_DEPLOY_PROFILE,
   else:
     skaffold_command = "skaffold run"
 
-  print(f"terraform_gke: {terraform_gke} \n")
-
   if terraform_gke:
     cluster_name = terraform_gke["cluster_name"]
     region = terraform_gke["gcp_region"]
