@@ -1,0 +1,11 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: {{resource_name}}
+spec:
+  template:
+    spec:
+      containers:
+        - image: {{resource_name}}
+          ports:
+            - containerPort: 80

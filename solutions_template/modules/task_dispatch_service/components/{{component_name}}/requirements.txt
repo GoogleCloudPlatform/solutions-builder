@@ -1,0 +1,11 @@
+fastapi
+fastapi-restful
+firedantic
+fireo
+jinja2
+google-cloud-bigquery
+google-cloud-storage
+google-cloud-pubsub
+python-multipart
+pyyaml
+uvicorn

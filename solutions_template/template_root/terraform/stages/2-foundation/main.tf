@@ -27,11 +27,13 @@ locals {
     "container.googleapis.com",            # Google Kubernetes Engine
     "containerregistry.googleapis.com",    # Google Container Registry
     "dataflow.googleapis.com",             # Cloud Dataflow
+    "eventarc.googleapis.com",             # Event Arc
     "firebase.googleapis.com",             # Firebase
     "firestore.googleapis.com",            # Firestore
     "iam.googleapis.com",                  # Cloud IAM
     "logging.googleapis.com",              # Cloud Logging
     "monitoring.googleapis.com",           # Cloud Operations Suite
+    "pubsub.googleapis.com",               # Pub/Sub
     "run.googleapis.com",                  # Cloud Run
     "secretmanager.googleapis.com",        # Secret Manager
     "storage.googleapis.com",              # Cloud Storage
@@ -54,6 +56,7 @@ locals {
   ]
 }
 
+# Used to retrieve project_number later
 data "google_project" "project" {}
 
 module "project_services" {

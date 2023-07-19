@@ -80,6 +80,7 @@ _patch:
   - "skaffold.yaml"
 
 _exclude:
+  - "README.md"
   - "copier.yaml"
   - "copier_extensions"
   - ".terraform*"
