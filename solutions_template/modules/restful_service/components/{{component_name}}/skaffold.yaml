@@ -79,12 +79,7 @@ profiles:
           command: ["sh", "-c", "rm *.rendered.env"]
   # Simple deployment using kubectl.
   deploy:
-    kubectl:
-      hooks:
-        before:
-        - host:
-            dir: .
-            command: ["sh", "-c", "gcloud container clusters get-credentials 'main-cluster' --region '{{gcp_region}}' --project '{{project_id}}'"]
+    kubectl: {}
 
 # Profile for GKE Horizontal Pod Autoscaler.
 # This profile only works with `gke` profile together.
