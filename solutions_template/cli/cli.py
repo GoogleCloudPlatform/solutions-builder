@@ -129,6 +129,8 @@ def deploy(profile: str = DEFAULT_DEPLOY_PROFILE,
 
   st_yaml = read_yaml(f"{solution_path}/st.yaml")
   project_id = st_yaml["project_id"]
+  terraform_gke = st_yaml["components"].get("terraform_gke")
+  commands = []
 
   if component:
     component_flag = f" -m {component} "
@@ -140,11 +142,25 @@ def deploy(profile: str = DEFAULT_DEPLOY_PROFILE,
   else:
     skaffold_command = "skaffold run"
 
-  command = f"{skaffold_command} -p {profile} {component_flag} --default-repo=\"gcr.io/{project_id}\""
+  print(f"terraform_gke: {terraform_gke} \n")
+
+  if terraform_gke:
+    cluster_name = terraform_gke["cluster_name"]
+    region = terraform_gke["gcp_region"]
+    commands.append(
+        f"gcloud container clusters get-credentials {cluster_name} --region {region} --project {project_id}"
+    )
+
+  commands.append(
+      f"{skaffold_command} -p {profile} {component_flag} --default-repo=\"gcr.io/{project_id}\""
+  )
   print("This will build and deploy all services using the command below:")
-  print_highlight(command)
+  for command in commands:
+    print_highlight(f"- {command}")
   confirm("\nThis may take a few minutes. Continue?", skip=yes)
-  exec_shell(command, working_dir=solution_path)
+
+  for command in commands:
+    exec_shell(command, working_dir=solution_path)
 
 
 # Destory deployment.
