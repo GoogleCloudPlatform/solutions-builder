@@ -41,7 +41,7 @@ variable "region" {
 }
 
 variable "node_pool_name" {
-  type    = str
+  type    = string
   default = "default-pool"
 }
 
