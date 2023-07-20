@@ -100,19 +100,5 @@ module "gke-workload-identity" {
   name       = var.service_account_name
   namespace  = var.namespace
   project_id = var.project_id
-  roles = [
-    "roles/aiplatform.user",
-    "roles/bigquery.admin",
-    "roles/datastore.owner",
-    "roles/documentai.admin",
-    "roles/firebase.admin",
-    "roles/iam.serviceAccountUser",
-    "roles/logging.admin",
-    "roles/logging.logWriter",
-    "roles/monitoring.metricWriter",
-    "roles/monitoring.viewer",
-    "roles/pubsub.admin",
-    "roles/stackdriver.resourceMetadata.writer",
-    "roles/storage.admin",
-  ]
+  roles      = var.gke_service_account_roles
 }
