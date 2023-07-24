@@ -16,7 +16,7 @@ terraform_stage_name:
 
 resource_name:
   type: str
-  help: Resource name (lower case, alphanumeric characters, '-')?
+  help: Ingress resource name (lower case, alphanumeric characters, '-')?
   default: gke-ingress
 
 gcp_region:
@@ -32,7 +32,7 @@ cluster_name:
 kubernetes_version:
   type: str
   help: Kubernetes version?
-  default: 1.24.11-gke.1000
+  default: 1.26.5-gke.1200 # See https://cloud.google.com/kubernetes-engine/docs/release-notes-stable
 
 node_machine_type:
   type: str

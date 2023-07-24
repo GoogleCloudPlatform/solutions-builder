@@ -118,3 +118,24 @@ variable "source_subnetwork_ip_ranges_to_nat" {
   description = "Defaults to ALL_SUBNETWORKS_ALL_IP_RANGES. How NAT should be configured per Subnetwork. Valid values include: ALL_SUBNETWORKS_ALL_IP_RANGES, ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES, LIST_OF_SUBNETWORKS. Changing this forces a new NAT to be created."
   default     = "ALL_SUBNETWORKS_ALL_IP_RANGES"
 }
+
+variable "gke_service_account_roles" {
+  type        = list(string)
+  description = "List of GCP IAM roles"
+  default = [
+    "roles/aiplatform.user",
+    "roles/bigquery.admin",
+    "roles/datastore.owner",
+    "roles/documentai.admin",
+    "roles/firebase.admin",
+    "roles/iam.serviceAccountUser",
+    "roles/logging.admin",
+    "roles/logging.logWriter",
+    "roles/monitoring.metricWriter",
+    "roles/monitoring.viewer",
+    "roles/pubsub.admin",
+    "roles/stackdriver.resourceMetadata.writer",
+    "roles/secretmanager.admin",
+    "roles/storage.admin",
+  ]
+}
