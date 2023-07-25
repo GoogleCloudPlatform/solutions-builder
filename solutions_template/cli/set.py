@@ -16,7 +16,7 @@ limitations under the License.
 
 import typer
 import glob
-from pathlib import Path
+import pathlib
 from typing import Optional
 from typing_extensions import Annotated
 from copier import run_auto
@@ -24,7 +24,10 @@ from .cli_utils import *
 
 set_app = typer.Typer()
 
-FILE_EXTENSIONS = ["yaml", "env", "tfvars", "sh", "md"]
+INCLUDE_PATTERNS = [
+    "*.yaml", "*.yml", "*.env", "*.tfvars", "*.tf", "*.sh", "*.md"
+]
+EXCLUDE_PATTERNS = ["**/.terraform/**/*.*", "**/node_modules/**/*.*"]
 
 
 @set_app.command()
@@ -48,9 +51,15 @@ def project_id(
   write_yaml(f"{solution_path}/st.yaml", root_st_yaml)
 
   file_set = set()
-  for filetype in FILE_EXTENSIONS:
-    file_set.update(
-        set(glob.glob(solution_path + f"/**/*.{filetype}", recursive=True)))
+  # Adding includes.
+  for pattern in INCLUDE_PATTERNS:
+    file_list = pathlib.Path(solution_path).rglob(f"{pattern}")
+    file_set.update(set([str(x) for x in file_list]))
+
+  # Removing excludes.
+  for pattern in EXCLUDE_PATTERNS:
+    file_list = pathlib.Path(solution_path).rglob(f"{pattern}")
+    file_set = file_set - set([str(x) for x in file_list])
 
   for filename in list(file_set):
     with open(filename, "r") as file:
