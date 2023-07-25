@@ -23,6 +23,11 @@ gcp_region:
   help: Which Google Cloud region?
   default: us-central1
 
+has_common:
+  type: bool
+  help: Include a common component (for shared data models, utils, etc)?
+  default: true
+
 terraform_backend_gcs:
   type: bool
   help: Use GCS Bucket for Terraform backend?

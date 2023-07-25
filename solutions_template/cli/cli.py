@@ -23,6 +23,7 @@ from pathlib import Path
 from .component import component_app
 from .infra import infra_app
 from .template import template_app
+from .set import set_app
 from .cli_utils import *
 
 __version__ = importlib.metadata.version("solutions-template")
@@ -42,6 +43,9 @@ app.add_typer(infra_app,
 app.add_typer(template_app,
               name="template",
               help="Create or update module templates.")
+app.add_typer(set_app,
+              name="set",
+              help="Set properties to an existing solution folder.")
 
 
 # Create a new solution

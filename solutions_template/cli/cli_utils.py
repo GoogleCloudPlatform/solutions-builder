@@ -152,6 +152,20 @@ def get_answers_dict(data):
     return {}
 
 
+def get_project_number(project_id):
+  """
+    Get GCP project number based on project_id using gcloud command.
+    """
+  print(f"(Retrieving project number for {project_id}...)")
+  command = f"gcloud projects describe {project_id} --format='value(projectNumber)'"
+  project_number = exec_gcloud_output(command)
+  project_number = project_number.strip()
+  if not project_number.isnumeric():
+    return ""
+
+  return project_number
+
+
 # Print success message with styling.
 def print_success(msg):
   typer.echo(typer.style(msg, fg=typer.colors.GREEN, bold=True))
