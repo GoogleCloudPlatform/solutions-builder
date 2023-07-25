@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "solutions-template"
-version = "1.12.0"
+version = "1.13.0"
 description = "A solution framework to generate a project with built-in structure and modules"
 authors = ["Jon Chen <jonchen@google.com>"]
 license = "Apache"
