@@ -13,6 +13,7 @@ spec:
         app: {{resource_name}}
     spec:
       serviceAccountName: gke-sa
+      automountServiceAccountToken: true
       containers:
         - name: {{resource_name}}
           image: {{resource_name}}
