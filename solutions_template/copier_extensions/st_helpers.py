@@ -47,8 +47,6 @@ def exec_gcloud_output(command, working_dir="."):
   return output
 
 
-# taken from Django
-# https://github.com/django/django/blob/main/django/utils/text.py
 def get_project_number(project_id):
   """
     Get GCP project number based on project_id using gcloud command.
