@@ -3,7 +3,11 @@ apiVersion: skaffold/v4beta1
 kind: Config
 metadata:
   name: all-services
+{% if has_common == true %}
 requires:
-  - configs:
-      - common
-    path: ./components/common
+- configs:
+  - common
+  path: ./components/common
+{% else %}
+requires: []
+{% endif %}
