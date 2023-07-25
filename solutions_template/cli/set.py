@@ -24,7 +24,7 @@ from .cli_utils import *
 
 set_app = typer.Typer()
 
-FILE_EXTENSIONS = ["yaml", "env", "tfvars", "sh", "md"]
+FILE_EXTENSIONS = ["yaml", "yml", "env", "tfvars", "tf", "sh", "md"]
 
 
 @set_app.command()
