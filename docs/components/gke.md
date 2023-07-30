@@ -2,7 +2,7 @@
 
 ## Deployment
 
-In this Solutions Template, we use [`skaffold`](https://skaffold.dev/) to deploy for both backend microservices and frontend application. The same steps apply for deploying to GKE and Cloud Run.
+In this Solutions Builder, we use [`skaffold`](https://skaffold.dev/) to deploy for both backend microservices and frontend application. The same steps apply for deploying to GKE and Cloud Run.
 
 ### Initialize GKE cluster
 

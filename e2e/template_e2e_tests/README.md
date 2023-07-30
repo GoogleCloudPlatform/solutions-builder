@@ -9,9 +9,9 @@ This doc covers the setup and steps required for running e2e tests for Template.
 - Create an org-level service account as e2e-runner:
   > This service account can be created separately under another GCP project with granted permissions on the org-level.
   ```
-  export E2E_RUNNER_PROJECT_ID=solutions-template-e2erunner
-  export SA_EMAIL=solutions-template-e2e-runner@$E2E_RUNNER_PROJECT_ID.iam.gserviceaccount.com
-  gcloud iam service-accounts create "solutions-template-e2e-runner" --project=${E2E_RUNNER_PROJECT_ID}
+  export E2E_RUNNER_PROJECT_ID=solutions-builder-e2erunner
+  export SA_EMAIL=solutions-builder-e2e-runner@$E2E_RUNNER_PROJECT_ID.iam.gserviceaccount.com
+  gcloud iam service-accounts create "solutions-builder-e2e-runner" --project=${E2E_RUNNER_PROJECT_ID}
   ```
 
   Enable required services to the host project where the service account resides:

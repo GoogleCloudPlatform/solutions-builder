@@ -2,7 +2,7 @@
 
 ## Deploy
 
-Use Solutions Template CLI to deploy:
+Use Solutions Builder CLI to deploy:
 ```
 st deploy . --component {{component_name}}
 ```

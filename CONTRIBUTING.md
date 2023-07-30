@@ -1,12 +1,12 @@
-# Contributing to Solutions Template
+# Contributing to Solutions Builder
 
-This doc explains the development workflow to get started contributing to **Solutions Template**.
+This doc explains the development workflow to get started contributing to **Solutions Builder**.
 
 If you are looking for the general development guide for the generated code from this template, please refer to [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)
 
 ## Bug Reports
 
-If you encounter any issues or bugs, please [file a new Github Issue](https://github.com/GoogleCloudPlatform/solutions-template/issues/new).
+If you encounter any issues or bugs, please [file a new Github Issue](https://github.com/GoogleCloudPlatform/solutions-builder/issues/new).
 
 - The Google team will triage the issues and will reply to your issues shortly.
 
@@ -14,25 +14,25 @@ If you encounter any issues or bugs, please [file a new Github Issue](https://gi
 
 ### Tool requirements:
 
-Install the dependencies according to root [README.md](https://github.com/GoogleCloudPlatform/solutions-template#tool-requirements).
+Install the dependencies according to root [README.md](https://github.com/GoogleCloudPlatform/solutions-builder#tool-requirements).
 
 Here's the high-level steps of the development flow:
 - Create a **new fork** and a **new feature branch**.
 - Develop and test locally (with your own Google Cloud project)
-- Create a [Pull Request](https://github.com/GoogleCloudPlatform/solutions-template/compare) to merge to `main` branch.
+- Create a [Pull Request](https://github.com/GoogleCloudPlatform/solutions-builder/compare) to merge to `main` branch.
 
 ### Create a new Fork
 
-- [Click this link](https://github.com/GoogleCloudPlatform/solutions-template/fork) to create a new fork.
+- [Click this link](https://github.com/GoogleCloudPlatform/solutions-builder/fork) to create a new fork.
 - Check out the code from your fork.
   ```
-  git clone https://github.com/<your-Github-handle>/solutions-template.git
+  git clone https://github.com/<your-Github-handle>/solutions-builder.git
   ```
 - Make sure the `origin` points to your fork.
   ```
   $ git remote -v
-  origin  https://github.com/<your-Github-handle>/solutions-template.git (fetch)
-  origin  https://github.com/<your-Github-handle>/solutions-template.git (push)
+  origin  https://github.com/<your-Github-handle>/solutions-builder.git (fetch)
+  origin  https://github.com/<your-Github-handle>/solutions-builder.git (push)
   ```
 - Check out a new branch. This is to make your local work clean and separated.
   ```
@@ -41,16 +41,16 @@ Here's the high-level steps of the development flow:
 
 ### Preparation
 
-Install `solutions-template` as local package.
+Install `solutions-builder` as local package.
 ```
-cd solutions-template
+cd solutions-builder
 poetry install
 ```
 
-At this moment, you shall see the `solutions-template` is installed with local package.
+At this moment, you shall see the `solutions-builder` is installed with local package.
 ```
-pip freeze | grep solutions-template
--e git+ssh://git@github.com/GoogleCloudPlatform/solutions-template.git@[HASH]#egg=solutions_template
+pip freeze | grep solutions-builder
+-e git+ssh://git@github.com/GoogleCloudPlatform/solutions-builder.git@[HASH]#egg=solutions_builder
 ```
 
 
@@ -70,7 +70,7 @@ git commit -a -m 'your message about this change'.
 
 ### Create a Pull Request for review
 
-Create a [Pull Request](https://github.com/GoogleCloudPlatform/solutions-template/compare) to merge to `main` branch, and tag the project owners/admins to review.
+Create a [Pull Request](https://github.com/GoogleCloudPlatform/solutions-builder/compare) to merge to `main` branch, and tag the project owners/admins to review.
 
 - The project owners and admins will run end-to-end tests (TBD) to ensure the change doesn't break existing functions.
 

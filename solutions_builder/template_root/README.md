@@ -1,6 +1,6 @@
 # {{project_name}}
 
-> This codebase is generated from https://github.com/GoogleCloudPlatform/solutions-template
+> This codebase is generated from https://github.com/GoogleCloudPlatform/solutions-builder
 
 ## Setting up Google Cloud project
 
