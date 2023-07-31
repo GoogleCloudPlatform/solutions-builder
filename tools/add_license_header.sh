@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 set -f
 
 HEADER_BLOCK=$(cat <<-END
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ END
 
 PYTHON_HEADER_BLOCK=$(cat <<-END
 """
-Copyright 2022 Google LLC
+Copyright 2023 Google LLC
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ END
 
 JS_HEADER_BLOCK=$(cat <<-END
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ END
 
 HTML_HEADER_BLOCK=$(cat <<-END
 <!--
-Copyright 2022 Google LLC
+Copyright 2023 Google LLC
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -94,7 +94,7 @@ END
 
 SHELL_HEADER_BLOCK=$(cat <<-END
 #!/bin/bash
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -132,7 +132,7 @@ for fname in `find $1 -name "$2" ! -name "__init__.py" ! -path "*/node_modules/*
     HEADER_BLOCK=$HTML_HEADER_BLOCK
   fi
 
-  if grep -q "Copyright 2022 Google LLC" $fname; then
+  if grep -q "Copyright 2023 Google LLC" $fname; then
     echo "${fname} already has license header. Skipped."
     continue
   fi
