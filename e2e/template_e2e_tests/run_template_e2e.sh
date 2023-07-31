@@ -36,22 +36,22 @@ then
   PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')
   
   # Create new solution folder
-  st new $PROJECT_ID $OUTPUT_FOLDER --answers=project_id=$PROJECT_ID,project_name=$PROJECT_ID,project_number=$PROJECT_NUMBER,gcp_region=$REGION,terraform_backend_gcs=Y,advanced_settings=n
+  sb new $PROJECT_ID $OUTPUT_FOLDER --answers=project_id=$PROJECT_ID,project_name=$PROJECT_ID,project_number=$PROJECT_NUMBER,gcp_region=$REGION,terraform_backend_gcs=Y,advanced_settings=n
   
   # Add RESTful service component
   cd $OUTPUT_FOLDER/$PROJECT_ID
-  st components add restful_service --answers=component_name=todo_service,resource_name=todo-service,service_path=todo-service,gcp_region=$REGION,data_model=todo,data_model_plural=todos,deploy_cloudrun=Y,cloudrun_neg=Y,deploy_gke=n,default_deploy=cloudrun,depend_on_common=n,local_port=9001,use_github_action=Y --yes
+  sb components add restful_service --answers=component_name=todo_service,resource_name=todo-service,service_path=todo-service,gcp_region=$REGION,data_model=todo,data_model_plural=todos,deploy_cloudrun=Y,cloudrun_neg=Y,deploy_gke=n,default_deploy=cloudrun,depend_on_common=n,local_port=9001,use_github_action=Y --yes
   
   # Initialize infra, but skipping the bootstrap stage.
-  # st infra apply 1-boostrap --yes
-  st infra apply 2-foundation --yes
+  # sb infra apply 1-boostrap --yes
+  sb infra apply 2-foundation --yes
   
 elif [[ $1 = "deploy" ]]
 then
   # Deploy to Cloud Run
   cd $OUTPUT_FOLDER/$PROJECT_ID
   ls -al .
-  st deploy --yes
+  sb deploy --yes
   
 elif [[ $1 = "test" ]]
 then
@@ -65,8 +65,8 @@ elif [[ $1 = "cleanup" ]]
 then
   # Clean up
   cd $OUTPUT_FOLDER/$PROJECT_ID
-  st destroy --yes
-  st infra destroy 2-foundation --yes
+  sb destroy --yes
+  sb infra destroy 2-foundation --yes
   
 else
   echo "Usage: bash run_template_e2e.sh [prepare|deploy|test|cleanup]"
