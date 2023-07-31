@@ -1,5 +1,6 @@
 locals {
   services = [
+    "appengine.googleapis.com",            # App Engine
     "cloudresourcemanager.googleapis.com", # Cloud Resource Manager
     "cloudbilling.googleapis.com",         # Cloud Billing
     "cloudbuild.googleapis.com",           # Cloud Build
