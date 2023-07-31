@@ -1,11 +1,11 @@
-# Google Cloud Solutions Template
+# Google Cloud Solutions Builder
 
 **A solution framework to generate a new project with built-in structure and modules
 to accelerate your project setup.**
 
 ## TL;DR
 
-Solutions Template is a boilerplate template for building repeatable
+Solutions Builder is a boilerplate template for building repeatable
 solutions with the best practices in architecture on Google Cloud, including GKE
 clusters, Cloud Run, Test Automation, CI/CD, as well as development process.
 
@@ -19,7 +19,7 @@ This template provides built-in and ready-to-ship modules including:
 
 ## Roadmap
 
-Please see [Feature Requests in the Github issue list](https://github.com/GoogleCloudPlatform/solutions-template/issues?q=is%3Aopen+is%3Aissue+label%3A%22feature+request%22).
+Please see [Feature Requests in the Github issue list](https://github.com/GoogleCloudPlatform/solutions-builder/issues?q=is%3Aopen+is%3Aissue+label%3A%22feature+request%22).
 
 ## Prerequisite
 
@@ -36,17 +36,17 @@ Please see [Feature Requests in the Github issue list](https://github.com/Google
 |---|---|---|
 | Kustomize   | &gt;= v5.0.0 | https://kubectl.docs.kubernetes.io/installation/kustomize/ |
 
-## Installing Solutions Template CLI
+## Installing Solutions Builder CLI
 
 With `pip`:
 ```
-pip install solutions-template
+pip install solutions-builder
 ```
 
 With `pipx`:
 ```
 pip install --user pipx
-pipx install solutions-template
+pipx install solutions-builder
 ```
 
 ## Getting Started
@@ -62,7 +62,7 @@ gcloud config set project my-solutions-gcp-id
 
 Generate a new solution folder.
 ```
-st new my-solution .
+sb new my-solution .
 ```
 
 This will prompt options and variables:
@@ -82,12 +82,12 @@ This will prompt options and variables:
 Go to the newly created project folder and initialize the solution.
 ```
 cd my-solution
-st infra init
+sb infra init
 ```
 
 Add a RESTful API service with **Todo** data model to this solution.
 ```
-st components add restful_service
+sb components add restful_service
 ```
 
 Fill details in the prompt:
@@ -102,15 +102,15 @@ Fill details in the prompt:
 
 Add a HTTP Load Balancer for Cloud Run service(s)
 ```
-st add component terraform_httplb_cloudrun
-st infra apply 3-httplb-cloudrun
+sb add component terraform_httplb_cloudrun
+sb infra apply 3-httplb-cloudrun
 ```
 
 Build and deploy
 ```
-st deploy
+sb deploy
 ```
-- See other deployment options in [solutions_template/modules](solutions_template/modules).
+- See other deployment options in [solutions_builder/modules](solutions_builder/modules).
 
 
 ## Additional Documentations
@@ -125,14 +125,14 @@ In the [docs/components](docs/components/) folder, it contains a few more guidan
 - [cloudrun.md](docs/components/cloudrun.md) covers the guidance if you want to deploy microservice to Cloud Run.
 
 ## FAQ
-- Who are the target audience/users for this Solutions template?
+- Who are the target audience/users for this Solutions Builder?
   - A: Any engineering team to start a new solution development project.
 
 - Can I choose to deploy microservice just to Cloud Run?
   - A: Yes, please refer to [Setting up Google Cloud Project](README.md#setting-up-google-cloud-project) in this README.md to choose where to deploy microservices. Or you can refer to [INSTALLATION.md](docs/INSTALLATION.md) for more details.
 
 - Can I use this template for non-Google or multi-Cloud environments?
-  - A: We design this Solutions Template to work 100% out of the box with Google Cloud products. However you could customize the solution to meet your needs on multi-Cloud environment. See [Why Google Cloud](https://cloud.google.com/why-google-cloud) for details.
+  - A: We design this Solutions Builder to work 100% out of the box with Google Cloud products. However you could customize the solution to meet your needs on multi-Cloud environment. See [Why Google Cloud](https://cloud.google.com/why-google-cloud) for details.
 
 ## Troubleshoot
 

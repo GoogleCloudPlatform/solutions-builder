@@ -1,4 +1,4 @@
-# Solutions Template - Installation
+# Solutions Builder - Installation
 
 ## Understanding Google Cloud
 
@@ -29,20 +29,20 @@ We recommend the following resources to get familiar with Google Cloud and micro
 |---|---|---|
 | Kustomize   | &gt;= v5.0.0 | https://kubectl.docs.kubernetes.io/installation/kustomize/ |
 
-### Installing Solutions Template CLI
+### Installing Solutions Builder CLI
 
 With `pip`:
 ```
-pip install solutions-template
+pip install solutions-builder
 ```
 
 With `pipx`:
 ```
 pip install --user pipx
-pipx install solutions-template
+pipx install solutions-builder
 
 # Alternatively, install a specific version
-pipx install solutions-template==[version]
+pipx install solutions-builder==[version]
 ```
 
 ## Preparation
@@ -56,7 +56,7 @@ gcloud projects create my-solution-gcp-id
 gcloud config set project my-solutions-gcp-id
 ```
 
-**NOTE**: Solutions Template will generate Infrastructure-as-Code (IaC) using Terraform.
+**NOTE**: Solutions Builder will generate Infrastructure-as-Code (IaC) using Terraform.
 It may contain GCP resource setup that conflicts with your existing resources.
 We recommend starting with a brand new GCP project.
 
@@ -105,14 +105,14 @@ Once filled, it will generate a new folder `my-solution` with the following file
 - **components/**: List of component/service folders. When adding components by running `st components add [COMPONENT_NAME]`, it will add a component subfolder here.
 - **setup.cfg**: yapf python formatter.
 - **skaffold.yaml**: Root skaffold YAML that manages deployment to Cloud Run and GKE.
-- **st.yaml**: Root Solutions Template YAML that contains metadata for this solution folder.
+- **st.yaml**: Root Solutions Builder YAML that contains metadata for this solution folder.
 - **terraform**: Infrastructure-as-Code using [Terraform](https://www.terraform.io/).
 - **terraform/modules**: Terraform modules by Cloud resources.
 - **terraform/stages**: Terraform stages based on [Cloud Foundation Fabric](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric) approach.
 
 ## Update an existing Solution folder
 
-Solutions Template supports updating exsiting solution folder, however it may override your files. Please use it with caution.
+Solutions Builder supports updating exsiting solution folder, however it may override your files. Please use it with caution.
 
 Run the following to update an existing solution folder:
 
@@ -158,11 +158,11 @@ st infra apply [STAGE_NAME]
 
 ## Add a component
 
-In Solutions Template, a component is a module provided with templated service (either frontend or backend) or templated Terraform code for particular GCP resources.
+In Solutions Builder, a component is a module provided with templated service (either frontend or backend) or templated Terraform code for particular GCP resources.
 
 You can see the list of available component modules by run the following:
 ```
-$ st components list
+$ sb components list
 
 Available module names:
 
@@ -170,7 +170,7 @@ Available module names:
 - terraform_gke
 - terraform_httplb_cloudrun
 ```
-- Alternatively you can check existing modules in [modules/](../solutions_template/modules) folder.
+- Alternatively you can check existing modules in [modules/](../solutions_builder/modules) folder.
 
 To add a component to a solution:
 ```

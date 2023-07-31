@@ -2,7 +2,7 @@
 
 ## Deployment
 
-In this Solutions Template, we use [`skaffold`](https://skaffold.dev/) to deploy for both backend microservices and frontend application. The same steps apply for deploying to GKE and Cloud Run.
+In this Solutions Builder, we use [`skaffold`](https://skaffold.dev/) to deploy for both backend microservices and frontend application. The same steps apply for deploying to GKE and Cloud Run.
 
 ### Deploy to Cloud Run with default **run.app** domain
 
@@ -61,7 +61,7 @@ Once deployed, you will see the output like below:
 ```
 frontend-angular: Service starting: Deploying Revision. Waiting on revision frontend-angular-kmwth.
 Cloud Run Service frontend-angular finished: Service started. 0/1 deployment(s) still pending
-Forwarding service projects/solutions-template-develop/locations/us-central1/services/frontend-angular to local port 9001
+Forwarding service projects/solutions-builder-develop/locations/us-central1/services/frontend-angular to local port 9001
 Listing files to watch...
 - frontend-angular
 Press Ctrl+C to exit

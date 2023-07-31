@@ -27,7 +27,7 @@ template_app = typer.Typer()
 @template_app.command()
 def new(module_name,
         modules_folder: Annotated[
-            Optional[str], typer.Argument()] = "./solutions_template/modules",
+            Optional[str], typer.Argument()] = "./solutions_builder/modules",
         module_template_path=None,
         answers=None,
         yes: Optional[bool] = False):

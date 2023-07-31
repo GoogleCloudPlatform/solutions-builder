@@ -26,13 +26,13 @@ from .template import template_app
 from .set import set_app
 from .cli_utils import *
 
-__version__ = importlib.metadata.version("solutions-template")
+__version__ = importlib.metadata.version("solutions-builder")
 DEFAULT_DEPLOY_PROFILE = "default-deploy"
 
 app = typer.Typer(
     add_completion=False,
     help=
-    "Solutions Template CLI. See https://github.com/GoogleCloudPlatform/solutions-template for details."
+    "Solutions Builder CLI. See https://github.com/GoogleCloudPlatform/solutions-builder for details."
 )
 app.add_typer(component_app,
               name="components",
@@ -197,13 +197,13 @@ def version():
   """
   Print version.
   """
-  print(f"Solutions Template v{__version__}")
+  print(f"Solutions Builder v{__version__}")
   raise typer.Exit()
 
 
 def main():
   try:
-    print_highlight(f"Solutions Template (version " +
+    print_highlight(f"Solutions Builder (version " +
                     typer.style(__version__, fg=typer.colors.CYAN, bold=True) +
                     ")\n")
     app()

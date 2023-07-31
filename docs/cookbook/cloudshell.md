@@ -27,7 +27,7 @@
 
 - Generate skeleton code in a new folder:
   ```
-  cookiecutter https://github.com/GoogleCloudPlatform/solutions-template.git
+  cookiecutter https://github.com/GoogleCloudPlatform/solutions-builder.git
   ```
   - Provide the required variables to Cookiecutter prompt.
 

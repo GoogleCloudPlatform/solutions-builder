@@ -14,7 +14,7 @@
 # limitations under the License.
 
 # This script automates all the setup steps after creating code skeleton using
-# the Solutions template and set up all components to a brand-new Google Cloud
+# the Solutions Builder and set up all components to a brand-new Google Cloud
 # project.
 
 export PROJECT_ID="{{project_id}}"
