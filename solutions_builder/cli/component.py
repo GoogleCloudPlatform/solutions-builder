@@ -151,6 +151,7 @@ def process_component(method,
 
   # Patch skaffold.yaml
   for patch_file in copier_dict.get("_patch", []):
+    print(f"Patching {patch_file}...")
     new_yaml = patch_yaml(f"{solution_path}/{patch_file}",
                           f"{solution_path}/{patch_file}.patch")
     new_yaml["requires"] = dedupe(new_yaml["requires"])

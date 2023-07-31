@@ -48,6 +48,9 @@ _answers_file: ".st/module_answers/{{component_name}}.yaml"
 
 _templates_suffix: ""
 
+_patch:
+  - "skaffold.yaml"
+
 _exclude:
   - "README.md"
   - "copier.yaml"

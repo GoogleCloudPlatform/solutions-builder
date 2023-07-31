@@ -19,7 +19,6 @@ import importlib.metadata
 from typing import Optional
 from typing_extensions import Annotated
 from copier import run_auto
-from pathlib import Path
 from .component import component_app
 from .infra import infra_app
 from .template import template_app
