@@ -1,5 +1,5 @@
-# #!/bin/bash
-# Copyright 2022 Google LLC
+#!/bin/bash
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,9 +15,11 @@
 
 #!/bin/bash
 
+set -f
+
+# Hardcoded the project ID for all local development.
 declare -a EnvVars=(
-  "PROJECT_ID"
-  "REGION"
+  "SA_EMAIL"
 )
 for variable in "${EnvVars[@]}"; do
   if [[ -z "${!variable}" ]]; then
@@ -26,12 +28,10 @@ for variable in "${EnvVars[@]}"; do
   fi
 done
 
-if [[ -z "$OUTPUT_FOLDER" ]]
-then
-  OUTPUT_FOLDER="."
-fi
+mkdir -p .tmp
+gcloud iam service-accounts keys create .tmp/sa-key.json --iam-account=$SA_EMAIL
 
-if [[ $1 = "prepare" ]]
+gcloud auth activate-service-account --key-file=.tmp/sa-key.json
 then
   PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')
 

@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,25 +16,25 @@
  */
 
 output "vpc_network" {
-  value =  var.vpc_network
+  value = var.vpc_network
 }
 
 output "vpc_subnetwork" {
-  value =  var.vpc_subnetwork
+  value = var.vpc_subnetwork
 }
 
 output "ip_cidr_range" {
-  value =  var.ip_cidr_range
+  value = var.ip_cidr_range
 }
 
 output "master_ipv4_cidr_block" {
-  value =  var.master_ipv4_cidr_block
+  value = var.master_ipv4_cidr_block
 }
 
 output "secondary_ranges_pods" {
-  value =  var.secondary_ranges_pods
+  value = var.secondary_ranges_pods
 }
 
 output "secondary_ranges_services" {
-  value =  var.secondary_ranges_services
+  value = var.secondary_ranges_services
 }
