@@ -32,7 +32,7 @@ cluster_name:
 kubernetes_version:
   type: str
   help: Kubernetes version?
-  default: 1.26.5-gke.1200 # See https://cloud.google.com/kubernetes-engine/docs/release-notes-stable
+  default: 1.26.5-gke.1400 # See https://cloud.google.com/kubernetes-engine/docs/release-notes-stable
 
 node_machine_type:
   type: str
@@ -47,6 +47,9 @@ private_cluster:
 _answers_file: ".st/module_answers/{{component_name}}.yaml"
 
 _templates_suffix: ""
+
+_patch:
+  - "skaffold.yaml"
 
 _exclude:
   - "README.md"

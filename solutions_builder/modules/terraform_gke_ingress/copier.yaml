@@ -41,9 +41,15 @@ kubernetes_services:
   help: Kubernetes service names in ingress? (comma-separated string)
   default: "{{solution_path | get_services_from_yaml}}"
 
+use_custom_domain:
+  type: bool
+  help: Use a custom Domain with cert?
+  default: true
+
 domains:
   type: str
   help: DNS domains (comma-separated string)?
+  when: "{{use_custom_domain}}"
 
 cors_allow_origins:
   type: str

@@ -19,7 +19,6 @@ import importlib.metadata
 from typing import Optional
 from typing_extensions import Annotated
 from copier import run_auto
-from pathlib import Path
 from .component import component_app
 from .infra import infra_app
 from .template import template_app
@@ -97,7 +96,7 @@ def update(solution_path: Annotated[Optional[str],
   )
 
   # Copy template_root to destination, excluding skaffold.yaml.
-  orig_st_yaml = read_yaml(f"{solution_path}/st.yaml")
+  orig_st_yaml = read_yaml(f"{solution_path}/sb.yaml")
 
   if not template_path:
     current_dir = os.path.dirname(__file__)
@@ -106,14 +105,14 @@ def update(solution_path: Annotated[Optional[str],
       raise FileNotFoundError(f"{template_path} does not exist.")
   worker = run_auto(template_path,
                     solution_path,
-                    exclude=["skaffold.yaml", "st.yaml"])
+                    exclude=["skaffold.yaml", "sb.yaml"])
   answers = worker.answers.last
 
-  # Restore some fields in st.yaml.
-  st_yaml = read_yaml(f"{solution_path}/st.yaml")
+  # Restore some fields in sb.yaml.
+  st_yaml = read_yaml(f"{solution_path}/sb.yaml")
   st_yaml["created_at"] = orig_st_yaml["created_at"]
   st_yaml["components"] = orig_st_yaml["components"]
-  write_yaml(f"{solution_path}/st.yaml", st_yaml)
+  write_yaml(f"{solution_path}/sb.yaml", st_yaml)
 
   print_success(f"Complete. Solution folder updated at {solution_path}.\n")
 
@@ -131,7 +130,7 @@ def deploy(profile: str = DEFAULT_DEPLOY_PROFILE,
   """
   validate_solution_folder(solution_path)
 
-  st_yaml = read_yaml(f"{solution_path}/st.yaml")
+  st_yaml = read_yaml(f"{solution_path}/sb.yaml")
   project_id = st_yaml["project_id"]
   terraform_gke = st_yaml["components"].get("terraform_gke")
   commands = []
@@ -177,7 +176,7 @@ def delete(profile: str = DEFAULT_DEPLOY_PROFILE,
   """
   validate_solution_folder(solution_path)
 
-  st_yaml = read_yaml(f"{solution_path}/st.yaml")
+  st_yaml = read_yaml(f"{solution_path}/sb.yaml")
   project_id = st_yaml["project_id"]
 
   if component:

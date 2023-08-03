@@ -68,11 +68,11 @@ def update(component_name,
 
 def update_component_to_root_yaml(component_name, answers, solution_path):
   # Update Solution root YAML with new component name.
-  solution_yaml_dict = read_yaml(f"{solution_path}/st.yaml") or {}
+  solution_yaml_dict = read_yaml(f"{solution_path}/sb.yaml") or {}
   components = solution_yaml_dict["components"] or {}
   components[component_name] = answers
   solution_yaml_dict["components"] = components
-  write_yaml(f"{solution_path}/st.yaml", solution_yaml_dict)
+  write_yaml(f"{solution_path}/sb.yaml", solution_yaml_dict)
 
 
 def process_component(method,
@@ -84,8 +84,8 @@ def process_component(method,
   current_dir = os.path.dirname(__file__)
   answers_file = None
 
-  # Get basic info from root st.yaml.
-  root_st_yaml = read_yaml(f"{solution_path}/st.yaml")
+  # Get basic info from root sb.yaml.
+  root_st_yaml = read_yaml(f"{solution_path}/sb.yaml")
   component_answers = {}
 
   # If the component name is a Git URL, use the URL as-is in copier.
@@ -100,7 +100,7 @@ def process_component(method,
       data["component_name"] = component_name
       if component_name not in root_st_yaml["components"]:
         raise NameError(
-            f"Component {component_name} is not defined in the root yaml 'st.yaml' file."
+            f"Component {component_name} is not defined in the root yaml 'sb.yaml' file."
         )
       component_answers = root_st_yaml["components"][component_name]
       component_template = component_answers["component_template"]
@@ -145,23 +145,25 @@ def process_component(method,
   answers["destination_path"] = copier_dict["_metadata"].get(
       "destination_path")
 
-  # Update component's answer back to st.yaml.
+  # Update component's answer back to sb.yaml.
   update_component_to_root_yaml(answers["component_name"], answers,
                                 solution_path)
 
   # Patch skaffold.yaml
   for patch_file in copier_dict.get("_patch", []):
+    print(f"Patching {patch_file}...")
     new_yaml = patch_yaml(f"{solution_path}/{patch_file}",
                           f"{solution_path}/{patch_file}.patch")
     new_yaml["requires"] = dedupe(new_yaml["requires"])
     write_yaml(f"{solution_path}/{patch_file}", new_yaml)
     os.remove(f"{solution_path}/{patch_file}.patch")
 
+  print()
 
 # List installed components.
 @component_app.command()
 def list(solution_path: Annotated[Optional[str], typer.Argument()] = ".", ):
-  root_st_yaml = read_yaml(f"{solution_path}/st.yaml")
+  root_st_yaml = read_yaml(f"{solution_path}/sb.yaml")
   components = root_st_yaml.get("components", [])
   print("Installed components:\n")
   for component_name, properties in components.items():

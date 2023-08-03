@@ -37,9 +37,9 @@ def project_id(
     yes: Optional[bool] = False,
 ):
   validate_solution_folder(solution_path)
-  root_st_yaml = read_yaml(f"{solution_path}/st.yaml")
+  root_st_yaml = read_yaml(f"{solution_path}/sb.yaml")
   old_project_id = root_st_yaml.get("project_id")
-  assert old_project_id, "project_id does not exist in st.yaml"
+  assert old_project_id, "project_id does not exist in sb.yaml"
 
   confirm(
       f"This will replace all project-id '{old_project_id}' to '{new_project_id}' in folder '{solution_path}'. "
@@ -48,7 +48,7 @@ def project_id(
 
   root_st_yaml["project_id"] = new_project_id
   root_st_yaml["project_number"] = get_project_number(new_project_id)
-  write_yaml(f"{solution_path}/st.yaml", root_st_yaml)
+  write_yaml(f"{solution_path}/sb.yaml", root_st_yaml)
 
   file_set = set()
   # Adding includes.
