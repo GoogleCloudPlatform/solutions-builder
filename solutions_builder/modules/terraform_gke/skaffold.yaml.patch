@@ -1,4 +1,0 @@
-requires:
-  - configs:
-      - gke_ingress
-    path: ./ingress

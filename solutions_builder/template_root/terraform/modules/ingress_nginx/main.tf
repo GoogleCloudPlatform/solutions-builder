@@ -61,49 +61,49 @@ module "nginx-controller" {
   ]
 }
 
-resource "kubernetes_ingress_v1" "default_ingress" {
-  depends_on = [
-    module.nginx-controller
-  ]
+# resource "kubernetes_ingress_v1" "default_ingress" {
+#   depends_on = [
+#     module.nginx-controller
+#   ]
 
-  metadata {
-    name = "default-ingress"
-    annotations = {
-      "kubernetes.io/ingress.class"                        = "nginx"
-      "cert-manager.io/cluster-issuer"                     = module.cert_manager.cluster_issuer_name
-      "nginx.ingress.kubernetes.io/enable-cors"            = "true"
-      "nginx.ingress.kubernetes.io/cors-allow-methods"     = "PUT,GET,POST,DELETE,OPTIONS"
-      "nginx.ingress.kubernetes.io/cors-allow-origin"      = var.cors_allow_origins
-      "nginx.ingress.kubernetes.io/cors-allow-credentials" = "true"
-      "nginx.ingress.kubernetes.io/proxy-read-timeout"     = "3600"
-    }
-  }
+#   metadata {
+#     name = "default-ingress"
+#     annotations = {
+#       "kubernetes.io/ingress.class"                        = "nginx"
+#       "cert-manager.io/cluster-issuer"                     = module.cert_manager.cluster_issuer_name
+#       "nginx.ingress.kubernetes.io/enable-cors"            = "true"
+#       "nginx.ingress.kubernetes.io/cors-allow-methods"     = "PUT,GET,POST,DELETE,OPTIONS"
+#       "nginx.ingress.kubernetes.io/cors-allow-origin"      = var.cors_allow_origins
+#       "nginx.ingress.kubernetes.io/cors-allow-credentials" = "true"
+#       "nginx.ingress.kubernetes.io/proxy-read-timeout"     = "3600"
+#     }
+#   }
 
-  spec {
-    rule {
-      http {
-        # Sample Service
-        path {
-          backend {
-            service {
-              name = "sample-service"
-              port {
-                number = 80
-              }
-            }
-          }
-          path_type = "Prefix"
-          path      = "/sample_service"
-        }
-      }
-    }
+#   spec {
+#     rule {
+#       http {
+#         # Sample Service
+#         path {
+#           backend {
+#             service {
+#               name = "sample-service"
+#               port {
+#                 number = 80
+#               }
+#             }
+#           }
+#           path_type = "Prefix"
+#           path      = "/sample_service"
+#         }
+#       }
+#     }
 
-    tls {
-      hosts = [
-        var.api_domain,
-        google_compute_address.ingress_ip_address.address,
-      ]
-      secret_name = "cert-manager-private-key"
-    }
-  }
-}
+#     tls {
+#       hosts = [
+#         var.api_domain,
+#         google_compute_address.ingress_ip_address.address,
+#       ]
+#       secret_name = "cert-manager-private-key"
+#     }
+#   }
+# }

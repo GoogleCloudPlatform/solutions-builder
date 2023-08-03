@@ -13,7 +13,7 @@ on:
       - "e2e/requirements.txt"
       - "e2e/utils/**"
       - "utils/**"
-      - ".github/workflows/e2e_cloudrun_api_test.yaml"
+      - ".github/workflows/e2e_cloudrun_api_tesb.yaml"
   workflow_dispatch:
 env:
   PROJECT_ID: {{project_id}}

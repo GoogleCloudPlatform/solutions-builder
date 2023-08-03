@@ -57,37 +57,3 @@ resource "google_compute_ssl_policy" "gke-ingress-ssl-policy" {
   profile         = "MODERN"
   min_tls_version = "TLS_1_2"
 }
-
-# resource "kubernetes_ingress_v1" "default_ingress" {
-
-#   metadata {
-#     name = "default-ingress"
-#     annotations = {
-#       "kubernetes.io/ingress.class"                 = "gce"
-#       "kubernetes.io/ingress.global-static-ip-name" = local.global_static_ip_name
-#       "networking.gke.io/managed-certificates"      = var.managed_cert_name
-#       "networking.gke.io/v1beta1.FrontendConfig"    = var.frontend_config_name
-#     }
-#   }
-
-#   spec {
-#     rule {
-#       host = var.domains[0]
-#       http {
-#         # Sample Service
-#         path {
-#           backend {
-#             service {
-#               name = "sample-service"
-#               port {
-#                 number = 80
-#               }
-#             }
-#           }
-#           path_type = "Prefix"
-#           path      = "/sample_service"
-#         }
-#       }
-#     }
-#   }
-# }

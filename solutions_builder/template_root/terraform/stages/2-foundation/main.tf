@@ -66,6 +66,7 @@ module "project_services" {
 }
 
 module "vpc_network" {
+  count                     = ((var.vpc_network != null && var.vpc_network != "") ? 1 : 0)
   depends_on                = [module.project_services]
   source                    = "../../modules/vpc_network"
   project_id                = var.project_id

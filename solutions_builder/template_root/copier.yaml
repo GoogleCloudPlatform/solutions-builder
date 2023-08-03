@@ -25,7 +25,7 @@ gcp_region:
 
 has_common:
   type: bool
-  help: Include a common component (for shared data models, utils, etc)?
+  help: Include a common container image for shared libraries, data models, utils, etc?
   default: true
 
 terraform_backend_gcs:
@@ -41,19 +41,19 @@ advanced_settings:
 create_vpc_network:
   type: bool
   help: Create a default VPC Network?
-  default: false
+  default: true
   when: "{{advanced_settings}}"
 
 vpc_network:
   type: str
   help: VPC Network ID?
-  default: default-vpc
+  default: "{{'default-vpc' if create_vpc_network}}"
   when: "{{advanced_settings and create_vpc_network}}"
 
 vpc_subnetwork:
   type: str
   help: VPC Subnetwork ID?
-  default: default-vpc-subnet
+  default: "{{'default-vpc-subset' if create_vpc_network}}"
   when: "{{advanced_settings and create_vpc_network}}"
 
 ip_cidr_range:

@@ -49,20 +49,27 @@ pip install --user pipx
 pipx install solutions-builder
 ```
 
-## Getting Started
+## Quick Start
+
+This quick start steps will do the following:
+- Create a new GCP project and initialize Cloud foundation.
+- Add a RESTful API service for managing Todo list.
+- Deploy the service to Cloud Run.
 
 Set up GCP project
 ```
-# Optional: create a new GCP project. You can also use an existing GCP project.
-gcloud projects create my-solution-gcp-id
+export PROJECT_ID=my-solution-gcp-id
+
+# (Optional) Create a new GCP project. You can also use an existing GCP project.
+gcloud projects create $PROJECT_ID
 
 # Set gcloud CLI to the GCP project.
-gcloud config set project my-solutions-gcp-id
+gcloud config set project $PROJECT_ID
 ```
 
 Generate a new solution folder.
 ```
-sb new my-solution .
+sb new my-solution
 ```
 
 This will prompt options and variables:

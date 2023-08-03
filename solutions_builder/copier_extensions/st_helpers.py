@@ -106,7 +106,7 @@ def get_services_from_yaml(solution_path):
   """
     Get the service list from root yaml.
     """
-  st_yaml = read_yaml(f"{solution_path}/st.yaml")
+  st_yaml = read_yaml(f"{solution_path}/sb.yaml")
   services = []
   components = st_yaml.get("components", {})
   for component_name, properties in components.items():

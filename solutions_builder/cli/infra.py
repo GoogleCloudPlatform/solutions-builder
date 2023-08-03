@@ -48,7 +48,7 @@ def init(solution_path: Annotated[Optional[str],
     auto_approve_flag = "-auto-approve"
 
   # Get project ID from the existing root yaml.
-  st_yaml = read_yaml(f"{solution_path}/st.yaml")
+  st_yaml = read_yaml(f"{solution_path}/sb.yaml")
   project_id = st_yaml["project_id"]
 
   confirm(f"""
@@ -108,7 +108,7 @@ def apply(stage,
           skip=yes)
 
   # Get project_id
-  st_yaml = read_yaml(f"{solution_path}/st.yaml")
+  st_yaml = read_yaml(f"{solution_path}/sb.yaml")
   project_id = st_yaml["project_id"]
 
   # Get impersonate service account email
@@ -152,7 +152,7 @@ def destroy(stage,
           skip=yes)
 
   # Get project ID from the existing root yaml.
-  st_yaml = read_yaml(f"{solution_path}/st.yaml")
+  st_yaml = read_yaml(f"{solution_path}/sb.yaml")
   project_id = st_yaml["project_id"]
 
   # Get impersonate service account email

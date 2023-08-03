@@ -22,11 +22,11 @@ def confirm(msg, skip=False, default=True):
     typer.confirm(msg, abort=True, default=default)
 
 
-# Check if the solution folder has st.yaml file.
+# Check if the solution folder has sb.yaml file.
 def validate_solution_folder(path):
-  if not os.path.isfile(path + "/st.yaml"):
+  if not os.path.isfile(path + "/sb.yaml"):
     raise FileNotFoundError(
-        f"Path {path} is not a valid solution folder: missing st.yaml")
+        f"Path {path} is not a valid solution folder: missing sb.yaml")
   return True
 
 

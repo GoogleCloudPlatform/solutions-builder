@@ -91,7 +91,7 @@ Once filled, it will generate a new folder `my-solution` with the following file
 │   └── common
 ├── setup.cfg
 ├── skaffold.yaml
-├── st.yaml
+├── sb.yaml
 ├── terraform
 │   ├── modules
 │   └── stages
@@ -105,7 +105,7 @@ Once filled, it will generate a new folder `my-solution` with the following file
 - **components/**: List of component/service folders. When adding components by running `st components add [COMPONENT_NAME]`, it will add a component subfolder here.
 - **setup.cfg**: yapf python formatter.
 - **skaffold.yaml**: Root skaffold YAML that manages deployment to Cloud Run and GKE.
-- **st.yaml**: Root Solutions Builder YAML that contains metadata for this solution folder.
+- **sb.yaml**: Root Solutions Builder YAML that contains metadata for this solution folder.
 - **terraform**: Infrastructure-as-Code using [Terraform](https://www.terraform.io/).
 - **terraform/modules**: Terraform modules by Cloud resources.
 - **terraform/stages**: Terraform stages based on [Cloud Foundation Fabric](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric) approach.
