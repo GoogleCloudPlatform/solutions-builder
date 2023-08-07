@@ -43,3 +43,16 @@ module "vpc" {
   }
 
 }
+
+module "cloud-nat" {
+  source            = "terraform-google-modules/cloud-nat/google"
+  version           = "~> 1.2"
+  name              = format("%s-%s-nat", var.project_id, var.region)
+  create_router     = true
+  router            = format("%s-%s-router", var.project_id, var.region)
+  project_id        = var.project_id
+  region            = var.region
+  network           = module.vpc.network_id
+  log_config_enable = true
+  log_config_filter = "ERRORS_ONLY"
+}

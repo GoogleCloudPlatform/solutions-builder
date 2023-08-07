@@ -29,6 +29,6 @@ for variable in "${EnvVars[@]}"; do
 done
 
 mkdir -p .tmp
-gcloud iam service-accounts keys create .tmp/sa-key.json --iam-account=$SA_EMAIL
+gcloud iam service-accounts keys create .tmp/sa-key.json --iam-account="$SA_EMAIL"
 
 gcloud auth activate-service-account --key-file=.tmp/sa-key.json

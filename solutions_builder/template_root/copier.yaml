@@ -23,6 +23,16 @@ gcp_region:
   help: Which Google Cloud region?
   default: us-central1
 
+gcp_zone:
+  type: str
+  help: Which Google Cloud zone?
+  default: us-central1-a
+
+jump_host:
+  type: bool
+  help: Use a jump-host for running terraform foundations?
+  default: true
+
 has_common:
   type: bool
   help: Include a common container image for shared libraries, data models, utils, etc?

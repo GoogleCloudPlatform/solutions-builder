@@ -1,3 +1,20 @@
+/**
+ * Copyright 2023 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 locals {
   services = [
     "appengine.googleapis.com",            # App Engine
@@ -18,9 +35,31 @@ resource "google_project_service" "project-apis" {
   disable_dependent_services = true
 }
 
+module "vpc_network" {
+  depends_on                = [time_sleep.wait_60_seconds]
+  source                    = "../../modules/vpc_network"
+  count                     = var.existing_custom_vpc ? 0 : 1
+  vpc_network               = var.vpc_network
+  project_id                = var.project_id
+  region                    = var.region
+  vpc_subnetwork            = var.vpc_subnetwork
+  subnet_ip                 = var.ip_cidr_range
+  secondary_ranges_pods     = var.secondary_ranges_pods
+  secondary_ranges_services = var.secondary_ranges_services
+}
+
+module "bastion_host" {
+  depends_on                = [module.vpc_network]
+  source                    = "../../modules/bastion"
+  project_id                = var.project_id
+  zone                      = var.zone
+  vpc_network_self_link     = module.vpc_network[0].network_self_link
+  vpc_subnetworks_self_link = module.vpc_network[0].subnets_self_link[0]
+}
+
 # add timer to avoid errors on new project creation and API enables
 resource "time_sleep" "wait_60_seconds" {
-  depends_on = [google_project_service.project-apis]
+  depends_on      = [google_project_service.project-apis]
   create_duration = "60s"
 }
 
