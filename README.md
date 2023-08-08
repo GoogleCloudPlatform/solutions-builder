@@ -86,10 +86,17 @@ This will prompt options and variables:
    Yes
 ```
 
-Go to the newly created project folder and initialize the solution.
+Go to the newly created project folder
 ```
 cd my-solution
-sb infra init
+sb infra apply 1-bootstrap
+```
+
+Initialize Cloud infrastructure
+- Option 1: (Recommended) Log in to the bastion host and run the following command(s) in the solution folder.
+- Option 2: Run the following commands in your local machine.
+```
+sb infra apply 2-foundation
 ```
 
 Add a RESTful API service with **Todo** data model to this solution.
