@@ -28,7 +28,7 @@ gcp_zone:
   help: Which Google Cloud zone?
   default: us-central1-a
 
-jump_host:
+use_jump_host:
   type: bool
   help: Use a jump-host for running terraform foundations?
   default: true
@@ -45,7 +45,7 @@ terraform_backend_gcs:
 
 advanced_settings:
   type: bool
-  help: Show advanced settings (VPC, Storage region, etc)?
+  help: Show advanced settings (VPC, Storage, Region, etc)?
   default: false
 
 create_vpc_network:

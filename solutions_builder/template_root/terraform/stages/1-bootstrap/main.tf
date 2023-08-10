@@ -51,6 +51,7 @@ module "vpc_network" {
 module "bastion_host" {
   depends_on                = [module.vpc_network]
   source                    = "../../modules/bastion"
+  count                     = var.use_jump_host ? 0 : 1
   project_id                = var.project_id
   zone                      = var.zone
   vpc_network_self_link     = module.vpc_network[0].network_self_link
@@ -84,7 +85,6 @@ module "terraform_runner_service_account" {
     "roles/firebase.admin",
     "roles/iam.serviceAccountTokenCreator",
     "roles/iam.serviceAccountUser",
-    "roles/iam.workloadIdentityUser",
     "roles/iam.workloadIdentityUser",
     "roles/logging.admin",
     "roles/logging.viewer",

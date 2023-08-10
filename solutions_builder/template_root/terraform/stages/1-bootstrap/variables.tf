@@ -44,6 +44,12 @@ variable "zone" {
   description = "GCP Zone"
 }
 
+variable "use_jump_host" {
+  type        = bool
+  description = "Whether to create a jump host for running the foundation step"
+  default     = true
+}
+
 # custom vpc network variables
 variable "existing_custom_vpc" {
   type        = bool

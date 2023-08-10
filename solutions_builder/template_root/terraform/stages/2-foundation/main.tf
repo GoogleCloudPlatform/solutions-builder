@@ -62,23 +62,14 @@ locals {
 # Used to retrieve project_number later
 data "google_project" "project" {}
 
+resource "google_identity_platform_config" "default" {
+  project = var.project_id
+}
+
 module "project_services" {
   source     = "../../modules/project_services"
   project_id = var.project_id
   services   = local.services
-}
-
-module "vpc_network" {
-  count                     = ((var.vpc_network != null && var.vpc_network != "") ? 1 : 0)
-  depends_on                = [module.project_services]
-  source                    = "../../modules/vpc_network"
-  project_id                = var.project_id
-  vpc_network               = var.vpc_network
-  region                    = var.region
-  vpc_subnetwork            = var.vpc_subnetwork
-  subnet_ip                 = var.ip_cidr_range
-  secondary_ranges_pods     = var.secondary_ranges_pods
-  secondary_ranges_services = var.secondary_ranges_services
 }
 
 resource "google_project_iam_member" "cloudbuild-sa-iam" {
