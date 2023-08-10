@@ -94,4 +94,4 @@ _exclude:
 _jinja_extensions:
   - jinja2_time.TimeExtension
   - copier_templates_extensions.TemplateExtensionLoader
-  - ../copier_extensions/st_helpers.py:SolutionsTemplateHelpersExtension
+  - ../copier_extensions/sb_helpers.py:SolutionsTemplateHelpersExtension

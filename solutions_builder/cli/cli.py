@@ -36,6 +36,9 @@ app = typer.Typer(
 app.add_typer(component_app,
               name="components",
               help="Add or update components.")
+app.add_typer(component_app,
+              name="component",
+              help="Add or update components.")
 app.add_typer(infra_app,
               name="infra",
               help="Manage infrastructure (terraform).")
@@ -96,7 +99,7 @@ def update(solution_path: Annotated[Optional[str],
   )
 
   # Copy template_root to destination, excluding skaffold.yaml.
-  orig_st_yaml = read_yaml(f"{solution_path}/sb.yaml")
+  orig_sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
 
   if not template_path:
     current_dir = os.path.dirname(__file__)
@@ -109,10 +112,10 @@ def update(solution_path: Annotated[Optional[str],
   answers = worker.answers.last
 
   # Restore some fields in sb.yaml.
-  st_yaml = read_yaml(f"{solution_path}/sb.yaml")
-  st_yaml["created_at"] = orig_st_yaml["created_at"]
-  st_yaml["components"] = orig_st_yaml["components"]
-  write_yaml(f"{solution_path}/sb.yaml", st_yaml)
+  sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
+  sb_yaml["created_at"] = orig_sb_yaml["created_at"]
+  sb_yaml["components"] = orig_sb_yaml["components"]
+  write_yaml(f"{solution_path}/sb.yaml", sb_yaml)
 
   print_success(f"Complete. Solution folder updated at {solution_path}.\n")
 
@@ -130,9 +133,9 @@ def deploy(profile: str = DEFAULT_DEPLOY_PROFILE,
   """
   validate_solution_folder(solution_path)
 
-  st_yaml = read_yaml(f"{solution_path}/sb.yaml")
-  project_id = st_yaml["project_id"]
-  terraform_gke = st_yaml["components"].get("terraform_gke")
+  sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
+  project_id = sb_yaml["project_id"]
+  terraform_gke = sb_yaml["components"].get("terraform_gke")
   commands = []
 
   if component:
@@ -176,8 +179,8 @@ def delete(profile: str = DEFAULT_DEPLOY_PROFILE,
   """
   validate_solution_folder(solution_path)
 
-  st_yaml = read_yaml(f"{solution_path}/sb.yaml")
-  project_id = st_yaml["project_id"]
+  sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
+  project_id = sb_yaml["project_id"]
 
   if component:
     component_flag = f" -m {component} "
@@ -189,6 +192,26 @@ def delete(profile: str = DEFAULT_DEPLOY_PROFILE,
   print_highlight(command)
   confirm("\nThis may take a few minutes. Continue?", default=False, skip=yes)
   exec_shell(command, working_dir=solution_path)
+
+
+@app.command()
+def info(solution_path: Annotated[Optional[str],
+                                    typer.Argument()] = "."):
+  """
+  Print info from ./sb.yaml.
+  """
+  sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
+  print(f"Printing info of the solution folder at '{solution_path}'\n")
+
+  for key, value in sb_yaml.items():
+    if key not in ["components", "_metadata"]:
+      print(f"{key}: {value}")
+  print()
+
+  print(f"Installed components:")
+  for key, value in sb_yaml["components"].items():
+    print(f" - {key}")
+  print()
 
 
 @app.command()
