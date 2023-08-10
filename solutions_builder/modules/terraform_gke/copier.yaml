@@ -32,7 +32,7 @@ cluster_name:
 kubernetes_version:
   type: str
   help: Kubernetes version?
-  default: "{{(gcp_region, 'STABLE') | get_default_gke_version}}"
+  default: latest
   # See https://cloud.google.com/kubernetes-engine/docs/release-notes-stable
 
 node_machine_type:
