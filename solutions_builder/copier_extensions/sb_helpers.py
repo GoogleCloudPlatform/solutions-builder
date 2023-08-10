@@ -115,6 +115,24 @@ def get_services_from_yaml(solution_path):
   return ",".join(services)
 
 
+def get_default_gke_version(arguments):
+  """
+    Get the default GKE verions in a specific channel.
+    """
+  region, channel = arguments
+
+  print(f"(Retrieving the default GKE version in channel {channel}...)")
+  command = f"gcloud container get-server-config --region={region} --format='value(channels.defaultVersion)'"
+  default_versions = exec_gcloud_output(command).split(";")
+
+  channel_index = {
+    "RAPID": 0,
+    "REGULAR": 1,
+    "STABLE": 2,
+  }
+  return default_versions[channel_index[channel]]
+
+
 def convert_resource_name(resource_name):
   """
     Convert to valid resource_name: lower case, alpha-numeric, dash.
@@ -141,6 +159,7 @@ class SolutionsTemplateHelpersExtension(Extension):
     environment.filters["get_current_user"] = get_current_user
     environment.filters["get_cloud_run_services"] = get_cloud_run_services
     environment.filters["get_cluster_value"] = get_cluster_value
+    environment.filters["get_default_gke_version"] = get_default_gke_version
     environment.filters["get_services_from_yaml"] = get_services_from_yaml
     environment.filters["convert_resource_name"] = convert_resource_name
     environment.filters["assert_non_empty"] = assert_non_empty

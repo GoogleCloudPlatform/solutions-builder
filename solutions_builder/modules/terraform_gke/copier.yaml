@@ -32,7 +32,8 @@ cluster_name:
 kubernetes_version:
   type: str
   help: Kubernetes version?
-  default: 1.26.5-gke.1400 # See https://cloud.google.com/kubernetes-engine/docs/release-notes-stable
+  default: latest
+  # See https://cloud.google.com/kubernetes-engine/docs/release-notes-stable
 
 node_machine_type:
   type: str
@@ -48,8 +49,7 @@ _answers_file: ".st/module_answers/{{component_name}}.yaml"
 
 _templates_suffix: ""
 
-_patch:
-  - "skaffold.yaml"
+_patch: []
 
 _exclude:
   - "README.md"
@@ -67,4 +67,4 @@ _exclude:
 _jinja_extensions:
   - jinja2_time.TimeExtension
   - copier_templates_extensions.TemplateExtensionLoader
-  - ../../copier_extensions/st_helpers.py:SolutionsTemplateHelpersExtension
+  - ../../copier_extensions/sb_helpers.py:SolutionsTemplateHelpersExtension
