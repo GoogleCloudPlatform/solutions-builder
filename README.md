@@ -93,7 +93,7 @@ sb infra apply 1-bootstrap
 ```
 
 Initialize Cloud infrastructure
-- Option 1: (Recommended) Log in to the bastion host and run the following command(s) in the solution folder.
+- Option 1: (Recommended) Log in to the jump host and run the following command(s) in the solution folder.
 - Option 2: Run the following commands in your local machine.
 ```
 sb infra apply 2-foundation
