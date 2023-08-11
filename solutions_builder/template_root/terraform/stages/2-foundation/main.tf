@@ -18,6 +18,7 @@
 # project-specific locals
 locals {
   services = [
+    "apikeys.googleapis.com",              # API Keys
     "appengine.googleapis.com",            # AppEngine
     "artifactregistry.googleapis.com",     # Artifact Registry
     "bigquery.googleapis.com",             # BigQuery
@@ -31,6 +32,7 @@ locals {
     "firebase.googleapis.com",             # Firebase
     "firestore.googleapis.com",            # Firestore
     "iam.googleapis.com",                  # Cloud IAM
+    "identitytoolkit.googleapis.com",      # Identity Toolkit
     "logging.googleapis.com",              # Cloud Logging
     "monitoring.googleapis.com",           # Cloud Operations Suite
     "pubsub.googleapis.com",               # Pub/Sub

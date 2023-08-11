@@ -80,6 +80,12 @@ secondary_service_ip_cidr_range:
   default: 10.2.0.0/16
   when: "{{advanced_settings and create_vpc_network}}"
 
+existing_firestore_name:
+  type: str
+  help: Existing Firestore path? (e.g. projects/{{project_id}}/databases/(default))
+  default: "{{project_id | get_existing_firestore}}"
+  when: "{{advanced_settings and create_vpc_network}}"
+
 _templates_suffix: ""
 
 _exclude:
