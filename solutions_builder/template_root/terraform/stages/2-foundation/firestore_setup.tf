@@ -7,7 +7,7 @@ variable "firestore_region" {
 variable "existing_firestore_name" {
   type        = string
   description = "Does this project has existing firestore?"
-  default     = "{{project_id | get_existing_firestore}}"
+  default     = ""
 }
 
 module "firebase" {

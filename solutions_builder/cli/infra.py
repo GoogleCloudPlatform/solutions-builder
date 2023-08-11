@@ -67,13 +67,13 @@ def init(solution_path: Annotated[Optional[str],
   exec_shell(f"terraform apply {auto_approve_flag}", working_dir=working_dir)
   exec_shell(f"terraform output > tf_output.tfvars", working_dir=working_dir)
 
-  env_var_cluase = get_impersonate_clause(impersonate, impersonate_email,
+  env_var_clause = get_impersonate_clause(impersonate, impersonate_email,
                                           project_id)
   working_dir = f"{solution_path}/terraform/stages/2-foundation"
-  exec_shell(f"{env_var_cluase} terraform init", working_dir=working_dir)
-  exec_shell(f"{env_var_cluase} terraform apply {auto_approve_flag}",
+  exec_shell(f"{env_var_clause} terraform init", working_dir=working_dir)
+  exec_shell(f"{env_var_clause} terraform apply {auto_approve_flag}",
              working_dir=working_dir)
-  exec_shell(f"{env_var_cluase} terraform output > tf_output.tfvars",
+  exec_shell(f"{env_var_clause} terraform output > tf_output.tfvars",
              working_dir=working_dir)
 
 
@@ -84,6 +84,7 @@ def apply(stage,
                                    typer.Argument()] = ".",
           impersonate_email: Optional[str] = None,
           impersonate: Optional[bool] = False,
+          unlock: Optional[bool] = False,
           yes: Optional[bool] = False):
   validate_solution_folder(solution_path)
   if not yes:
@@ -112,13 +113,14 @@ def apply(stage,
   project_id = st_yaml["project_id"]
 
   # Get impersonate service account email
-  env_var_cluase = get_impersonate_clause(impersonate, impersonate_email,
+  env_var_clause = get_impersonate_clause(impersonate, impersonate_email,
                                           project_id)
+  unclock_clause = " -unlock=false" if unlock else ""
   working_dir = f"{solution_path}/terraform/stages/{stage}"
-  exec_shell(f"{env_var_cluase} terraform init", working_dir=working_dir)
-  exec_shell(f"{env_var_cluase} terraform apply {auto_approve_flag}",
+  exec_shell(f"{env_var_clause} terraform init {unclock_clause}", working_dir=working_dir)
+  exec_shell(f"{env_var_clause} terraform apply {auto_approve_flag} {unclock_clause}",
              working_dir=working_dir)
-  exec_shell(f"{env_var_cluase} terraform output > tf_output.tfvars",
+  exec_shell(f"{env_var_clause} terraform output > tf_output.tfvars",
              working_dir=working_dir)
 
 
@@ -129,6 +131,7 @@ def destroy(stage,
                                      typer.Argument()] = ".",
             impersonate_email: Optional[str] = None,
             impersonate: Optional[bool] = False,
+            unlock: Optional[bool] = False,
             yes: Optional[bool] = False):
   validate_solution_folder(solution_path)
   if not yes:
@@ -156,11 +159,12 @@ def destroy(stage,
   project_id = st_yaml["project_id"]
 
   # Get impersonate service account email
-  env_var_cluase = get_impersonate_clause(impersonate, impersonate_email,
+  env_var_clause = get_impersonate_clause(impersonate, impersonate_email,
                                           project_id)
+  unclock_clause = " -unlock=false" if unlock else ""
   working_dir = f"{solution_path}/terraform/stages/{stage}"
-  exec_shell(f"{env_var_cluase} terraform init", working_dir=working_dir)
-  exec_shell(f"{env_var_cluase} terraform destroy {auto_approve_flag}",
+  exec_shell(f"{env_var_clause} terraform init {unclock_clause}", working_dir=working_dir)
+  exec_shell(f"{env_var_clause} terraform destroy {auto_approve_flag} {unclock_clause}",
              working_dir=working_dir)
 
 
