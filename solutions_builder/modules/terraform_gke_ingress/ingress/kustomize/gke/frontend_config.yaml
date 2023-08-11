@@ -5,4 +5,4 @@ metadata:
 spec:
   sslPolicy: gke-ingress-ssl-policy
   redirectToHttps:
-    enabled: true
+    enabled: false
