@@ -107,3 +107,9 @@ variable "storage_multiregion" {
     error_message = "The region value must be an non-empty string."
   }
 }
+
+variable "firestore_location_id" {
+  type        = string
+  description = "Firestore Dataset location. Available values: nam5 or eur3"
+  default     = "nam5"
+}
