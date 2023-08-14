@@ -66,6 +66,22 @@ def update(component_name,
   )
 
 
+@component_app.command()
+def init(component_name,
+          solution_path: Annotated[Optional[str],
+                                  typer.Argument()] = ".",
+          yes: Optional[bool] = False):
+
+  pass
+
+@component_app.command()
+def fix_skaffold(component_name,
+          solution_path: Annotated[Optional[str],
+                                  typer.Argument()] = ".",
+          yes: Optional[bool] = False):
+
+  pass
+
 def update_component_to_root_yaml(component_name, answers, solution_path):
   # Update Solution root YAML with new component name.
   solution_yaml_dict = read_yaml(f"{solution_path}/sb.yaml") or {}
