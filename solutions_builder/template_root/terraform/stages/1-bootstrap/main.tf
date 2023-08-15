@@ -48,6 +48,12 @@ module "vpc_network" {
   secondary_ranges_services = var.secondary_ranges_services
 }
 
+# The startup script continues to run while the jump host is deemed ready
+# It may take a up to 15 minutes for the script to complete
+data "template_file" "startup_script" {
+  template = file("${path.module}/../scripts/bastion_startup.sh")
+}
+
 module "bastion_host" {
   depends_on                = [module.vpc_network]
   source                    = "../../modules/bastion"
@@ -56,6 +62,7 @@ module "bastion_host" {
   zone                      = var.zone
   vpc_network_self_link     = module.vpc_network[0].network_self_link
   vpc_subnetworks_self_link = module.vpc_network[0].subnets_self_link[0]
+  startup_script            = data.template_file.startup_script.rendered
 }
 
 # add timer to avoid errors on new project creation and API enables

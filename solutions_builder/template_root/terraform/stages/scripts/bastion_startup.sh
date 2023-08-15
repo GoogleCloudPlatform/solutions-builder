@@ -21,7 +21,7 @@ cd /tmp
 # Update system packages
 sudo apt-get update -y && sudo apt-get autoremove -y
 sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -yq
-sudo apt-get install apt-transport-https python3-pip pipenv redis-tools -y
+sudo apt-get install apt-transport-https python3-pip pipenv redis-tools unzip -y
 
 sudo addgroup --system docker
 sudo snap install docker && sudo snap start docker
