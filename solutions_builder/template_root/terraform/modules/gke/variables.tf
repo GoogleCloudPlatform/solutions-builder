@@ -125,10 +125,12 @@ variable "gke_service_account_roles" {
   default = [
     "roles/aiplatform.user",
     "roles/bigquery.admin",
+    "roles/container.admin",
     "roles/datastore.owner",
     "roles/documentai.admin",
     "roles/firebase.admin",
     "roles/iam.serviceAccountUser",
+    "roles/iam.workloadIdentityUser",
     "roles/logging.admin",
     "roles/logging.logWriter",
     "roles/monitoring.metricWriter",

@@ -18,6 +18,7 @@
 # project-specific locals
 locals {
   services = [
+    "aiplatform.googleapis.com",           # Vertex AI
     "apikeys.googleapis.com",              # API Keys
     "appengine.googleapis.com",            # AppEngine
     "artifactregistry.googleapis.com",     # Artifact Registry

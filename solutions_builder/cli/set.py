@@ -46,9 +46,16 @@ def project_id(
       + "Continue?",
       skip=yes)
 
+  # Update Root sb.yaml
   root_st_yaml["project_id"] = new_project_id
-  root_st_yaml["project_number"] = get_project_number(new_project_id)
+  root_st_yaml["project_number"] = int(get_project_number(new_project_id))
   write_yaml(f"{solution_path}/sb.yaml", root_st_yaml)
+
+  # Update copier answers
+  copier_yaml = read_yaml(f"{solution_path}/.copier-answers.yml")
+  copier_yaml["project_id"] = new_project_id
+  copier_yaml["project_number"] = int(get_project_number(new_project_id))
+  write_yaml(f"{solution_path}/.copier-answers.yml", copier_yaml)
 
   file_set = set()
   # Adding includes.
