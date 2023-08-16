@@ -59,7 +59,7 @@ module "bastion_host" {
   source                    = "../../modules/bastion"
   count                     = var.use_jump_host ? 0 : 1
   project_id                = var.project_id
-  zone                      = var.zone
+  zone                      = var.jump_host_zone
   vpc_network_self_link     = module.vpc_network[0].network_self_link
   vpc_subnetworks_self_link = module.vpc_network[0].subnets_self_link[0]
   startup_script            = data.template_file.startup_script.rendered

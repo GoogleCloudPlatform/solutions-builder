@@ -23,15 +23,16 @@ gcp_region:
   help: Which Google Cloud region?
   default: us-central1
 
-gcp_zone:
-  type: str
-  help: Which Google Cloud zone?
-  default: us-central1-a
-
 use_jump_host:
   type: bool
   help: Use a jump-host for running terraform foundations?
   default: true
+
+jump_host_zone:
+  type: str
+  help: Google Cloud zone for creating the jump host?
+  default: us-central1-a
+  when: "{{use_jump_host}}"
 
 has_common:
   type: bool
