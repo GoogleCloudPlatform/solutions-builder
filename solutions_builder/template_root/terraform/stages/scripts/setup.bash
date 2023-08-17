@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Copy bootstrap terraform state to tfstate-bucket
-gsutil cp ../project_bootstrap/terraform.tfstate gs://"${PROJECT_ID}"-tfstate/env/bootstrap/terraform.tfstate
+# Copy bootstrap and foundation terraform states to tfstate-bucket
+gsutil cp ../1-bootstrap/terraform.tfstate gs://"${PROJECT_ID}"-tfstate/env/bootstrap/terraform.tfstate
+gsutil cp ../12-foundation/terraform.tfstate gs://"${PROJECT_ID}"-tfstate/env/foundation/terraform.tfstate
 
 # Enable deletion protection for the jump host
 gcloud compute instances update jump-host --deletion-protection --project="${PROJECT_ID}"

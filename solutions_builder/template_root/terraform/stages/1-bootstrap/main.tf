@@ -35,36 +35,6 @@ resource "google_project_service" "project-apis" {
   disable_dependent_services = true
 }
 
-module "vpc_network" {
-  depends_on                = [time_sleep.wait_60_seconds]
-  source                    = "../../modules/vpc_network"
-  count                     = var.existing_custom_vpc ? 0 : 1
-  vpc_network               = var.vpc_network
-  project_id                = var.project_id
-  region                    = var.region
-  vpc_subnetwork            = var.vpc_subnetwork
-  subnet_ip                 = var.ip_cidr_range
-  secondary_ranges_pods     = var.secondary_ranges_pods
-  secondary_ranges_services = var.secondary_ranges_services
-}
-
-# The startup script continues to run while the jump host is deemed ready
-# It may take a up to 15 minutes for the script to complete
-data "template_file" "startup_script" {
-  template = file("${path.module}/../scripts/bastion_startup.sh")
-}
-
-module "bastion_host" {
-  depends_on                = [module.vpc_network]
-  source                    = "../../modules/bastion"
-  count                     = var.use_jump_host ? 0 : 1
-  project_id                = var.project_id
-  zone                      = var.jump_host_zone
-  vpc_network_self_link     = module.vpc_network[0].network_self_link
-  vpc_subnetworks_self_link = module.vpc_network[0].subnets_self_link[0]
-  startup_script            = data.template_file.startup_script.rendered
-}
-
 # add timer to avoid errors on new project creation and API enables
 resource "time_sleep" "wait_60_seconds" {
   depends_on      = [google_project_service.project-apis]
