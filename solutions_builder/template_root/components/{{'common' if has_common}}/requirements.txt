@@ -1,6 +1,11 @@
-fireo==1.4.1
-google-cloud-bigquery==2.20.0
-google-cloud-logging
-google-cloud-secret-manager==2.5.0
-jsonschema==3.2.0
+fastapi==0.85.1
+fireo==1.6.2
+google-api-python-client==2.91.0
+google-cloud-bigquery==3.10.0
+google-cloud-logging==3.5.0
+google-cloud-secret-manager==2.16.1
+jsonschema==4.17.3
+gcsfs==2023.6.0
+kubernetes==27.2.0
 pandas==1.2.4
+regex==2023.6.3
