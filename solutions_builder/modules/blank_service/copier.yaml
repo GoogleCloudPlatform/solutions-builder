@@ -1,0 +1,62 @@
+_metadata:
+  module_name: blank_service
+  version: 1.0.0
+  destination_path: .
+
+# questions
+component_name:
+  type: str
+  help: What is the name of this component (snake_case)?
+  default: blank_service
+  validator: "{% if not component_name %}Required{% endif %}"
+
+resource_name:
+  type: str
+  help: Resource name (lower case, alphanumeric characters, '-')?
+  default: "{{ component_name | to_kebab }}"
+  validator: "{% if not resource_name %}Required{% endif %}"
+
+service_path:
+  type: str
+  help: "The relative path used in ingress as http://my-domain/[service_path]"
+  default: "{{resource_name}}"
+
+gcp_region:
+  type: str
+  help: Which Google Cloud region?
+  default: us-central1
+
+depend_on_common:
+  type: bool
+  help: Does this component require the Common image?
+  default: no
+
+module_version:
+  type: str
+  help: Module version?
+  default: "1.0"
+
+_subdirectory: "{{module_version}}"
+
+_answers_file: ".st/module_answers/{{component_name}}.yaml"
+
+_templates_suffix: ""
+
+_exclude:
+  - "README.md"
+  - "copier.yaml"
+  - "copier_extensions"
+  - ".terraform*"
+  - ".tmp"
+  - ".venv"
+  - ".pytest_cache"
+  - "__pycache__"
+  - "*-debug.log"
+  - ".skip"
+
+_jinja_extensions:
+  - jinja2_time.TimeExtension
+  - jinja2_strcase.StrcaseExtension
+  - copier_templates_extensions.TemplateExtensionLoader
+  - ../../copier_extensions/sb_helpers.py:SolutionsTemplateHelpersExtension
+  # - ../../copier_extensions/context.py:ContextUpdater
