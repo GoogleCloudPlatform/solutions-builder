@@ -145,6 +145,7 @@ def process_component(method,
   data["project_id"] = root_st_yaml["project_id"]
   data["project_number"] = root_st_yaml["project_number"]
   data["solution_path"] = solution_path
+  data["template_path"] = template_path
 
   # Run copier with data.
   worker = run_auto(template_path,
