@@ -27,13 +27,13 @@ sudo addgroup --system docker
 sudo snap install docker && sudo snap start docker
 
 # Install Kustomize
-export KUSTOMIZE_VERSION=4.5.7
+export KUSTOMIZE_VERSION=5.1.0
 wget https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv"$KUSTOMIZE_VERSION"/kustomize_v"$KUSTOMIZE_VERSION"_linux_amd64.tar.gz
 tar -xzf ./kustomize_v"$KUSTOMIZE_VERSION"_linux_amd64.tar.gz
 sudo cp kustomize /usr/local/bin/
 
 # Install Skaffold
-export SKAFFOLD_VERSION=1.39.2
+export SKAFFOLD_VERSION=2.6.0
 export SKAFFOLD_PLATFORM=linux
 curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/v"$SKAFFOLD_VERSION"/skaffold-"$SKAFFOLD_PLATFORM"-amd64
 sudo install skaffold /usr/local/bin/
@@ -54,7 +54,7 @@ pushd /usr/bin
 sudo ln -s python3 python
 popd
 python -m pip install --upgrade pip
-python -m pip install google-cloud-firestore google-cloud-bigquery firestore-admin
-touch completed
+python -m pip install solutions-builder google-cloud-firestore google-cloud-bigquery firebase-admin
+touch jumphost_ready
 cd
 

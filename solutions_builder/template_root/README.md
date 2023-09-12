@@ -4,14 +4,14 @@
 
 ## Prerequisite
 
-| Tool | Required Version | Installation |
-|---|---|---|
-| Python                 | &gt;= 3.9     | |
-| gcloud CLI             | Latest        | https://cloud.google.com/sdk/docs/install |
-| Terraform              | &gt;= v1.3.7  | https://developer.hashicorp.com/terraform/downloads |
-| Skaffold               | &gt;= v2.4.0  | https://skaffold.dev/docs/install/ |
-| Kustomize              | &gt;= v5.0.0  | https://kubectl.docs.kubernetes.io/installation/kustomize/ |
-| solutions-builder CLI | &gt;= v1.13.0 | https://github.com/GoogleCloudPlatform/solutions-builder |
+| Tool                  | Required Version | Installation |
+|-----------------------|------------------|---|
+| Python                | &gt;= 3.8        | |
+| gcloud CLI            | Latest           | https://cloud.google.com/sdk/docs/install |
+| Terraform             | &gt;= v1.3.7     | https://developer.hashicorp.com/terraform/downloads |
+| Skaffold              | &gt;= v2.4.0     | https://skaffold.dev/docs/install/ |
+| Kustomize             | &gt;= v5.0.0     | https://kubectl.docs.kubernetes.io/installation/kustomize/ |
+| solutions-builder CLI | &gt;= v1.13.0    | https://github.com/GoogleCloudPlatform/solutions-builder |
 
 ## Setup
 
@@ -32,15 +32,17 @@ gcloud auth application-default login
 gcloud config set project $PROJECT_ID
 ```
 
+Log in to the bastion host (Optional)
+```
+export ZONE=us-central1-c #<my-zone>
+sb infra apply 0-jumphost
+gcloud compute ssh --zone=$ZONE --tunnel-through-iap jump-host
+```
+
 Initialize the Cloud infra:
 ```
 sb set project-id $PROJECT_ID
 sb infra apply 1-bootstrap
-```
-
-Log in to the bastion host.
-```
-# TBD
 ```
 
 Set up Cloud foundation
