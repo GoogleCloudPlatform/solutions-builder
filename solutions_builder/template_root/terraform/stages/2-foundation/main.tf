@@ -62,6 +62,10 @@ locals {
 # Used to retrieve project_number later
 data "google_project" "project" {}
 
+resource "google_identity_platform_config" "default" {
+  project = var.project_id
+}
+
 module "project_services" {
   source     = "../../modules/project_services"
   project_id = var.project_id
