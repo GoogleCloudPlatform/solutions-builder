@@ -25,7 +25,6 @@ locals {
     "bigquery.googleapis.com",             # BigQuery
     "bigquerydatatransfer.googleapis.com", # BigQuery Data Transfer
     "cloudbuild.googleapis.com",           # Cloud Build
-    "compute.googleapis.com",              # Compute Engine
     "container.googleapis.com",            # Google Kubernetes Engine
     "containerregistry.googleapis.com",    # Google Container Registry
     "dataflow.googleapis.com",             # Cloud Dataflow
@@ -61,10 +60,6 @@ locals {
 
 # Used to retrieve project_number later
 data "google_project" "project" {}
-
-resource "google_identity_platform_config" "default" {
-  project = var.project_id
-}
 
 module "project_services" {
   source     = "../../modules/project_services"

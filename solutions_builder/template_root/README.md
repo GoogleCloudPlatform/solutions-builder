@@ -27,28 +27,36 @@ pip install -U solutions-builder
 ### Set up gcloud CLI
 ```
 export PROJECT_ID=<my-project-id>
-gcloud auth login
-gcloud auth application-default login
 gcloud config set project $PROJECT_ID
 ```
 
-Log in to the bastion host (Optional)
+Log in to the jump host (Optional but recommended)
 ```
 export ZONE=us-central1-c #<my-zone>
 sb infra apply 0-jumphost
 gcloud compute ssh --zone=$ZONE --tunnel-through-iap jump-host
 ```
 
+Startup script for the just host (takes about 15 min)
+```
+# Verify that startup script has completed
+ls -l /tmp/jumphost_ready
+
+# Look at the output of startup script, in case of errors
+sudo journalctl -u google-startup-scripts.service
+```
+
 Initialize the Cloud infra:
 ```
+gcloud auth login
+gcloud auth application-default login
 sb set project-id $PROJECT_ID
 sb infra apply 1-bootstrap
 ```
 
 Set up Cloud foundation
-
 ```
-sb infra apply-2-foundation
+sb infra apply 2-foundation
 ```
 
 ## Deploy
@@ -63,7 +71,11 @@ Follow README files of each microservice to setup:
 sb deploy
 ```
 
-## Development
+## Destroy
+Turn off deletion protection for the jump host (for `terraform destroy`)
+```
+gcloud compute instances update jump-host --no-deletion-protection
+```
 
 Please refer to [DEVELOPMENT.md](docs/DEVELOPMENT.md) for more details on development and code submission.
 

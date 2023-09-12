@@ -57,8 +57,14 @@ resource "google_project_service" "project-apis" {
   disable_dependent_services = true
 }
 
+# add timer to avoid errors on new project creation and API enables
+resource "time_sleep" "wait_60_seconds" {
+  depends_on      = [google_project_service.project-apis]
+  create_duration = "60s"
+}
+
 resource "google_compute_network" "vpc" {
-  depends_on              = [google_project_service.project-apis]
+  depends_on              = [time_sleep.wait_60_seconds]
   project                 = var.project_id
   name                    = "jumphost-vpc"
   auto_create_subnetworks = false
@@ -72,10 +78,11 @@ resource "google_compute_subnetwork" "subnet" {
 }
 
 resource "google_compute_disk" "default" {
-  name = "disk-data"
-  type = "pd-balanced"
-  zone = var.zone
-  size = var.disk_size_gb
+  depends_on = [time_sleep.wait_60_seconds]
+  name       = "disk-data"
+  type       = "pd-balanced"
+  zone       = var.zone
+  size       = var.disk_size_gb
 }
 
 resource "google_compute_firewall" "allow_ssh" {
@@ -105,7 +112,7 @@ module "cloud-nat" {
 }
 
 data "template_file" "startup_script" {
-  template = file("${path.module}/../scripts/bastion_startup.sh")
+  template = file("${path.module}/bastion_startup.sh")
 }
 
 resource "google_compute_instance" "jump_host" {
