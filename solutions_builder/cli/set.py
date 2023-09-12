@@ -39,6 +39,7 @@ def project_id(
   validate_solution_folder(solution_path)
   root_st_yaml = read_yaml(f"{solution_path}/sb.yaml")
   old_project_id = root_st_yaml.get("project_id")
+  old_project_number = root_st_yaml.get("project_number")
   assert old_project_id, "project_id does not exist in sb.yaml"
 
   confirm(
@@ -47,8 +48,11 @@ def project_id(
       skip=yes)
 
   # Update Root sb.yaml
+  new_project_number = int(get_project_number(new_project_id))
+  assert new_project_number, "Unable to receive project number for project '{new_project_id}'"
+
   root_st_yaml["project_id"] = new_project_id
-  root_st_yaml["project_number"] = int(get_project_number(new_project_id))
+  root_st_yaml["project_number"] = new_project_number
   write_yaml(f"{solution_path}/sb.yaml", root_st_yaml)
 
   # Update copier answers
@@ -71,9 +75,17 @@ def project_id(
   for filename in list(file_set):
     with open(filename, "r") as file:
       filedata = file.read()
+      # Replace project_id
       filedata = re.sub(old_project_id, new_project_id, filedata)
+      # Replace project_number
+      if old_project_number and new_project_number:
+        filedata = re.sub(str(old_project_number), str(new_project_number), filedata)
+
+    # Write back to the original file.
     with open(filename, "w") as file:
       file.write(filedata)
 
   print(
       f"\nReplaced project_id from '{old_project_id}' to '{new_project_id}'.")
+  print(
+      f"Replaced project_number from '{old_project_number}' to '{new_project_number}'.")
