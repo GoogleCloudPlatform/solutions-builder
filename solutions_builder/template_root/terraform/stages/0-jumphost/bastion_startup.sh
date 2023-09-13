@@ -21,7 +21,7 @@ cd /tmp
 # Update system packages
 sudo apt-get update -y && sudo apt-get autoremove -y
 sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -yq
-sudo apt-get install apt-transport-https python3-pip pipenv redis-tools unzip -y
+sudo apt-get install apt-transport-https python3.9 python3-pip python3-testresources pipenv redis-tools unzip -y
 
 sudo addgroup --system docker
 sudo snap install docker && sudo snap start docker
@@ -51,11 +51,10 @@ sudo snap install terraform --classic
 sudo snap install helm --classic
 sudo snap install kubectl --classic
 pushd /usr/bin
-sudo ln -s python3 python
+sudo ln -s python3.9 python
+sudo rm /usr/bin/python3 && sudo ln -s python3.9 python3
 popd
 python -m pip install --upgrade pip
 python -m pip install google-cloud-firestore google-cloud-bigquery firebase-admin
 python -m pip install solutions-builder --ignore-installed PyYAML
 touch jumphost_ready
-cd
-
