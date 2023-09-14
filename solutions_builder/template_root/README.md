@@ -37,7 +37,7 @@ sb infra apply 0-jumphost
 gcloud compute ssh --zone=$ZONE --tunnel-through-iap jump-host
 ```
 
-Startup script for the just host (takes about 15 min)
+Startup script for the just host (takes about 5-10 min)
 ```
 # Verify that startup script has completed
 ls -l /tmp/jumphost_ready
@@ -50,6 +50,8 @@ Initialize the Cloud infra:
 ```
 gcloud auth login
 gcloud auth application-default login
+export PROJECT_ID=$(gcloud config get project)
+echo PROJECT_ID=$PROJECT_ID
 sb set project-id $PROJECT_ID
 sb infra apply 1-bootstrap
 ```

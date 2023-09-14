@@ -101,9 +101,9 @@ resource "google_compute_firewall" "allow_ssh" {
 module "cloud-nat" {
   source            = "terraform-google-modules/cloud-nat/google"
   version           = "~> 1.2"
-  name              = format("%s-%s-nat", var.project_id, var.region)
+  name              = format("%s-%s-jump-nat", var.project_id, var.region)
   create_router     = true
-  router            = format("%s-%s-router", var.project_id, var.region)
+  router            = format("%s-%s-jump-router", var.project_id, var.region)
   project_id        = var.project_id
   region            = var.region
   network           = google_compute_network.vpc.self_link
@@ -127,7 +127,7 @@ resource "google_compute_instance" "jump_host" {
 
   boot_disk {
     initialize_params {
-      image = "ubuntu-os-cloud/ubuntu-2004-focal-v20230302"
+      image = "ubuntu-os-cloud/ubuntu-2004-focal-v20230907"
     }
   }
 
