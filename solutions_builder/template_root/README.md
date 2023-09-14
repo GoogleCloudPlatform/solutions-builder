@@ -52,6 +52,13 @@ ls -l /tmp/jumphost_ready
 sudo journalctl -u google-startup-scripts.service
 ```
 
+Note: For a fresh start, here are the steps to delete/destroy jump host and corresponding resources from project. However, this not clean up any resources that were deployed from the jump host
+```
+gcloud compute instances update jump-host --no-deletion-protection --project="${PROJECT_ID}"
+cd terraform/stages/0-jumphost
+terraform destroy
+```
+### Continue to Cloud Infra and foundation steps
 Initialize the Cloud infra:
 ```
 gcloud auth login
