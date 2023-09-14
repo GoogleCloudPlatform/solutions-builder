@@ -13,12 +13,6 @@
 | Kustomize             | &gt;= v5.0.0     | https://kubectl.docs.kubernetes.io/installation/kustomize/ |
 | solutions-builder CLI | &gt;= v1.13.0    | https://github.com/GoogleCloudPlatform/solutions-builder |
 
-Note: If you have Mac M1 i.e. darwin_arm64 and getting the error `provider registry.terraform.io/hashicorp/template v2.2.0 does not have a package available for your current platform, darwin_arm64` while running the `terraform init` command:
-```
-brew install kreuzwerker/taps/m1-terraform-provider-helper
-m1-terraform-provider-helper activate
-m1-terraform-provider-helper install hashicorp/template -v v2.2.0
-```
 ## Setup
 
 ### Create a new Google Cloud project
@@ -95,5 +89,5 @@ Please refer to [DEVELOPMENT.md](docs/DEVELOPMENT.md) for more details on develo
 
 ## Troubleshoot
 
-Please refer to [TROUBLESHOOT.md](docs/DEVELOPMENT.md) for more details on development and code submission.
+Please refer to [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) for any Terraform errors
 
