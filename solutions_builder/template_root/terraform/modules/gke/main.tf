@@ -84,9 +84,9 @@ module "cloud-nat" {
   count                              = var.enable_private_nodes ? 1 : 0
   source                             = "terraform-google-modules/cloud-nat/google"
   version                            = "~> 1.2"
-  name                               = format("%s-%s-nat", var.project_id, var.region)
+  name                               = format("%s-%s-gke-nat", var.project_id, var.region)
   create_router                      = true
-  router                             = format("%s-%s-router", var.project_id, var.region)
+  router                             = format("%s-%s-gke-router", var.project_id, var.region)
   project_id                         = var.project_id
   region                             = var.region
   network                            = var.vpc_network
