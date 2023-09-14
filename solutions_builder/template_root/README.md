@@ -2,17 +2,23 @@
 
 > This codebase is generated from https://github.com/GoogleCloudPlatform/solutions-builder
 
-## Prerequisite
+## Prerequisites
 
 | Tool                  | Required Version | Installation |
 |-----------------------|------------------|---|
-| Python                | &gt;= 3.8        | |
+| Python                | &gt;= 3.9        | |
 | gcloud CLI            | Latest           | https://cloud.google.com/sdk/docs/install |
 | Terraform             | &gt;= v1.3.7     | https://developer.hashicorp.com/terraform/downloads |
 | Skaffold              | &gt;= v2.4.0     | https://skaffold.dev/docs/install/ |
 | Kustomize             | &gt;= v5.0.0     | https://kubectl.docs.kubernetes.io/installation/kustomize/ |
 | solutions-builder CLI | &gt;= v1.13.0    | https://github.com/GoogleCloudPlatform/solutions-builder |
 
+Note: If you have Mac M1 i.e. darwin_arm64 and getting the error `provider registry.terraform.io/hashicorp/template v2.2.0 does not have a package available for your current platform, darwin_arm64` while running the `terraform init` command:
+```
+brew install kreuzwerker/taps/m1-terraform-provider-helper
+m1-terraform-provider-helper activate
+m1-terraform-provider-helper install hashicorp/template -v v2.2.0
+```
 ## Setup
 
 ### Create a new Google Cloud project
@@ -30,7 +36,13 @@ export PROJECT_ID=<my-project-id>
 gcloud config set project $PROJECT_ID
 ```
 
-Log in to the jump host (Optional but recommended)
+### Check Org policies (Optional)
+Make sure that policies are not enforced (`enforce: false` or `NOT_FOUND`). You must be an organization policy administrator to set a constraint.
+https://console.cloud.google.com/iam-admin/orgpolicies/compute-requireShieldedVm?project=$PROJECT_ID
+https://console.cloud.google.com/iam-admin/orgpolicies/requireOsLogin?project=$PROJECT_ID
+
+### Create jump host for the project (Recommended)
+Log in to the jump host
 ```
 export ZONE=us-central1-c #<my-zone>
 sb infra apply 0-jumphost
