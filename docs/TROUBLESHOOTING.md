@@ -1,6 +1,7 @@
 1. [Installation Issues](#InstallationIssues)
 ##  1. <a name='InstallationIssues'></a>Installation Issues
 
+### Apple M1 laptops related errors
 - I use a Apple M1 Mac and got errors like below when I ran `terraform init`:
   ```
   │ Error: Incompatible provider version
@@ -18,6 +19,7 @@
     m1-terraform-provider-helper install hashicorp/template -v v2.2.0
     ```
 
+### gcloud CLI is stuck with the old project ID
 - I ran terraform and other `gcloud` commands, it's stuck with old project ID.
   - A: First, check if gcloud is authorized correctly.
     ```
@@ -79,6 +81,7 @@
     export GOOGLE_APPLICATION_CREDENTIALS=<credential-json>
     ```
 
+### Terraform error for acquiring the state lock
 - I ran into the Terraform error for acquiring the state lock:
   ```
   │ Error: Error acquiring the state lock
