@@ -1,9 +1,9 @@
 # Module: Terraform GKE Stage
 
-This module defines a Terraform GKE setup stage named "2-gke".
+This module defines a Terraform GKE setup stage named "3-gke".
 
 Main components after setup:
-- ./terraform/stage/2-gke
+- ./terraform/stage/3-gke
 
 ## Setup
 
@@ -16,7 +16,7 @@ st components add terraform_gke .
 Fill in the variables.
 ```
 🎤 What is the name of this terraform stage?
-   2-gke
+   3-gke
 🎤 Which Google Cloud region?
    us-central1
 🎤 Kubernetes version?
@@ -33,7 +33,7 @@ Complete. Component terraform_gke added to solution at .
 
 Initialize the terraform stage using `st init --stage=[STAGE_NAME]`
 ```
-st init --stage=2-gke
+sb init --stage=3-gke
 ```
 
 ## Development

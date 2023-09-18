@@ -10,6 +10,11 @@ component_name:
   default: terraform_gke_ingress
   validator: "{% if not component_name %}Required{% endif %}"
 
+terraform_stage_name:
+  type: str
+  help: Terraform stage name?
+  default: 3-gke-ingress
+
 resource_name:
   type: str
   help: Resource name for ingress configs?
