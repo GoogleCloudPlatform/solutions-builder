@@ -12,7 +12,7 @@ component_name:
 terraform_stage_name:
   type: str
   help: Terraform stage name?
-  default: 2-gke
+  default: 3-gke
 
 resource_name:
   type: str
