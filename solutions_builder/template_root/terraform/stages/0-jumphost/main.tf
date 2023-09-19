@@ -52,12 +52,12 @@ resource "time_sleep" "wait_60_seconds" {
 resource "google_compute_network" "vpc" {
   depends_on              = [time_sleep.wait_60_seconds]
   project                 = var.project_id
-  name                    = "jumphost-vpc"
+  name                    = "jump-vpc"
   auto_create_subnetworks = false
 }
 
 resource "google_compute_subnetwork" "subnet" {
-  name          = "jumphost-vpc-subnet"
+  name          = "jump-vpc-subnet"
   region        = var.region
   network       = google_compute_network.vpc.name
   ip_cidr_range = "10.0.0.0/24"
