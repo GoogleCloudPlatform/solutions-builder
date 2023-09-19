@@ -18,7 +18,7 @@ variable "region" {
   }
 }
 
-variable "zone" {
+variable "jump_host_zone" {
   type        = string
   description = "GCP Zone for the jump host"
 }
