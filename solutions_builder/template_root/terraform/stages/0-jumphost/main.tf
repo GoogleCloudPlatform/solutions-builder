@@ -103,7 +103,7 @@ data "template_file" "startup_script" {
 
 resource "google_compute_instance" "jump_host" {
   project                   = var.project_id
-  zone                      = var.zone
+  zone                      = var.jump_host_zone
   name                      = "jump-host"
   machine_type              = var.machine_type
   deletion_protection       = true
