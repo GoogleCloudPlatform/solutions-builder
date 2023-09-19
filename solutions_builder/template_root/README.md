@@ -38,9 +38,10 @@ https://console.cloud.google.com/iam-admin/orgpolicies/requireOsLogin?project=$P
 ### Create jump host for the project (Recommended)
 Log in to the jump host
 ```
-export ZONE=us-central1-c #<my-zone>
 sb infra apply 0-jumphost
-gcloud compute ssh --zone=$ZONE --tunnel-through-iap jump-host
+export JUMP_HOST_ZONE=$(gcloud compute instances list --format="value(zone)")
+echo Jump host zone is $JUMP_HOST_ZONE
+gcloud compute ssh --zone=$JUMP_HOST_ZONE --tunnel-through-iap jump-host
 ```
 
 Startup script for the just host (takes about 5-10 min)
