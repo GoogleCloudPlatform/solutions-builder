@@ -67,7 +67,7 @@ resource "google_compute_disk" "default" {
   depends_on = [time_sleep.wait_60_seconds]
   name       = "disk-data"
   type       = "pd-balanced"
-  zone       = var.zone
+  zone       = var.jump_host_zone
   size       = var.disk_size_gb
 }
 
