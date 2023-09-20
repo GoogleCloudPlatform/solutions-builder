@@ -25,24 +25,30 @@ def read_yaml(filepath):
     data = yaml.safe_load(f)
   return data
 
+def print_indent(text, offest=6):
+  text = " " * offest + text
+  print(text)
+
 
 # Execute shell commands
-def exec_output(command, working_dir=".", stop_when_error=True):
-  output = subprocess.check_output(command,
-                                   cwd=working_dir,
-                                   shell=True,
-                                   text=True)
-  return output
+def exec_output(command, working_dir=".", stop_when_error=False):
+  try:
+    output = subprocess.check_output(command,
+                                    stderr=subprocess.STDOUT,
+                                    cwd=working_dir,
+                                    shell=True,
+                                    text=True)
+  except subprocess.CalledProcessError as e:
+    # print("Status : FAIL", e.returncode, e.output)
+    raise e
+
+  else:
+    return output
 
 
 def exec_gcloud_output(command, working_dir="."):
   output = ""
-  try:
-    output = exec_output(command)
-  except Exception as e:
-    print(f"Error: {e}")
-    output = ""
-
+  output = exec_output(command)
   output = output.strip()
   return output
 
@@ -51,25 +57,39 @@ def get_project_number(project_id):
   """
     Get GCP project number based on project_id using gcloud command.
     """
-  print(f"    (Retrieving project number for {project_id}...)")
+  print_indent(f"(Retrieving project number for {project_id}...)")
   command = f"gcloud projects describe {project_id} --format='value(projectNumber)'"
-  project_number = exec_gcloud_output(command)
-  project_number = project_number.strip()
-  if not project_number.isnumeric():
+  try:
+    project_number = exec_gcloud_output(command)
+    project_number = project_number.strip()
+
+    if not project_number.isnumeric():
+      print_indent(f"project_number is not numeric: {project_number}")
+      return ""
+
+  except subprocess.CalledProcessError as e:
+    print_indent(f"{e.output}")
+    print_indent(f"Unable to retrieve project_number for '{project_id}'. GCP project '{project_id}' may not exist on GCP yet.\n")
     return ""
 
-  return project_number
+  else:
+    return project_number
 
 
 def get_existing_firestore(project_id):
   """
     Get boolean whether to initialize Firestore.
     """
-  print(f"   (Retrieving Firestore databases list...)")
+  print_indent(f"(Retrieving Firestore databases list...)")
   command = f"gcloud alpha firestore databases list --format='value(databases[0].name)' --project='{project_id}' --quiet"
-  database_name = exec_gcloud_output(command)
-  return database_name
 
+  try:
+    database_name = exec_gcloud_output(command)
+    return database_name
+
+  except subprocess.CalledProcessError as e:
+    print_indent(f"Unable to retrieve default Firestore database name for '{project_id}'. GCP project '{project_id}' may not exist on GCP yet.\n")
+    return ""
 
 def get_current_user(project_id):
   """
@@ -77,8 +97,15 @@ def get_current_user(project_id):
     """
   print(f"   (Retrieving current authenticated gcloud user...)")
   command = f"gcloud config list account --format 'value(core.account)' | head -n 1"
-  email = exec_gcloud_output(command)
-  return email
+
+  try:
+    email = exec_gcloud_output(command)
+    return email
+
+  except subprocess.CalledProcessError as e:
+    print_indent(f"{e.output}")
+    print_indent(f"Unable to retrieve current authenticated gcloud user.")
+    return ""
 
 
 def get_cloud_run_services(project_id):
