@@ -15,7 +15,7 @@ project_id:
 
 project_number:
   type: str
-  help: What is your Google Cloud project number?
+  help: What is your Google Cloud project number? (Leave it as empty if the project hasn't created yet.)
   default: "{{project_id | get_project_number}}"
 
 gcp_region:
@@ -89,12 +89,6 @@ secondary_service_ip_cidr_range:
   type: str
   help: Secondary service ranges?
   default: 10.2.0.0/16
-  when: "{{advanced_settings and create_vpc_network}}"
-
-existing_firestore_name:
-  type: str
-  help: Existing Firestore path? (e.g. projects/{{project_id}}/databases/(default))
-  default: "{{project_id | get_existing_firestore}}"
   when: "{{advanced_settings and create_vpc_network}}"
 
 _templates_suffix: ""
