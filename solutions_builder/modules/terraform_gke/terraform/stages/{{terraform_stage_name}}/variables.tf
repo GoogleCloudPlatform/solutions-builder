@@ -49,7 +49,7 @@ variable "kubernetes_version" {
 variable "node_machine_type" {
   type        = string
   description = "VM machine time"
-  default     = "n1-standard-4"
+  default     = "n2-standard-2"
 }
 
 variable "private_cluster" {

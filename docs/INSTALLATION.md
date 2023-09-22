@@ -64,7 +64,7 @@ We recommend starting with a brand new GCP project.
 
 Run the following to generate a new solution skeleton at the current directory:
 ```
-st new my-solution .
+sb new my-solution .
 ```
 
 This will prompt options and variables:
@@ -118,7 +118,7 @@ Run the following to update an existing solution folder:
 
 ```
 cd my-solution
-st update .
+sb update .
 ```
 
 This will prompt the same questions like in creating a new solution. You can provide a different values like a new GCP project ID or region. Once complete, it will replace the project ID and region to the exising solution folder.
@@ -146,14 +146,14 @@ The `1-bootstrap` stage creates a GCS bucket for persisting terraform state file
 
 Run the following to initialize both stages:
 ```
-st infra init
+sb infra init
 ```
 - Terraform will prompt for approval before proceed the terraform apply.
 - You can also pass a `--yes` to automatically approve the changes.
 
 Alternatively, to run a particular stage:
 ```
-st infra apply [STAGE_NAME]
+sb infra apply [STAGE_NAME]
 ```
 
 ## Add a component
@@ -174,7 +174,7 @@ Available module names:
 
 To add a component to a solution:
 ```
-st components add [COMPONENT_NAME]
+sb components add [COMPONENT_NAME]
 ```
 
 This will show the prompt quesitons from this particular component.
@@ -185,7 +185,7 @@ This section shows an example of adding RESTful API service component that manag
 
 For example, to add a RESTful microservice:
 ```
-st components add restful_service
+sb components add restful_service
 ```
 
 In the prompt, rename the component as `todo_service` (snake_case) and `todo-service` as resource name. (lower case with dash)
@@ -248,7 +248,7 @@ Once complete, it adds the `todo_service` folder to `my-solution/components`.
 
 At this point, we'll deploy this service to Cloud Run with the following command:
 ```
-st deploy
+sb deploy
 ```
 - This will run `skaffold run` to deploy all services with `default` profile.
 
@@ -274,14 +274,14 @@ An infra component is nothing but another component. Some component contains jus
 
 To add an infra component, run the same command like adding a regular component.
 ```
-st components add [COMPONENT_NAME]
+sb components add [COMPONENT_NAME]
 ```
 
 ### Example: Add a HTTP load balancer
 
 Run the following to add a HTTP load balancer that supports Google-managed cert and a domain name.
 ```
-st components add terraform_httplb_cloudrun
+sb components add terraform_httplb_cloudrun
 ```
 
 Fill in the answers in the prompt.
@@ -302,7 +302,7 @@ This component creates a stage `3-httplb-cloudrun`, which you can find in `terra
 
 To apply the infra terraform code:
 ```
-st infra apply 3-httplb-cloudrun
+sb infra apply 3-httplb-cloudrun
 
 ... (terraform execution)
 
