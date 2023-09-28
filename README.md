@@ -127,6 +127,10 @@ sb deploy
 - See other deployment options in [solutions_builder/modules](solutions_builder/modules).
 
 
+## CLI Usage
+
+For more information on how to use the CLI, please refer to the [CLI_USAGE.md](docs/CLI_USAGE.md).
+
 ## Additional Documentations
 
 You can find more documentations in [docs](docs) folder. In a nutshell, it covers the following:
