@@ -17,7 +17,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "{{project_id}}-tfstate"
+    bucket = "{{project_id}}-tfstate" # sb-var:project_id:{{project_id}}-tfstate
     prefix = "stage/{{terraform_stage_name}}"
   }
 }
