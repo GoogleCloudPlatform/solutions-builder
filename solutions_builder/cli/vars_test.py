@@ -54,8 +54,6 @@ def test_replace_with_multiple_lines():
       PROJECT_ID: not-replaced-yet # sb-var:project_id
     """
   text = replace_var_to_value("project_id", "fake-id", text)
-
-  print(text)
   assert text == """
     env:
       PROJECT_ID: fake-id # sb-var:project_id

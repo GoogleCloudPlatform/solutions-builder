@@ -42,23 +42,27 @@ def replace_var_to_template(var_name, text, custom_template=False, debug=False):
   if debug:
     print(f"match_pattern = {match_pattern}")
 
-  text = re.sub(match_pattern, output_pattern, text)
-  return text
+  text, count = re.subn(match_pattern, output_pattern, text)
+  return (text, count)
 
 def restore_template_in_comment(var_name, var_value, text):
   # Restore jinja2 variables in the custom content comment.
   match_pattern = f"(#\\s*sb-var:{var_name}:)(.*){var_value}(.*)"
   output_pattern = f"\\1\\2{{{{{var_name}}}}}\\3"
-  text = re.sub(match_pattern, output_pattern, text)
-  return text
+  text, count = re.subn(match_pattern, output_pattern, text)
+  return (text, count)
 
 
 def replace_var_to_value(var_name, var_value, text):
+  overall_count = 0
+
   # Replace simple variable pattern with sb-var:var_name
-  text = replace_var_to_template(var_name, text)
+  text, count = replace_var_to_template(var_name, text)
+  overall_count += count
 
   # Replace custom-content variable pattern with sb-var:var_name:custom_template
-  text = replace_var_to_template(var_name, text, custom_template=True)
+  text, count = replace_var_to_template(var_name, text, custom_template=True)
+  overall_count += count
 
   # Update variables using Jinja2
   jinja_env = jinja2.Environment()
@@ -74,9 +78,9 @@ def replace_var_to_value(var_name, var_value, text):
   text = template.render(**data)
 
   # Restore vars to template in comment.
-  text = restore_template_in_comment(var_name, var_value, text)
+  text, count = restore_template_in_comment(var_name, var_value, text)
 
-  return text
+  return (text, overall_count)
 
 # Apply a specific variable with a new value.
 def apply_var_to_folder(solution_path, var_name, var_value):
@@ -92,18 +96,23 @@ def apply_var_to_folder(solution_path, var_name, var_value):
     file_list = pathlib.Path(solution_path).rglob(f"{pattern}")
     file_set = file_set - set([str(x) for x in file_list])
 
+  modified_files_list = []
   for filename in list(file_set):
     with open(filename, "r") as file:
-      print(f"filename = {filename}")
-
       # Replace variable
       filedata = file.read()
-      filedata = replace_var_to_value(var_name, var_value, filedata)
-      # filedata = filedata + "\n"
+      filedata, count = replace_var_to_value(var_name, var_value, filedata)
+      filedata = filedata + "\n"
 
-      # Write back to the original file.
-      with open(filename, "w") as file:
-        file.write(filedata)
+      if count > 0:
+        modified_files_list.append(filename)
+
+      # If there's any changes, write back to the original file.
+      if count > 0:
+        with open(filename, "w") as file:
+          file.write(filedata)
+
+  return modified_files_list
 
 # CLI command for `sb vars set <var_name> <var_value>`
 @vars_app.command(name="set")
@@ -122,16 +131,8 @@ def set_var(
   write_yaml(f"{solution_path}/sb.yaml", root_st_yaml)
 
   # Apply vars to individual files
-  apply_var_to_folder(solution_path, var_name, var_value)
+  filenames = apply_var_to_folder(solution_path, var_name, var_value)
 
-# # Reapply and replace all variables
-# @vars_app.command()
-# def apply_all(
-#     solution_path: Annotated[Optional[str], typer.Argument()] = ".",
-# ):
-#   validate_solution_folder(solution_path)
-#   root_st_yaml = read_yaml(f"{solution_path}/sb.yaml")
-#   global_variables = root_st_yaml.get("global_variables", {})
-
-#   for var_name, value in global_variables.items():
-#     apply_var_to_folder(solution_path, var_name, value)
+  print_success(
+      f"Complete. {len(filenames)} files updated.\n"
+  )
