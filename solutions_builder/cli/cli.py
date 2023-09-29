@@ -51,7 +51,7 @@ app.add_typer(set_app,
               help="Set properties to an existing solution folder.")
 app.add_typer(vars_app,
               name="vars",
-              help="Set global variables to an existing solution folder.")
+              help="Set variables in an existing solutions-builder folder.")
 
 
 # Create a new solution

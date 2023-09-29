@@ -1,18 +1,16 @@
-"""
-Copyright 2023 Google LLC
+# Copyright 2023 Google LLC
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 
-    https://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-"""
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 import typer
 import pathlib
@@ -30,11 +28,22 @@ INCLUDE_PATTERNS = [
 ]
 EXCLUDE_PATTERNS = ["**/.terraform/**/*.*", "**/node_modules/**/*.*", "**/.venv/**/*.*"]
 
-# Replace a varialbe with a given text content.
+# Replace a variable with a given text content.
 def replace_var_to_template(var_name, text, custom_template=False, debug=False):
+  # This pattern matches lines with sb-var anchor in the comment at the end.
+  # For example:
+  #   PROJECT_ID: 12345          # sb-var:project_id
+  #   GCP_REGION = "us-central1" # sb-var:gcp_region
   match_pattern = f"^([^\\r]*[:|=]\\s*)([\"\']?)([^\"^\']*)([\"\']?)\\s*#\\s*sb-var:{var_name}"
+
+  # This output patterh print the jinja2 template for the specific variable name.
+  # For example:
+  #   PROJECT_ID: {{project_id}} # sb-var:project_id
   output_pattern = f"\\1\\2{{{{{var_name}}}}}\\4 # sb-var:{var_name}"
 
+  # In addition, if custom_template is true, the pattern will extend to the custom
+  # template string at the end of the anchor. For example:
+  #   BUCKET_NAME: my-project-bucket # sb-var:project_id:{{project_id}}-bucket
   if custom_template:
     match_pattern = match_pattern + ":(.*)"
     output_pattern = f"\\1\\2\\5\\4 # sb-var:{var_name}:\\5"
@@ -42,6 +51,7 @@ def replace_var_to_template(var_name, text, custom_template=False, debug=False):
   if debug:
     print(f"match_pattern = {match_pattern}")
 
+  # Replace with regex pattern and returns new text and count of changes.
   text, count = re.subn(match_pattern, output_pattern, text)
   return (text, count)
 
@@ -49,6 +59,8 @@ def restore_template_in_comment(var_name, var_value, text):
   # Restore jinja2 variables in the custom content comment.
   match_pattern = f"(#\\s*sb-var:{var_name}:)(.*){var_value}(.*)"
   output_pattern = f"\\1\\2{{{{{var_name}}}}}\\3"
+
+  text, count = re.subn(match_pattern, output_pattern, text)
   text, count = re.subn(match_pattern, output_pattern, text)
   return (text, count)
 
