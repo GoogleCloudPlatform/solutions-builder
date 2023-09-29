@@ -148,3 +148,22 @@ def set_var(
   print_success(
       f"Complete. {len(filenames)} files updated.\n"
   )
+
+# CLI command for `sb vars apply-all`
+@vars_app.command(name="apply-all")
+def apply_all(
+    solution_path: Annotated[Optional[str], typer.Argument()] = ".",
+):
+  validate_solution_folder(solution_path)
+
+  # Update to the root sb.yaml
+  root_st_yaml = read_yaml(f"{solution_path}/sb.yaml")
+  global_variables = root_st_yaml.get("global_variables", {})
+  filenames = []
+
+  for var_name, var_value in global_variables.items():
+    filenames += apply_var_to_folder(solution_path, var_name, var_value)
+
+  print_success(
+      f"Complete. {len(filenames)} files updated.\n"
+  )

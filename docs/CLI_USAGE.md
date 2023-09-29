@@ -28,3 +28,29 @@ detail:
   OTHER: something
 ```
 
+### Apply all existing global variables
+
+You can apply all existing global variables to files with corresponding variable anchors.
+
+For example, in a YAML file:
+```yaml
+detail:
+  PROJECT_ID: old-project-id # sb-var:project_id
+  OTHER: something
+```
+
+And in the `sb.yaml` file in your project root folder:
+```yaml
+global_variables:
+  project_id: MY_PROJECT_ID
+  project_name: core-solution-services
+  project_number: MY_PROJECT_NUMBER
+  gcp_region: us-central1
+```
+
+Run the following to apply all these values to exsiting variables in all files.
+```
+$ sb vars apply-all
+```
+
+All files with the corresponding anchors will be updated altogether.
