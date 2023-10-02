@@ -18,7 +18,7 @@ Then, you can run the following to replace the variable value:
 ```
 $ sb vars set project_id new-project-id
 ```
-- This will find all occurance of the `sb-var:project_id` anchors in your folder, and replace with the new value "new-project-id"
+- This will find all occurrence of the `sb-var:project_id` anchors in your folder, and replace with the new value "new-project-id"
 
 The YAML file will become:
 
@@ -48,7 +48,7 @@ global_variables:
   gcp_region: us-central1
 ```
 
-Run the following to apply all these values to exsiting variables in all files.
+Run the following to apply all these values to existing variables in all files.
 ```
 $ sb vars apply-all
 ```

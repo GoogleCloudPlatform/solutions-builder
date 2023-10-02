@@ -61,7 +61,6 @@ def restore_template_in_comment(var_name, var_value, text):
   output_pattern = f"\\1\\2{{{{{var_name}}}}}\\3"
 
   text, count = re.subn(match_pattern, output_pattern, text)
-  text, count = re.subn(match_pattern, output_pattern, text)
   return (text, count)
 
 
