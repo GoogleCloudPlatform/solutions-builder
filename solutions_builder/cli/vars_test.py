@@ -20,46 +20,57 @@ from .vars import *
 def test_replace_var_to_template():
   # Test with equals and quotes
   text = "project_id = \"not-replaced-yet\" # sb-var:project_id"
-  text = replace_var_to_template("project_id", text)
+  text, count = replace_var_to_template("project_id", text)
   assert text == "project_id = \"{{project_id}}\" # sb-var:project_id"
+  assert count == 1
 
   # Test with equals without quotes
   text = "project_id = test # sb-var:project_id"
-  text = replace_var_to_template("project_id", text)
+  text, count = replace_var_to_template("project_id", text)
   assert text == "project_id = {{project_id}} # sb-var:project_id"
+  assert count == 1
 
   # Test with comma without quotes
   text = "project_id: test # sb-var:project_id"
-  text = replace_var_to_template("project_id", text)
+  text, count = replace_var_to_template("project_id", text)
   assert text == "project_id: {{project_id}} # sb-var:project_id"
+  assert count == 1
 
 def test_replace_var_to_custom_template():
   # Test with equals and quotes
   text = "project_id = \"not-replaced-yet\" # sb-var:project_id:prefix-{{project_id}}-suffix"
-  text = replace_var_to_template("project_id", text, custom_template=True)
+  text, count = replace_var_to_template("project_id", text, custom_template=True)
   assert text == "project_id = \"prefix-{{project_id}}-suffix\" # sb-var:project_id:prefix-{{project_id}}-suffix"
+  assert count == 1
 
 def test_replace_var_to_value():
   text = "project_id = \"not-replaced-yet\" # sb-var:project_id"
-  text = replace_var_to_value("project_id", "fake-id", text)
+  text, count = replace_var_to_value("project_id", "fake-id", text)
   assert text == "project_id = \"fake-id\" # sb-var:project_id"
+  assert count == 1
 
   text = "  PROJECT_ID: not-replaced-yet # sb-var:project_id"
-  text = replace_var_to_value("project_id", "fake-id", text)
+  text, count = replace_var_to_value("project_id", "fake-id", text)
   assert text == "  PROJECT_ID: fake-id # sb-var:project_id"
+  assert count == 1
 
 def test_replace_with_multiple_lines():
   text = """
     env:
       PROJECT_ID: not-replaced-yet # sb-var:project_id
     """
-  text = replace_var_to_value("project_id", "fake-id", text)
+  text, count = replace_var_to_value("project_id", "fake-id", text)
   assert text == """
     env:
       PROJECT_ID: fake-id # sb-var:project_id
     """
+  assert count == 1
 
 def test_replace_var_to_value_custom_template():
   text = "project_id = \"not-replaced-yet\" # sb-var:project_id:prefix-{{project_id}}-suffix"
-  text = replace_var_to_value("project_id", "fake-id", text)
+  text, count = replace_var_to_value("project_id", "fake-id", text)
   assert text == "project_id = \"prefix-fake-id-suffix\" # sb-var:project_id:prefix-{{project_id}}-suffix"
+
+  # FIXME: it double-counted the changes, as both simple template and custom
+  # template both counts.
+  assert count == 2
