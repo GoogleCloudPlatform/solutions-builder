@@ -23,6 +23,7 @@ from .component import component_app
 from .infra import infra_app
 from .template import template_app
 from .set import set_app
+from .vars import vars_app
 from .cli_utils import *
 
 __version__ = importlib.metadata.version("solutions-builder")
@@ -48,6 +49,9 @@ app.add_typer(template_app,
 app.add_typer(set_app,
               name="set",
               help="Set properties to an existing solution folder.")
+app.add_typer(vars_app,
+              name="vars",
+              help="Set variables in an existing solutions-builder folder.")
 
 
 # Create a new solution

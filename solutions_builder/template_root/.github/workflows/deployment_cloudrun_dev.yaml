@@ -16,7 +16,7 @@ env:
   REGION: {{gcp_region}}
   ENV: dev
 
-# copoier:raw {% raw %}
+# copier:raw {% raw %}
 jobs:
   build_common:
     name: Build Common image
@@ -85,4 +85,4 @@ jobs:
           _IMAGE="${{ matrix.target-folder[1] }}",\
           _SERVICE_ACCOUNT="deployment-${{ env.ENV }}@${{ env.PROJECT_ID }}.iam.gserviceaccount.com"
 
-# copoier:endraw {% endraw %}
+# copier:endraw {% endraw %}

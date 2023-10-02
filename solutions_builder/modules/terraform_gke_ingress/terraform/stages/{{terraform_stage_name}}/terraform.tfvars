@@ -1,5 +1,5 @@
-project_id                = "{{project_id}}"
-region                    = "{{gcp_region}}"
+project_id                = "{{project_id}}" # sb-var:project_id
+region                    = "{{gcp_region}}" # sb-var:gcp_region
 cluster_name              = "{{cluster_name}}"
 cluster_external_endpoint = "{{cluster_external_endpoint}}"
 cluster_ca_certificate    = "{{('masterAuth.clusterCaCertificate', cluster_name, gcp_region) | get_cluster_value}}"
