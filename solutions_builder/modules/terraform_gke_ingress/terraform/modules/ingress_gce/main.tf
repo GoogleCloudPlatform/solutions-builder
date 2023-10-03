@@ -44,9 +44,11 @@ resource "google_compute_global_address" "ingress_ip_address" {
 }
 
 resource "google_compute_managed_ssl_certificate" "managed_certificate" {
-  provider = google-beta
+  # Prevent managed cert from deploying if no domains
+  count = ((length(var.domains) == 1) && (var.domains[0] == "None")) ? 0 : 1
 
-  name = var.managed_cert_name
+  provider = google-beta
+  name     = var.managed_cert_name
   managed {
     domains = var.domains
   }
