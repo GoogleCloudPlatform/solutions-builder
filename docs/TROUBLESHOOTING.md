@@ -125,6 +125,6 @@
 
   To fix this, run the following to update the organization policies (You will need Org Policy Admin IAM role.)
   ```
-  export ORGANIZATION_ID=$(gcloud organizations list --format="value(name)")
+  export ORGANIZATION_ID="$(gcloud projects get-ancestors $PROJECT_ID | grep organization | cut -f1 -d' ')"
   gcloud resource-manager org-policies delete constraints/compute.requireShieldedVm --organization=$ORGANIZATION_ID
   ```
