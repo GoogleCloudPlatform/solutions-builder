@@ -108,3 +108,23 @@
   cd terraform/stages/foundation # foundation, gke or cloudrun.
   terraform force-unlock <terraform-lock-id>
   ```
+
+### Terraform error when creating the jump host in 0-jumphost stage
+
+- I ran into the following error when running `sb infra apply 0-jumphost`:
+  ```
+  │ Error: Error creating instance: googleapi: Error 412: Constraint constraints/compute.requireShieldedVm violated for project projects/jonchen-css-1004. Secure Boot is not enabled in the 'shielded_instance_config' field. See https://cloud.google.com/resource-manager/docs/organization-policy/org-policy-constraints for more information., conditionNotMet
+  │
+  │   with google_compute_instance.jump_host,
+  │   on main.tf line 104, in resource "google_compute_instance" "jump_host":
+  │  104: resource "google_compute_instance" "jump_host" {
+  │
+  ╵
+  Error when running command:  terraform apply   (working_dir=./terraform/stages/0-jumphost)
+  ```
+
+  To fix this, run the following to update the organization policies (You will need Org Policy Admin IAM role.)
+  ```
+  export ORGANIZATION_ID=$(gcloud organizations list --format="value(name)")
+  gcloud resource-manager org-policies delete constraints/compute.requireShieldedVm --organization=$ORGANIZATION_ID
+  ```
