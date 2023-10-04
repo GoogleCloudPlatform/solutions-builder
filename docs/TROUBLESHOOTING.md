@@ -2,7 +2,7 @@
 ##  1. <a name='InstallationIssues'></a>Installation Issues
 
 ### Apple M1 laptops related errors
-- I use a Apple M1 Mac and got errors like below when I ran `terraform init`:
+- I use an Apple M1 Mac and got errors like below when I ran `terraform init`:
   ```
   │ Error: Incompatible provider version
   │
@@ -31,7 +31,7 @@
     *    jonchen@google.com
     ```
 
-    If not, relogin to gcloud.
+    If not, re-login to gcloud.
     ```
     gcloud auth login
     ```
@@ -103,7 +103,7 @@
   ╵
   ```
 
-  In each terraform `stage` folder, run the folllowing:
+  In each terraform `stage` folder, run the following:
   ```
   cd terraform/stages/foundation # foundation, gke or cloudrun.
   terraform force-unlock <terraform-lock-id>
