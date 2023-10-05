@@ -14,27 +14,27 @@ This template provides built-in and ready-to-ship modules including:
 * Container-based microservices, can be deployed to a Kubernetes cluster or Cloud Run.
 * Unified deployment using Skaffold.
 * Automatically generated API documentation with Swagger UI.
-* CI/CD deployment (with Github Actions).
+* CI/CD deployment (with GitHub Actions).
 * Cloud Run templates.
 
 ## Roadmap
 
-Please see [Feature Requests in the Github issue list](https://github.com/GoogleCloudPlatform/solutions-builder/issues?q=is%3Aopen+is%3Aissue+label%3A%22feature+request%22).
+Please see [Feature Requests in the GitHub issue list](https://github.com/GoogleCloudPlatform/solutions-builder/issues?q=is%3Aopen+is%3Aissue+label%3A%22feature+request%22).
 
 ## Prerequisite
 
-| Tool | Required Version | Installation |
-|---|---|---|
-| Python     | &gt;= 3.9     | |
-| gcloud CLI | Latest        | https://cloud.google.com/sdk/docs/install |
-| Terraform  | &gt;= v1.3.7  | https://developer.hashicorp.com/terraform/downloads |
-| Skaffold   | &gt;= v2.4.0  | https://skaffold.dev/docs/install/ |
+| Tool       | Required Version | Installation                                        |
+|------------|------------------|-----------------------------------------------------|
+| Python     | &gt;= 3.9        |                                                     |
+| gcloud CLI | Latest           | https://cloud.google.com/sdk/docs/install           |
+| Terraform  | &gt;= v1.3.7     | https://developer.hashicorp.com/terraform/downloads |
+| Skaffold   | &gt;= v2.4.0     | https://skaffold.dev/docs/install/                  |
 
 [Optional] If you plan to deploy services on a GKE cluster, please install the following:
 
-| Tool | Required Version | Installation |
-|---|---|---|
-| Kustomize   | &gt;= v5.0.0 | https://kubectl.docs.kubernetes.io/installation/kustomize/ |
+| Tool      | Required Version | Installation                                               |
+|-----------|------------------|------------------------------------------------------------|
+| Kustomize | &gt;= v5.0.0     | https://kubectl.docs.kubernetes.io/installation/kustomize/ |
 
 ## Installing Solutions Builder CLI
 
@@ -114,7 +114,7 @@ Fill details in the prompt:
 - Create network endpoint group (NEG) for serverless ingress: **yes**
 - Default deploy method? (cloudrun or gke): **Cloud Run**
 
-Add a HTTP Load Balancer for Cloud Run service(s)
+Add an HTTP Load Balancer for Cloud Run service(s)
 ```
 sb add component terraform_httplb_cloudrun
 sb infra apply 3-httplb-cloudrun
@@ -125,7 +125,6 @@ Build and deploy
 sb deploy
 ```
 - See other deployment options in [solutions_builder/modules](solutions_builder/modules).
-
 
 ## CLI Usage
 
@@ -138,8 +137,8 @@ You can find more documentations in [docs](docs) folder. In a nutshell, it cover
 - [DEVELOPMENT.md](docs/DEVELOPMENT.md) - Development guide and code submission process.
 - [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) - Development guide and code submission process.
 
-In the [docs/components](docs/components/) folder, it contains a few more guidance based on each component/feature available in this template.
-- [gke.md](docs/components/gke.md) covers the overall developmeng guidance on Google Kubernetes Engine.
+In the [docs/components](docs/components) folder, it contains a few more guidance based on each component/feature available in this template.
+- [gke.md](docs/components/gke.md) covers the overall development guidance on Google Kubernetes Engine.
 - [cloudrun.md](docs/components/cloudrun.md) covers the guidance if you want to deploy microservice to Cloud Run.
 
 ## FAQ
@@ -147,11 +146,11 @@ In the [docs/components](docs/components/) folder, it contains a few more guidan
   - A: Any engineering team to start a new solution development project.
 
 - Can I choose to deploy microservice just to Cloud Run?
-  - A: Yes, please refer to [Setting up Google Cloud Project](README.md#setting-up-google-cloud-project) in this README.md to choose where to deploy microservices. Or you can refer to [INSTALLATION.md](docs/INSTALLATION.md) for more details.
+  - A: Yes, please refer to [INSTALLATION Guide](docs/INSTALLATION.md) for more details.
 
 - Can I use this template for non-Google or multi-Cloud environments?
-  - A: We design this Solutions Builder to work 100% out of the box with Google Cloud products. However you could customize the solution to meet your needs on multi-Cloud environment. See [Why Google Cloud](https://cloud.google.com/why-google-cloud) for details.
+  - A: We design this Solutions Builder to work 100% out of the box with Google Cloud products. However, you could customize the solution to meet your needs on multi-Cloud environment. See [Why Google Cloud](https://cloud.google.com/why-google-cloud) for details.
 
 ## Troubleshoot
 
-See [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) for details.
+See [TROUBLESHOOTING Guide](docs/TROUBLESHOOTING.md) for details.

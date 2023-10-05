@@ -10,19 +10,19 @@
   sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
   ```
 
-- Downgrade Kustomize to v4.5.7
-  > Kustomize
+- Ensure `kustomize` version to be >= v5.0.0
+  > kustomize
   ```
   cd ~
   wget https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh
   sudo rm /usr/local/bin/kustomize
-  sudo ./install_kustomize.sh 4.5.7 /usr/local/bin
+  sudo ./install_kustomize.sh 5.0.0 /usr/local/bin
   ```
 
-- Ensure skaffold version to be &gt;= v2.2.0
+- Ensure `skaffold` version to be &gt;= v2.4.0
   ```
   skaffold version
-  # v2.2.0
+  # v2.4.0
   ```
 
 - Generate skeleton code in a new folder:

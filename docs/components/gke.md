@@ -1,4 +1,4 @@
-# GKE developmnet
+# GKE development
 
 ## Deployment
 
