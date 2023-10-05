@@ -4,7 +4,7 @@
 
 ## Update the Template Root
 
-## Updating Solutions Tempalte to PyPi package management
+## Updating Solutions Template to PyPi package management
 
 Check out the Solutions Builder repo:
 

@@ -4,7 +4,7 @@ This doc covers the setup and steps required for running e2e tests for Template.
 
 ## Setup
 
-> Currently we run into issues of creating brand new project for every e2e test. Hence we use one static project for e2e testing with resources clean up.
+> Currently, we run into issues of creating a brand new project for every e2e test. Hence we use one static project for e2e testing with resources clean up.
 
 - Create an org-level service account as e2e-runner:
   > This service account can be created separately under another GCP project with granted permissions on the org-level.
