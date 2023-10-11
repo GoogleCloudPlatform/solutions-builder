@@ -6,7 +6,7 @@ If you are looking for the general development guide for the generated code from
 
 ## Bug Reports
 
-If you encounter any issues or bugs, please [file a new Github Issue](https://github.com/GoogleCloudPlatform/solutions-builder/issues/new).
+If you encounter any issues or bugs, please [file a new GitHub Issue](https://github.com/GoogleCloudPlatform/solutions-builder/issues/new).
 
 - The Google team will triage the issues and will reply to your issues shortly.
 
