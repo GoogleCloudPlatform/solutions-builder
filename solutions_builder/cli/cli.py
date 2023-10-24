@@ -25,6 +25,7 @@ from .template import template_app
 from .set import set_app
 from .vars import vars_app
 from .cli_utils import *
+from .cli_constants import DEBUG
 
 __version__ = importlib.metadata.version("solutions-builder")
 DEFAULT_DEPLOY_PROFILE = "default-deploy"
@@ -236,7 +237,7 @@ def main():
     print()
 
   except Exception as e:
-    if os.getenv("DEBUG", False):
+    if DEBUG:
       traceback.print_exc()
     print_error(e)
 

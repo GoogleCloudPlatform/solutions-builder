@@ -14,7 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import os, yaml, typer, subprocess, re
+import os
+import yaml
+import typer
+import subprocess
+import re
 
 
 def confirm(msg, skip=False, default=True):
@@ -139,7 +143,7 @@ def list_subfolders(path):
 
 
 def check_git_url(url):
-  regex_str = "((git|ssh|http(s)?)|(git@[\w\.]+))(:(//)?)([\w\.@\:/\-~]+)(\.git)(/)?"
+  regex_str = "((git|ssh|http(s)?)|(git@[\\w\\.]+))(:(//)?)([\\w\\.\\@\\:/\\-~]+)(\\.git)(/)?"
   regex = re.compile(regex_str)
   match = regex.match(url)
   return match is not None
