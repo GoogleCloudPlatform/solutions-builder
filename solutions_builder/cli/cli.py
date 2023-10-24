@@ -127,12 +127,14 @@ def update(solution_path: Annotated[Optional[str],
 
 # Build and deploy services.
 @app.command()
-def deploy(profile: str = DEFAULT_DEPLOY_PROFILE,
-           component: str = None,
-           dev: Optional[bool] = False,
-           solution_path: Annotated[Optional[str],
-                                    typer.Argument()] = ".",
-           yes: Optional[bool] = False):
+def deploy(
+    profile: Annotated[str, typer.Option("--profile", "-p")] = DEFAULT_DEPLOY_PROFILE,
+    component: Annotated[str, typer.Option("--component", "-c", "-m")] = None,
+    dev: Optional[bool] = False,
+    solution_path: Annotated[Optional[str],
+                            typer.Argument()] = ".",
+    skaffold_args: Optional[str] = "",
+    yes: Optional[bool] = False):
   """
   Build and deploy services.
   """
@@ -164,7 +166,7 @@ def deploy(profile: str = DEFAULT_DEPLOY_PROFILE,
     )
 
   commands.append(
-      f"{skaffold_command} -p {profile} {component_flag} --default-repo=\"gcr.io/{project_id}\""
+      f"{skaffold_command} -p {profile} {component_flag} --default-repo=\"gcr.io/{project_id}\" {skaffold_args}"
   )
   print("This will build and deploy all services using the command below:")
   for command in commands:
