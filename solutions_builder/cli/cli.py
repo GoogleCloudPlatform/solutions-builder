@@ -25,6 +25,7 @@ from .template import template_app
 from .set import set_app
 from .vars import vars_app
 from .cli_utils import *
+from .cli_constants import DEBUG
 
 __version__ = importlib.metadata.version("solutions-builder")
 DEFAULT_DEPLOY_PROFILE = "default-deploy"
@@ -126,12 +127,14 @@ def update(solution_path: Annotated[Optional[str],
 
 # Build and deploy services.
 @app.command()
-def deploy(profile: str = DEFAULT_DEPLOY_PROFILE,
-           component: str = None,
-           dev: Optional[bool] = False,
-           solution_path: Annotated[Optional[str],
-                                    typer.Argument()] = ".",
-           yes: Optional[bool] = False):
+def deploy(
+    profile: Annotated[str, typer.Option("--profile", "-p")] = DEFAULT_DEPLOY_PROFILE,
+    component: Annotated[str, typer.Option("--component", "-c", "-m")] = None,
+    dev: Optional[bool] = False,
+    solution_path: Annotated[Optional[str],
+                            typer.Argument()] = ".",
+    skaffold_args: Optional[str] = "",
+    yes: Optional[bool] = False):
   """
   Build and deploy services.
   """
@@ -140,6 +143,9 @@ def deploy(profile: str = DEFAULT_DEPLOY_PROFILE,
   sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
   project_id = sb_yaml["project_id"]
   terraform_gke = sb_yaml["components"].get("terraform_gke")
+  env_vars = {
+    "PROJECT_ID": project_id,
+  }
   commands = []
 
   if component:
@@ -160,15 +166,22 @@ def deploy(profile: str = DEFAULT_DEPLOY_PROFILE,
     )
 
   commands.append(
-      f"{skaffold_command} -p {profile} {component_flag} --default-repo=\"gcr.io/{project_id}\""
+      f"{skaffold_command} -p {profile} {component_flag} --default-repo=\"gcr.io/{project_id}\" {skaffold_args}"
   )
   print("This will build and deploy all services using the command below:")
   for command in commands:
-    print_highlight(f"- {command}")
+    print_success(f"- {command}")
+
+  print("\nwith the following environment variables:")
+  env_var_str = ""
+  for key, value in env_vars.items():
+    print_success(f"- {key}={value}")
+    env_var_str += f"{key}={value} "
+
   confirm("\nThis may take a few minutes. Continue?", skip=yes)
 
   for command in commands:
-    exec_shell(command, working_dir=solution_path)
+    exec_shell(env_var_str + command, working_dir=solution_path)
 
 
 # Destory deployment.
@@ -236,7 +249,7 @@ def main():
     print()
 
   except Exception as e:
-    if os.getenv("DEBUG", False):
+    if DEBUG:
       traceback.print_exc()
     print_error(e)
 

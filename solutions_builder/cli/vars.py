@@ -20,39 +20,40 @@ from typing import Optional
 from typing_extensions import Annotated
 from copier import run_auto
 from .cli_utils import *
+from .cli_constants import DEBUG
+
 
 vars_app = typer.Typer()
 
 INCLUDE_PATTERNS = [
-    "*.yaml", "*.yml", "*.env", "*.tfvars", "*.tf", "*.sh", "*.md"
+    "*.yaml", "*.yml", "*.env", "*.tfvars", "*.tf", "*.sh"
 ]
 EXCLUDE_PATTERNS = ["**/.terraform/**/*.*", "**/node_modules/**/*.*", "**/.venv/**/*.*"]
 
 # Replace a variable with a given text content.
-def replace_var_to_template(var_name, text, custom_template=False, debug=False):
-  # This pattern matches lines with sb-var anchor in the comment at the end.
+def replace_var_to_template(var_name, text, custom_template=False):
+  # Regex test: https://regex101.com/r/XtnJQI/4
+  # match_pattern matches lines with sb-var anchor in the comment at the end.
   # For example:
   #   PROJECT_ID: 12345          # sb-var:project_id
   #   GCP_REGION = "us-central1" # sb-var:gcp_region
-  match_pattern = f"^([^\\r]*[:|=][\\s\-]*)([\"\']?)([^\"^\']*)([\"\']?)\\s*#\\s*sb-var:{var_name}"
+  match_pattern = f"(\\s*[\":=-][ ]*)(-[ ]*)?([\"\']?)([^\"^\'^\r^\n]*)([\"\']?)\\s*#\\s*sb-var:{var_name}"
 
-  # This output patterh print the jinja2 template for the specific variable name.
+  # output_pattern prints the jinja2 template for the specific variable name.
   # For example:
   #   PROJECT_ID: {{project_id}} # sb-var:project_id
-  output_pattern = f"\\1\\2{{{{{var_name}}}}}\\4 # sb-var:{var_name}"
+  output_pattern = f"\\1\\2\\3{{{{{var_name}}}}}\\5 # sb-var:{var_name}"
 
   # In addition, if custom_template is true, the pattern will extend to the custom
   # template string at the end of the anchor. For example:
   #   BUCKET_NAME: my-project-bucket # sb-var:project_id:{{project_id}}-bucket
   if custom_template:
     match_pattern = match_pattern + ":(.*)"
-    output_pattern = f"\\1\\2\\5\\4 # sb-var:{var_name}:\\5"
-
-  if debug:
-    print(f"match_pattern = {match_pattern}")
+    output_pattern = f"\\1\\2\\3\\6\\5 # sb-var:{var_name}:\\6"
 
   # Replace with regex pattern and returns new text and count of changes.
   text, count = re.subn(match_pattern, output_pattern, text)
+
   return (text, count)
 
 def restore_template_in_comment(var_name, var_value, text):
@@ -109,6 +110,9 @@ def apply_var_to_folder(solution_path, var_name, var_value):
 
   modified_files_list = []
   for filename in list(file_set):
+    if DEBUG:
+      print(filename)
+
     with open(filename, "r") as file:
       # Replace variable
       filedata = file.read()
@@ -133,6 +137,7 @@ def set_var(
     solution_path: Annotated[Optional[str], typer.Argument()] = ".",
 ):
   validate_solution_folder(solution_path)
+  print(f"Setting {var_name} to '{var_value}'...")
 
   # Update to the root sb.yaml
   root_st_yaml = read_yaml(f"{solution_path}/sb.yaml")

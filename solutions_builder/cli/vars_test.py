@@ -74,3 +74,43 @@ def test_replace_var_to_value_custom_template():
   # FIXME: it double-counted the changes, as both simple template and custom
   # template both counts.
   assert count == 2
+
+def test_replace_with_multiple_occurances():
+  text = """
+    env:
+      PROJECT_ID: old-value-1 # sb-var:project_id
+      PROJECT_ID_2: old-value-2 # sb-var:project_id
+    """
+  text, count = replace_var_to_value("project_id", "fake-id", text)
+  assert text == """
+    env:
+      PROJECT_ID: fake-id # sb-var:project_id
+      PROJECT_ID_2: fake-id # sb-var:project_id
+    """
+  assert count == 2
+
+
+def test_replace_with_yaml_arrays():
+  text = """
+    array:
+      - not-replaced-yet # sb-var:project_id
+    """
+  text, count = replace_var_to_value("project_id", "fake-id", text)
+  assert text == """
+    array:
+      - fake-id # sb-var:project_id
+    """
+  assert count == 1
+
+  text = """
+    array:
+      - "not-replaced-yet" # sb-var:project_id
+      - "not-replaced-yet" # sb-var:project_id
+    """
+  text, count = replace_var_to_value("project_id", "fake-id", text)
+  assert text == """
+    array:
+      - "fake-id" # sb-var:project_id
+      - "fake-id" # sb-var:project_id
+    """
+  assert count == 2
