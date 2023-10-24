@@ -141,6 +141,9 @@ def deploy(profile: str = DEFAULT_DEPLOY_PROFILE,
   sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
   project_id = sb_yaml["project_id"]
   terraform_gke = sb_yaml["components"].get("terraform_gke")
+  env_vars = {
+    "PROJECT_ID": project_id,
+  }
   commands = []
 
   if component:
@@ -165,11 +168,18 @@ def deploy(profile: str = DEFAULT_DEPLOY_PROFILE,
   )
   print("This will build and deploy all services using the command below:")
   for command in commands:
-    print_highlight(f"- {command}")
+    print_success(f"- {command}")
+
+  print("\nwith the following environment variables:")
+  env_var_str = ""
+  for key, value in env_vars.items():
+    print_success(f"- {key}={value}")
+    env_var_str += f"{key}={value} "
+
   confirm("\nThis may take a few minutes. Continue?", skip=yes)
 
   for command in commands:
-    exec_shell(command, working_dir=solution_path)
+    exec_shell(env_var_str + command, working_dir=solution_path)
 
 
 # Destory deployment.
