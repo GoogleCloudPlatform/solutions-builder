@@ -141,7 +141,13 @@ def deploy(
   validate_solution_folder(solution_path)
 
   sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
-  project_id = sb_yaml["project_id"]
+  global_variables = sb_yaml.get("global_variables", {})
+
+  # Get project_id from sb.yaml.
+  project_id = global_variables.get("project_id", None)
+  assert project_id, "project_id is not set in 'global_variables' in sb.yaml."
+
+  # Get terraform_gke component settings.
   terraform_gke = sb_yaml["components"].get("terraform_gke")
   env_vars = {
     "PROJECT_ID": project_id,
