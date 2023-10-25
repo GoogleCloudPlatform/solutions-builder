@@ -130,6 +130,7 @@ def update(solution_path: Annotated[Optional[str],
 def deploy(
     profile: Annotated[str, typer.Option("--profile", "-p")] = DEFAULT_DEPLOY_PROFILE,
     component: Annotated[str, typer.Option("--component", "-c", "-m")] = None,
+    namespace: Annotated[str, typer.Option("--namespace", "-n")] = None,
     dev: Optional[bool] = False,
     solution_path: Annotated[Optional[str],
                             typer.Argument()] = ".",
@@ -171,8 +172,12 @@ def deploy(
         f"gcloud container clusters get-credentials {cluster_name} --region {region} --project {project_id}"
     )
 
+  # Set Skaffold namespace
+  namespace_flag = f"-n {namespace}" if namespace else ""
+
+  # Add skaffold command.
   commands.append(
-      f"{skaffold_command} -p {profile} {component_flag} --default-repo=\"gcr.io/{project_id}\" {skaffold_args}"
+      f"{skaffold_command} -p {profile} {component_flag} {namespace_flag} --default-repo=\"gcr.io/{project_id}\" {skaffold_args}"
   )
   print("This will build and deploy all services using the command below:")
   for command in commands:
