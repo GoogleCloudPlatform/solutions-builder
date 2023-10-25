@@ -130,6 +130,7 @@ def update(solution_path: Annotated[Optional[str],
 def deploy(
     profile: Annotated[str, typer.Option("--profile", "-p")] = DEFAULT_DEPLOY_PROFILE,
     component: Annotated[str, typer.Option("--component", "-c", "-m")] = None,
+    namespace: Annotated[str, typer.Option("--namespace", "-n")] = None,
     dev: Optional[bool] = False,
     solution_path: Annotated[Optional[str],
                             typer.Argument()] = ".",
@@ -141,7 +142,13 @@ def deploy(
   validate_solution_folder(solution_path)
 
   sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
-  project_id = sb_yaml["project_id"]
+  global_variables = sb_yaml.get("global_variables", {})
+
+  # Get project_id from sb.yaml.
+  project_id = global_variables.get("project_id", None)
+  assert project_id, "project_id is not set in 'global_variables' in sb.yaml."
+
+  # Get terraform_gke component settings.
   terraform_gke = sb_yaml["components"].get("terraform_gke")
   env_vars = {
     "PROJECT_ID": project_id,
@@ -165,8 +172,12 @@ def deploy(
         f"gcloud container clusters get-credentials {cluster_name} --region {region} --project {project_id}"
     )
 
+  # Set Skaffold namespace
+  namespace_flag = f"-n {namespace}" if namespace else ""
+
+  # Add skaffold command.
   commands.append(
-      f"{skaffold_command} -p {profile} {component_flag} --default-repo=\"gcr.io/{project_id}\" {skaffold_args}"
+      f"{skaffold_command} -p {profile} {component_flag} {namespace_flag} --default-repo=\"gcr.io/{project_id}\" {skaffold_args}"
   )
   print("This will build and deploy all services using the command below:")
   for command in commands:
@@ -187,7 +198,8 @@ def deploy(
 # Destory deployment.
 @app.command()
 def delete(profile: str = DEFAULT_DEPLOY_PROFILE,
-           component: str = None,
+           component: Annotated[str, typer.Option("--component", "-c", "-m")] = None,
+           namespace: Annotated[str, typer.Option("--namespace", "-n")] = None,
            solution_path: Annotated[Optional[str],
                                     typer.Argument()] = ".",
            yes: Optional[bool] = False):
@@ -197,14 +209,21 @@ def delete(profile: str = DEFAULT_DEPLOY_PROFILE,
   validate_solution_folder(solution_path)
 
   sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
-  project_id = sb_yaml["project_id"]
+  global_variables = sb_yaml.get("global_variables", {})
+
+  # Get project_id from sb.yaml.
+  project_id = global_variables.get("project_id", None)
+  assert project_id, "project_id is not set in 'global_variables' in sb.yaml."
 
   if component:
     component_flag = f" -m {component} "
   else:
     component_flag = ""
 
-  command = f"skaffold delete -p {profile} {component_flag} --default-repo=\"gcr.io/{project_id}\""
+  # Set Skaffold namespace
+  namespace_flag = f"-n {namespace}" if namespace else ""
+
+  command = f"skaffold delete -p {profile} {component_flag} {namespace_flag} --default-repo=\"gcr.io/{project_id}\""
   print("This will DELETE deployed services using the command below:")
   print_highlight(command)
   confirm("\nThis may take a few minutes. Continue?", default=False, skip=yes)

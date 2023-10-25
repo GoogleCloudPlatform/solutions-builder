@@ -38,8 +38,8 @@ def project_id(
     yes: Optional[bool] = False,
 ):
   validate_solution_folder(solution_path)
-  root_st_yaml = read_yaml(f"{solution_path}/sb.yaml")
-  global_variables = root_st_yaml.get("global_variables", {})
+  sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
+  global_variables = sb_yaml.get("global_variables", {})
 
   old_project_id = global_variables.get("project_id")
   old_project_number = global_variables.get("project_number")
@@ -56,8 +56,8 @@ def project_id(
 
   global_variables["project_id"] = new_project_id
   global_variables["project_number"] = new_project_number
-  root_st_yaml["global_variables"] = global_variables
-  write_yaml(f"{solution_path}/sb.yaml", root_st_yaml)
+  sb_yaml["global_variables"] = global_variables
+  write_yaml(f"{solution_path}/sb.yaml", sb_yaml)
 
   # Update copier answers
   copier_yaml = read_yaml(f"{solution_path}/.copier-answers.yml")
