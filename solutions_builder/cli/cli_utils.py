@@ -108,8 +108,8 @@ def exec_shell(command, working_dir=".", stop_when_error=True, stdout=None):
   exit_status = proc.wait()
 
   if exit_status != 0 and stop_when_error:
-    raise Exception(
-        f"Error when running command: {command} (working_dir={working_dir})")
+    raise RuntimeError(
+        f"Error occurs when running command: {command} (working_dir={working_dir})")
 
   return exit_status
 

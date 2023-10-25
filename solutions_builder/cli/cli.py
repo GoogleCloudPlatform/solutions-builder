@@ -194,7 +194,6 @@ def deploy(
   for command in commands:
     exec_shell(env_var_str + command, working_dir=solution_path)
 
-
 # Destory deployment.
 @app.command()
 def delete(profile: str = DEFAULT_DEPLOY_PROFILE,
@@ -244,7 +243,7 @@ def info(solution_path: Annotated[Optional[str],
       print(f"{key}: {value}")
   print()
 
-  print(f"Installed components:")
+  print("Installed components:")
   for key, value in sb_yaml["components"].items():
     print(f" - {key}")
   print()
@@ -261,7 +260,7 @@ def version():
 
 def main():
   try:
-    print_highlight(f"Solutions Builder (version " +
+    print_highlight("Solutions Builder (version " +
                     typer.style(__version__, fg=typer.colors.CYAN, bold=True) +
                     ")\n")
     app()
@@ -271,7 +270,9 @@ def main():
     if DEBUG:
       traceback.print_exc()
     print_error(e)
+    return -1
 
+  return 0
 
 if __name__ == "__main__":
   main()
