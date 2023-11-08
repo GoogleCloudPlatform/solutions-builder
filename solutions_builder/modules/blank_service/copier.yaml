@@ -4,10 +4,15 @@ _metadata:
   destination_path: .
 
 # questions
+module_version:
+  type: str
+  help: Module version (Default to 1.0)?
+  default: "1.0"
+
 component_name:
   type: str
   help: What is the name of this component (snake_case)?
-  default: blank_service
+  default: my_service
   validator: "{% if not component_name %}Required{% endif %}"
 
 resource_name:
@@ -26,21 +31,53 @@ gcp_region:
   help: Which Google Cloud region?
   default: us-central1
 
+deploy_cloudrun:
+  type: bool
+  help: Add Cloud Run to deployment methods (using Skaffold)?
+  default: yes
+
+cloudrun_neg:
+  type: bool
+  help: Create network endpoint group (NEG) for serverless ingress?
+  default: yes
+  when: "{{deploy_cloudrun}}"
+
+deploy_gke:
+  type: bool
+  help: Add GKE to deployment methods (using Skaffold)?
+  default: yes
+
+default_deploy:
+  type: str
+  help: Default deploy method? (cloudrun or gke)
+  choices:
+    Cloud Run: cloudrun
+    GKE: gke
+  default: cloudrun
+
 depend_on_common:
   type: bool
   help: Does this component require the Common image?
-  default: no
+  default: yes
 
-module_version:
+local_port:
   type: str
-  help: Module version?
-  default: "1.0"
+  help: What's the port for local port forwarding?
+  default: 9001
+
+use_github_action:
+  type: bool
+  help: Use Github Action as the default CI/CD?
+  default: yes
 
 _subdirectory: "{{module_version}}"
 
 _answers_file: ".st/module_answers/{{component_name}}.yaml"
 
 _templates_suffix: ""
+
+_patch:
+  - "skaffold.yaml"
 
 _exclude:
   - "README.md"
@@ -59,4 +96,3 @@ _jinja_extensions:
   - jinja2_strcase.StrcaseExtension
   - copier_templates_extensions.TemplateExtensionLoader
   - ../../copier_extensions/sb_helpers.py:SolutionsTemplateHelpersExtension
-  # - ../../copier_extensions/context.py:ContextUpdater

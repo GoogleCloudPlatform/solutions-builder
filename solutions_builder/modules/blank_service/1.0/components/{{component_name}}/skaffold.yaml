@@ -1,0 +1,125 @@
+apiVersion: skaffold/v4beta1
+kind: Config
+metadata:
+  name: {{component_name}}
+
+{% if depend_on_common == true -%}
+# Requires the common image for shared data models or utils.
+requires:
+- configs:
+  - common
+  path: ../common
+{%- endif %}
+
+build:
+  artifacts:
+  - image: {{resource_name}}
+    sync:
+      infer:
+      - '**/*.py'
+      - '**/*.json'
+    docker:
+      cacheFrom:
+      - {{resource_name}}
+      - {{resource_name}}:latest
+
+    {% if depend_on_common == true -%}
+    requires:
+    - image: common
+      alias: COMMON_IMAGE
+    {%- endif %}
+  googleCloudBuild: {}
+
+# Portforwarding when running `skaffold dev` locally.
+portForward:
+- resourceType: service
+  resourceName: {{resource_name}}
+  port: 80
+  localPort: {{local_port}} # Change this when adding other microservice.
+
+profiles:
+# Profile for building images locally.
+- name: local_build
+  build:
+    artifacts:
+    - image: {{resource_name}}
+      {% if depend_on_common == true -%}
+      requires:
+      - image: common
+        alias: COMMON_IMAGE
+      {%- endif %}
+      sync:
+        infer:
+        - '**/*.py'
+        - '**/*.json'
+    tagPolicy:
+      gitCommit: {}
+    local:
+      concurrency: 0
+
+{% if deploy_gke == true -%}
+# Profile for GKE deployment, building images via CloudBuild
+- &gke-profile # YAML anchor used by "default" profile.
+  name: gke
+  manifests:
+    # Loading kustomize base file for deployment.
+    kustomize:
+      paths:
+      - ./kustomize/base
+    # Substitute system's environment vars to properties.rendered.env
+    hooks:
+      before:
+      - host:
+          dir: ./kustomize/base
+          command: ["sh", "-c",
+            "envsubst < properties.env > properties.rendered.env"]
+      after:
+      - host:
+          dir: ./kustomize/base
+          command: ["sh", "-c", "rm *.rendered.env"]
+  # Simple deployment using kubectl.
+  deploy:
+    kubectl: {}
+
+# Profile for GKE Horizontal Pod Autoscaler.
+# This profile only works with `gke` profile together.
+# E.g. skaffold run -p gke,hpa
+- name: gke-hpa
+  manifests:
+    kustomize:
+      paths:
+      - ./kustomize/hpa
+  # Simple deployment using kubectl.
+  deploy:
+    kubectl: {}
+{%- endif %}
+
+{% if deploy_cloudrun == true -%}
+# Profile for Cloud Run deployment, building images via CloudBuild
+- &cloudrun-profile # YAML anchor used by "default" profile.
+  name: cloudrun
+  manifests:
+    rawYaml:
+      - manifests/cloudrun-service.yaml
+  deploy:
+    cloudrun:
+      projectid: {{project_id}}
+      region: {{gcp_region}}
+  portForward:
+  - resourceType: service
+    resourceName: {{resource_name}}
+    port: 80
+    localPort: {{local_port}} # Change this when adding other microservice.
+{%- endif %}
+
+{% if default_deploy == "cloudrun" -%}
+# The default-deploy profile refer to cloudrun profile above.
+- <<: *cloudrun-profile
+  name: default-deploy
+{%- endif %}
+
+{% if default_deploy == "gke" -%}
+# The default-deploy profile refer to gke profile above.
+- <<: *gke-profile
+  name: default-deploy
+{%- endif %}
