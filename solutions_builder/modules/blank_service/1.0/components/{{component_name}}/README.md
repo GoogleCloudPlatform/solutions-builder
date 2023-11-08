@@ -18,8 +18,7 @@ to install all dependencies from common.
 pip install -r ../common/requirements.txt
 ```
 
-Run `main.py` locally.
-
+Run `main.py`.
 ```
 cd components/{{component_name}}/src
 PYTHONPATH=../common/src python main.py
