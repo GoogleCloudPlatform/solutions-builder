@@ -22,13 +22,14 @@ from copier import run_auto
 from .component import component_app
 from .infra import infra_app
 from .template import template_app
-from .set import set_app
+from .set import set_app, project_id as set_project_id
 from .vars import vars_app
 from .cli_utils import *
 from .cli_constants import DEBUG
 
 __version__ = importlib.metadata.version("solutions-builder")
 DEFAULT_DEPLOY_PROFILE = "default-deploy"
+DEFAULT_PROEJCT_ID_PLACEHOLDER = "your-project-id"
 
 app = typer.Typer(
     add_completion=False,
@@ -147,6 +148,10 @@ def deploy(
   # Get project_id from sb.yaml.
   project_id = global_variables.get("project_id", None)
   assert project_id, "project_id is not set in 'global_variables' in sb.yaml."
+
+  if project_id == DEFAULT_PROEJCT_ID_PLACEHOLDER:
+    project_id = input("Please set the GCP project ID: ")
+    set_project_id(project_id)
 
   # Get terraform_gke component settings.
   terraform_gke = sb_yaml["components"].get("terraform_gke")
