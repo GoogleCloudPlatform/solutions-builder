@@ -201,7 +201,8 @@ def deploy(
     print_success(f"- {key}={value}")
     env_var_str += f"{key}={value} "
 
-  confirm("\nThis may take a few minutes. Continue?", skip=yes)
+  print()
+  confirm("This may take a few minutes. Continue?", skip=yes)
 
   for command in commands:
     exec_shell(env_var_str + command, working_dir=solution_path)
