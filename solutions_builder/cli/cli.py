@@ -150,7 +150,10 @@ def deploy(
   assert project_id, "project_id is not set in 'global_variables' in sb.yaml."
 
   if project_id == DEFAULT_PROEJCT_ID_PLACEHOLDER:
-    project_id = input("Please set the GCP project ID: ")
+    project_id = None
+    while not project_id:
+      project_id = input("Please set the GCP project ID: ")
+    print()
     set_project_id(project_id)
 
   # Get terraform_gke component settings.
@@ -187,6 +190,10 @@ def deploy(
   print("This will build and deploy all services using the command below:")
   for command in commands:
     print_success(f"- {command}")
+
+  namespace_str = namespace or "default"
+  print("\nto the namespace:")
+  print_success(f"- {namespace_str}")
 
   print("\nwith the following environment variables:")
   env_var_str = ""
