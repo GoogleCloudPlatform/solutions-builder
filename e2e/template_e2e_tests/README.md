@@ -4,7 +4,7 @@ This doc covers the setup and steps required for running e2e tests for Template.
 
 ## Setup
 
-> Currently, we run into issues of creating a brand new project for every e2e test. Hence we use one static project for e2e testing with resources clean up.
+> Currently, we run into issues of creating a brand-new project for every e2e test. Hence, we use one static project for e2e testing with resources clean up.
 
 - Create an org-level service account as e2e-runner:
   > This service account can be created separately under another GCP project with granted permissions on the org-level.
@@ -75,7 +75,7 @@ This doc covers the setup and steps required for running e2e tests for Template.
   bash ./e2e/template_e2e_tests/run_e2e_test.sh
   ```
 
-## Run E2E tests with Github Actions for E2E tests
+## Run E2E tests with GitHub Actions for E2E tests
 
 Add the following secrets to the `e2e` group:
 

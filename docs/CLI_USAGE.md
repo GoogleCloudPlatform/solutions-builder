@@ -1,4 +1,4 @@
-# Solution Builder CLI Usage
+# Solutions Builder CLI Usage
 
 ## Global Variables
 

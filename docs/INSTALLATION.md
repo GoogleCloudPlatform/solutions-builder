@@ -272,7 +272,7 @@ Once updated, open the browser to the Cloud Run service's URL, and you'll see th
 
 An infra component is nothing but another component. Some component contains just infra pieces in `terraform/modules` or `terraform/stages` folders. Other component may contain both `component/service_name` as a microservice **AND** required infra resources in `terraform/stages`.
 
-To add an infra component, run the same command like adding a regular component.
+To add an infra component, run the same command as adding a regular component.
 ```
 sb components add [COMPONENT_NAME]
 ```
