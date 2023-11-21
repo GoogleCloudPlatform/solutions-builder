@@ -102,6 +102,7 @@ data "template_file" "startup_script" {
 }
 
 resource "google_compute_instance" "jump_host" {
+  depends_on                = [time_sleep.wait_60_seconds]
   project                   = var.project_id
   zone                      = var.jump_host_zone
   name                      = "jump-host"
@@ -113,6 +114,7 @@ resource "google_compute_instance" "jump_host" {
   boot_disk {
     initialize_params {
       image = "ubuntu-os-cloud/ubuntu-2004-focal-v20230907"
+      size = 50
     }
   }
 
