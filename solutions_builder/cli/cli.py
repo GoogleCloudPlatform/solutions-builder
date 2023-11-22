@@ -201,6 +201,10 @@ def deploy(
     print_success(f"- {key}={value}")
     env_var_str += f"{key}={value} "
 
+  print("\nand the following global_variables from sb.yaml:")
+  for key, value in sb_yaml.get("global_variables", {}).items():
+    print_success(f"- {key}: {value}")
+
   print()
   confirm("This may take a few minutes. Continue?", skip=yes)
 
