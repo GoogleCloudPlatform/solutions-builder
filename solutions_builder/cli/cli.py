@@ -156,6 +156,10 @@ def deploy(
     print()
     set_project_id(project_id)
 
+    # Reload sb.yaml
+    sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
+    global_variables = sb_yaml.get("global_variables", {})
+
   # Get terraform_gke component settings.
   terraform_gke = sb_yaml["components"].get("terraform_gke")
   env_vars = {
