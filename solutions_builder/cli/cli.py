@@ -25,11 +25,10 @@ from .template import template_app
 from .set import set_app, project_id as set_project_id
 from .vars import vars_app
 from .cli_utils import *
-from .cli_constants import DEBUG
+from .cli_constants import DEBUG, PLACEHOLDER_VALUES
 
 __version__ = importlib.metadata.version("solutions-builder")
 DEFAULT_DEPLOY_PROFILE = "default-deploy"
-DEFAULT_PROEJCT_ID_PLACEHOLDER = "your-project-id"
 
 app = typer.Typer(
     add_completion=False,
@@ -149,7 +148,7 @@ def deploy(
   project_id = global_variables.get("project_id", None)
   assert project_id, "project_id is not set in 'global_variables' in sb.yaml."
 
-  if project_id == DEFAULT_PROEJCT_ID_PLACEHOLDER:
+  if project_id in PLACEHOLDER_VALUES:
     project_id = None
     while not project_id:
       project_id = input("Please set the GCP project ID: ")
