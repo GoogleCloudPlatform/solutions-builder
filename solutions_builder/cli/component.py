@@ -101,7 +101,8 @@ def process_component(method,
   answers_file = None
 
   # Get basic info from root sb.yaml.
-  root_st_yaml = read_yaml(f"{solution_path}/sb.yaml")
+  sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
+  global_variables = sb_yaml.get("global_variables", {})
   component_answers = {}
 
   # If the component name is a Git URL, use the URL as-is in copier.
@@ -114,11 +115,11 @@ def process_component(method,
 
     if method == "update":
       data["component_name"] = component_name
-      if component_name not in root_st_yaml["components"]:
+      if component_name not in sb_yaml["components"]:
         raise NameError(
             f"Component {component_name} is not defined in the root yaml 'sb.yaml' file."
         )
-      component_answers = root_st_yaml["components"][component_name]
+      component_answers = sb_yaml["components"][component_name]
       component_template = component_answers["component_template"]
       template_path = f"{current_dir}/../modules/{component_template}"
       answers_file = f".st/module_answers/{component_name}.yaml"
@@ -142,8 +143,8 @@ def process_component(method,
         "destination_path")
     destination_path = destination_path.replace("//", "/")
 
-  data["project_id"] = root_st_yaml["project_id"]
-  data["project_number"] = root_st_yaml["project_number"]
+  data["project_id"] = global_variables["project_id"]
+  data["project_number"] = global_variables["project_number"]
   data["solution_path"] = solution_path
   data["template_path"] = template_path
 
@@ -180,8 +181,8 @@ def process_component(method,
 # List installed components.
 @component_app.command()
 def list(solution_path: Annotated[Optional[str], typer.Argument()] = ".", ):
-  root_st_yaml = read_yaml(f"{solution_path}/sb.yaml")
-  components = root_st_yaml.get("components", [])
+  sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
+  components = sb_yaml.get("components", [])
   print("Installed components:\n")
   for component_name, properties in components.items():
     typer.echo(
