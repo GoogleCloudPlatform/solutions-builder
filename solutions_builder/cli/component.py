@@ -15,7 +15,6 @@ limitations under the License.
 """
 
 import typer
-import traceback
 from typing import Optional
 from typing_extensions import Annotated
 from copier import run_auto
@@ -26,6 +25,7 @@ component_app = typer.Typer()
 
 @component_app.command()
 def add(component_name,
+        component_template: Annotated[str, typer.Option("--template", "-t")] = None,
         solution_path: Annotated[Optional[str],
                                  typer.Argument()] = ".",
         yes: Optional[bool] = False,
@@ -37,7 +37,9 @@ def add(component_name,
       skip=yes)
 
   answers_dict = get_answers_dict(answers)
-  process_component("add", component_name, solution_path, data=answers_dict)
+  process_component("add",
+                    component_name, component_template,
+                    solution_path, data=answers_dict)
   print_success(
       f"Complete. Component {component_name} added to solution at {solution_path}\n"
   )
@@ -55,9 +57,15 @@ def update(component_name,
       + "Continue?",
       skip=yes)
 
+  sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
+  components = sb_yaml.get("components", {})
+  component_dict = components.get(component_name, {})
+  component_template = component_dict.get("component_template")
+
   answers_dict = get_answers_dict(answers)
   process_component("update",
                     component_name,
+                    component_template,
                     solution_path,
                     data=answers_dict,
                     use_existing_answers=yes)
@@ -93,9 +101,13 @@ def update_component_to_root_yaml(component_name, answers, solution_path):
 
 def process_component(method,
                       component_name,
+                      component_template,
                       solution_path,
                       data={},
                       use_existing_answers=False):
+
+  assert component_template, f"component_template is not empty."
+
   destination_path = "."
   current_dir = os.path.dirname(__file__)
   answers_file = None
@@ -106,9 +118,9 @@ def process_component(method,
   component_answers = {}
 
   # If the component name is a Git URL, use the URL as-is in copier.
-  if check_git_url(component_name):
-    print(f"Loading component from remote Git URL: {component_name}")
-    template_path = component_name
+  if check_git_url(component_template):
+    print(f"Loading component from remote Git URL: {component_template}")
+    template_path = component_template
 
   # Otherwise, try to locate the component in local modules/ folder.
   else:
@@ -131,11 +143,10 @@ def process_component(method,
           data[key] = value
 
     else:
-      component_template = component_name
       template_path = f"{current_dir}/../modules/{component_template}"
       if not os.path.exists(template_path):
         raise FileNotFoundError(
-            f"Component {component_name} does not exist in modules folder.")
+            f"Component {component_template} does not exist in modules folder.")
 
     # Get destination_path defined in copier.yaml
     copier_dict = get_copier_yaml(template_path)
@@ -143,6 +154,7 @@ def process_component(method,
         "destination_path")
     destination_path = destination_path.replace("//", "/")
 
+  data["component_name"] = component_name
   data["project_id"] = global_variables["project_id"]
   data["project_number"] = global_variables["project_number"]
   data["solution_path"] = solution_path
