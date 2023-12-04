@@ -18,5 +18,6 @@ import os
 DEBUG = (os.environ.get("SB_DEBUG", "").lower() == "true")
 PLACEHOLDER_VALUES = [
   "your-project-id",
+  "project-id-placeholder",
   "example.com"
 ]
