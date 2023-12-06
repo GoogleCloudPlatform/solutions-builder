@@ -48,8 +48,9 @@ def init(solution_path: Annotated[Optional[str],
     auto_approve_flag = "-auto-approve"
 
   # Get project ID from the existing root yaml.
-  st_yaml = read_yaml(f"{solution_path}/sb.yaml")
-  project_id = st_yaml["project_id"]
+  sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
+  global_variables = sb_yaml.get("global_variables", {})
+  project_id = global_variables["project_id"]
 
   confirm(f"""
   This will initialize the solution with the following steps:
@@ -109,8 +110,9 @@ def apply(stage,
           skip=yes)
 
   # Get project_id
-  st_yaml = read_yaml(f"{solution_path}/sb.yaml")
-  project_id = st_yaml["project_id"]
+  sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
+  global_variables = sb_yaml.get("global_variables", {})
+  project_id = global_variables["project_id"]
 
   # Get impersonate service account email
   env_var_clause = get_impersonate_clause(impersonate, impersonate_email,
@@ -155,8 +157,9 @@ def destroy(stage,
           skip=yes)
 
   # Get project ID from the existing root yaml.
-  st_yaml = read_yaml(f"{solution_path}/sb.yaml")
-  project_id = st_yaml["project_id"]
+  sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
+  global_variables = sb_yaml.get("global_variables", {})
+  project_id = global_variables["project_id"]
 
   # Get impersonate service account email
   env_var_clause = get_impersonate_clause(impersonate, impersonate_email,
