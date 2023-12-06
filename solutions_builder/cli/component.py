@@ -40,8 +40,8 @@ def add(component_name,
     return
 
   confirm(
-      f"This will add component '{component_name}' to '{solution_path}'. " +
-      "Continue?",
+      f"This will add component '{component_name}' to " \
+      f"{solution_path}/components folder. Continue?",
       skip=yes)
 
   answers_dict = get_answers_dict(answers)
@@ -61,8 +61,8 @@ def update(component_name,
            answers=None):
   validate_solution_folder(solution_path)
   confirm(
-      f"This will update the existing component '{component_name}' in '{solution_path}'. "
-      + "Continue?",
+      f"This will update '{component_name}' in " \
+      f"'{solution_path}/components'. Continue?",
       skip=yes)
 
   sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
@@ -200,10 +200,10 @@ def process_component(method,
 
 # List installed components.
 @component_app.command()
-def list(solution_path: Annotated[Optional[str], typer.Argument()] = ".", ):
+def info(solution_path: Annotated[Optional[str], typer.Argument()] = ".", ):
   sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
   components = sb_yaml.get("components", [])
-  print("Installed components:\n")
+  print("Installed components:")
   for component_name, properties in components.items():
     typer.echo(
         typer.style(f"- {component_name} ", fg=typer.colors.WHITE, bold=True) +
@@ -215,6 +215,6 @@ def list(solution_path: Annotated[Optional[str], typer.Argument()] = ".", ):
 
 # List available components to add.
 @component_app.command()
-def available():
+def list():
   print("Available components to add:\n")
   list_component_templates()

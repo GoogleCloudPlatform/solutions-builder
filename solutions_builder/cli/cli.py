@@ -19,7 +19,7 @@ import importlib.metadata
 from typing import Optional
 from typing_extensions import Annotated
 from copier import run_auto
-from .component import component_app
+from .component import component_app, info as components_info
 from .infra import infra_app
 from .template import template_app
 from .set import set_app, project_id as set_project_id
@@ -190,21 +190,22 @@ def deploy(
   commands.append(
       f"{skaffold_command} -p {profile} {component_flag} {namespace_flag} --default-repo=\"gcr.io/{project_id}\" {skaffold_args}"
   )
-  print("This will build and deploy all services using the command below:")
+  print("This will build and deploy all services using the command "\
+        "and variables below:")
   for command in commands:
     print_success(f"- {command}")
 
   namespace_str = namespace or "default"
-  print("\nto the namespace:")
+  print("\nnamespace:")
   print_success(f"- {namespace_str}")
 
-  print("\nwith the following environment variables:")
+  print("\nenvironment variables:")
   env_var_str = ""
   for key, value in env_vars.items():
     print_success(f"- {key}={value}")
     env_var_str += f"{key}={value} "
 
-  print("\nand the following global_variables from sb.yaml:")
+  print("\nglobal_variables in sb.yaml:")
   for key, value in sb_yaml.get("global_variables", {}).items():
     print_success(f"- {key}: {value}")
 
@@ -256,17 +257,16 @@ def info(solution_path: Annotated[Optional[str],
   Print info from ./sb.yaml.
   """
   sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
-  print(f"Printing info of the solution folder at '{solution_path}'\n")
+  print(f"Printing info of the solution folder at '{solution_path}/'\n")
 
-  for key, value in sb_yaml.items():
-    if key not in ["components", "_metadata"]:
-      print(f"{key}: {value}")
+  # Global variables
+  print("global_variables in sb.yaml:")
+  for key, value in sb_yaml.get("global_variables", {}).items():
+    print(f"- {key}: {value}")
   print()
 
-  print("Installed components:")
-  for key, value in sb_yaml["components"].items():
-    print(f" - {key}")
-  print()
+  # List of installed components.
+  components_info()
 
 
 @app.command()
