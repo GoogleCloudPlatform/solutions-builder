@@ -39,11 +39,11 @@ resource "google_project_service" "firestore" {
   service = "firestore.googleapis.com"
 }
 
-resource "google_firestore_database" "database" {
-  depends_on = [google_project_service.firestore]
+# resource "google_firestore_database" "database" {
+#   depends_on = [google_project_service.firestore]
 
-  project     = var.project_id
-  location_id = var.firestore_location_id
-  name        = "(default)"
-  type        = "FIRESTORE_NATIVE"
-}
+#   project     = var.project_id
+#   location_id = var.firestore_location_id
+#   name        = "(default)"
+#   type        = "FIRESTORE_NATIVE"
+# }
