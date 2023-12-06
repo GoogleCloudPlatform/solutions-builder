@@ -31,6 +31,14 @@ def add(component_name,
         yes: Optional[bool] = False,
         answers=None):
   validate_solution_folder(solution_path)
+
+  # Check if component_template is empty.
+  if not component_template:
+    print("Missing component_template. Please set --template or -t with one " \
+          " of the component templates:")
+    list_component_templates()
+    return
+
   confirm(
       f"This will add component '{component_name}' to '{solution_path}'. " +
       "Continue?",
@@ -208,7 +216,5 @@ def list(solution_path: Annotated[Optional[str], typer.Argument()] = ".", ):
 # List available components to add.
 @component_app.command()
 def available():
-  current_dir = os.path.dirname(__file__)
-  path = current_dir + "/../modules"
   print("Available components to add:\n")
-  list_subfolders(path)
+  list_component_templates()

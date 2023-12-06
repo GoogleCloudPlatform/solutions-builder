@@ -142,6 +142,12 @@ def list_subfolders(path):
   print()
 
 
+def list_component_templates():
+  current_dir = os.path.dirname(__file__)
+  path = current_dir + "/../modules"
+  list_subfolders(path)
+
+
 def check_git_url(url):
   regex_str = "((git|ssh|http(s)?)|(git@[\\w\\.]+))(:(//)?)([\\w\\.\\@\\:/\\-~]+)(\\.git)(/)?"
   regex = re.compile(regex_str)
