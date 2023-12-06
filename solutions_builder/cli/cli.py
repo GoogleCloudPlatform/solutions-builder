@@ -148,6 +148,11 @@ def deploy(
   project_id = global_variables.get("project_id", None)
   assert project_id, "project_id is not set in 'global_variables' in sb.yaml."
 
+  # Check namespace
+  allow_deploy_without_namespace = sb_yaml.get("allow_deploy_without_namespace")
+  if allow_deploy_without_namespace in [None, False, ""] and not namespace:
+    assert namespace, "Please set namespace with --namespace or -n"
+
   if project_id in PLACEHOLDER_VALUES:
     project_id = None
     while not project_id:
