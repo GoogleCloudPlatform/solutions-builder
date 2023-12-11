@@ -1,0 +1,55 @@
+_metadata:
+  module_name: terraform_gke
+  version: 1.0.0
+  destination_path: .
+
+# questions
+component_name:
+  type: str
+  help: What is the name of this component (snake_case)?
+  default: terraform_gke
+
+terraform_stage_name:
+  type: str
+  help: Terraform stage name?
+  default: 3-gke-autopilot
+
+gcp_region:
+  type: str
+  help: Which Google Cloud region?
+  default: us-central1
+
+cluster_name:
+  type: str
+  help: GKE cluster name?
+  default: main-cluster
+
+kubernetes_version:
+  type: str
+  help: Kubernetes version?
+  default: latest
+  # See https://cloud.google.com/kubernetes-engine/docs/release-notes-stable
+
+_answers_file: ".st/module_answers/{{component_name}}.yaml"
+
+_templates_suffix: ""
+
+_patch: []
+
+_exclude:
+  - "README.md"
+  - "copier.yaml"
+  - "copier_extensions"
+  - ".terraform*"
+  - ".tmp"
+  - ".venv"
+  - ".pytest_cache"
+  - "__pycache__"
+  - "*-debug.log"
+  - ".skip"
+  - "README.md"
+
+_jinja_extensions:
+  - jinja2_time.TimeExtension
+  - copier_templates_extensions.TemplateExtensionLoader
+  - ../../copier_extensions/sb_helpers.py:SolutionsTemplateHelpersExtension
