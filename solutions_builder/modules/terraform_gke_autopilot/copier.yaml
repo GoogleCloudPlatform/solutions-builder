@@ -24,12 +24,6 @@ cluster_name:
   help: GKE cluster name?
   default: main-cluster
 
-kubernetes_version:
-  type: str
-  help: Kubernetes version?
-  default: latest
-  # See https://cloud.google.com/kubernetes-engine/docs/release-notes-stable
-
 _answers_file: ".st/module_answers/{{component_name}}.yaml"
 
 _templates_suffix: ""
