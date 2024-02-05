@@ -1,30 +1,24 @@
 # Module: Terraform GKE Stage
 
-This module defines a Terraform GKE setup stage named "3-gke".
+This module defines a Terraform GKE setup stage named "3-gke-autopillot".
 
 Main components after setup:
-- ./terraform/stage/3-gke
+- ./terraform/stage/3-gke-autopillot
 
 ## Setup
 
-Run `sb components add [COMPONENT_NAME]` to add this module.
+Run `st components add [COMPONENT_NAME]` to add this module.
 ```
 cd my-solution-folder
-sb components add terraform_gke .
+sb components add terraform_gke_autopilot
 ```
 
 Fill in the variables.
 ```
 🎤 What is the name of this terraform stage?
-   3-gke
+   3-gke-autopillot
 🎤 Which Google Cloud region?
    us-central1
-🎤 Kubernetes version?
-   latest
-🎤 Allow domains for CORS? (comma-seperated)
-   http://localhost:4200,http://localhost:3000
-🎤 Cert Issuer Email
-   my_name@example.com
 
 ...
 

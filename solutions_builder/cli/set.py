@@ -52,7 +52,8 @@ def project_id(
 
   # Update Root sb.yaml
   new_project_number = get_project_number(new_project_id)
-  assert new_project_number, "Unable to receive project number for project '{new_project_id}'"
+  assert new_project_number, "Unable to receive project number for project " \
+                             f"'{new_project_id}'. Does this GCP project exist?"
 
   global_variables["project_id"] = new_project_id
   global_variables["project_number"] = new_project_number

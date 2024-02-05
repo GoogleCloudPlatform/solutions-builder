@@ -113,3 +113,9 @@ variable "firestore_location_id" {
   description = "Firestore Dataset location. Available values: nam5 or eur3"
   default     = "nam5"
 }
+
+variable "firestore_database_name" {
+  type        = string
+  description = "Firestore Dataset name"
+  default     = "(default)"
+}

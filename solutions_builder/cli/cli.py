@@ -19,13 +19,13 @@ import importlib.metadata
 from typing import Optional
 from typing_extensions import Annotated
 from copier import run_auto
-from .component import component_app
+from .component import component_app, info as components_info
 from .infra import infra_app
 from .template import template_app
-from .set import set_app
+from .set import set_app, project_id as set_project_id
 from .vars import vars_app
 from .cli_utils import *
-from .cli_constants import DEBUG
+from .cli_constants import DEBUG, PLACEHOLDER_VALUES
 
 __version__ = importlib.metadata.version("solutions-builder")
 DEFAULT_DEPLOY_PROFILE = "default-deploy"
@@ -148,6 +148,22 @@ def deploy(
   project_id = global_variables.get("project_id", None)
   assert project_id, "project_id is not set in 'global_variables' in sb.yaml."
 
+  # Check namespace
+  allow_deploy_without_namespace = sb_yaml.get("allow_deploy_without_namespace")
+  if allow_deploy_without_namespace in [None, False, ""] and not namespace:
+    assert namespace, "Please set namespace with --namespace or -n"
+
+  if project_id in PLACEHOLDER_VALUES:
+    project_id = None
+    while not project_id:
+      project_id = input("Please set the GCP project ID: ")
+    print()
+    set_project_id(project_id)
+
+    # Reload sb.yaml
+    sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
+    global_variables = sb_yaml.get("global_variables", {})
+
   # Get terraform_gke component settings.
   terraform_gke = sb_yaml["components"].get("terraform_gke")
   env_vars = {
@@ -179,17 +195,27 @@ def deploy(
   commands.append(
       f"{skaffold_command} -p {profile} {component_flag} {namespace_flag} --default-repo=\"gcr.io/{project_id}\" {skaffold_args}"
   )
-  print("This will build and deploy all services using the command below:")
+  print("This will build and deploy all services using the command "\
+        "and variables below:")
   for command in commands:
     print_success(f"- {command}")
 
-  print("\nwith the following environment variables:")
+  namespace_str = namespace or "default"
+  print("\nnamespace:")
+  print_success(f"- {namespace_str}")
+
+  print("\nenvironment variables:")
   env_var_str = ""
   for key, value in env_vars.items():
     print_success(f"- {key}={value}")
     env_var_str += f"{key}={value} "
 
-  confirm("\nThis may take a few minutes. Continue?", skip=yes)
+  print("\nglobal_variables in sb.yaml:")
+  for key, value in sb_yaml.get("global_variables", {}).items():
+    print_success(f"- {key}: {value}")
+
+  print()
+  confirm("This may take a few minutes. Continue?", skip=yes)
 
   for command in commands:
     exec_shell(env_var_str + command, working_dir=solution_path)
@@ -236,17 +262,16 @@ def info(solution_path: Annotated[Optional[str],
   Print info from ./sb.yaml.
   """
   sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
-  print(f"Printing info of the solution folder at '{solution_path}'\n")
+  print(f"Printing info of the solution folder at '{solution_path}/'\n")
 
-  for key, value in sb_yaml.items():
-    if key not in ["components", "_metadata"]:
-      print(f"{key}: {value}")
+  # Global variables
+  print("global_variables in sb.yaml:")
+  for key, value in sb_yaml.get("global_variables", {}).items():
+    print(f"- {key}: {value}")
   print()
 
-  print("Installed components:")
-  for key, value in sb_yaml["components"].items():
-    print(f" - {key}")
-  print()
+  # List of installed components.
+  components_info()
 
 
 @app.command()

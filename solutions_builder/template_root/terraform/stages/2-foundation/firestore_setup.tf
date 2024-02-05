@@ -39,11 +39,14 @@ resource "google_project_service" "firestore" {
   service = "firestore.googleapis.com"
 }
 
+# Only create a new Firestore database if choosing a different
+# Firestore database name other than (default).
 resource "google_firestore_database" "database" {
   depends_on = [google_project_service.firestore]
+  count      = ((var.firestore_database_name != "" && var.firestore_database_name != "(default)") ? 1 : 0)
 
   project     = var.project_id
   location_id = var.firestore_location_id
-  name        = "(default)"
+  name        = var.firestore_database_name
   type        = "FIRESTORE_NATIVE"
 }
