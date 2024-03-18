@@ -101,7 +101,7 @@ sb infra apply 2-foundation
 
 Add a RESTful API service with **Todo** data model to this solution.
 ```
-sb components add restful_service
+sb components add -t restful_service todo_service
 ```
 
 Fill details in the prompt:
