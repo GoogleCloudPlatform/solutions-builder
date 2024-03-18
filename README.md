@@ -122,7 +122,8 @@ sb infra apply 3-httplb-cloudrun
 
 Build and deploy
 ```
-sb deploy
+NAMESPACE=default
+sb deploy -n $NAMESPACE
 ```
 - See other deployment options in [solutions_builder/modules](solutions_builder/modules).
 
