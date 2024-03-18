@@ -116,7 +116,7 @@ Fill details in the prompt:
 
 Add an HTTP Load Balancer for Cloud Run service(s)
 ```
-sb add component terraform_httplb_cloudrun
+sb components add -t terraform_httplb_cloudrun terraform_httplb_cloudrun
 sb infra apply 3-httplb-cloudrun
 ```
 
