@@ -101,7 +101,7 @@ sb infra apply 2-foundation
 
 Add a RESTful API service with **Todo** data model to this solution.
 ```
-sb components add restful_service
+sb components add -t restful_service todo_service
 ```
 
 Fill details in the prompt:
@@ -116,13 +116,14 @@ Fill details in the prompt:
 
 Add an HTTP Load Balancer for Cloud Run service(s)
 ```
-sb add component terraform_httplb_cloudrun
+sb components add -t terraform_httplb_cloudrun terraform_httplb_cloudrun
 sb infra apply 3-httplb-cloudrun
 ```
 
 Build and deploy
 ```
-sb deploy
+NAMESPACE=default
+sb deploy -n $NAMESPACE
 ```
 - See other deployment options in [solutions_builder/modules](solutions_builder/modules).
 
