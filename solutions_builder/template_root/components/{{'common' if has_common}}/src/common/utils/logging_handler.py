@@ -13,27 +13,49 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-"""class and methods for logs handling."""
+"""class and methods for logs handling.
+Sample usage:
+>>> from common.utils.logging_handler import Logger
+
+>>> logger.get_logger(__file__)
+
+>>> def my_function(){
+>>>   logger.info("")
+>>> }
+"""
 
 import logging
+import os
+import sys
+from common.config import CLOUD_LOGGING_ENABLED
+import google.cloud.logging
 
-logging.basicConfig(level=logging.INFO)
+if CLOUD_LOGGING_ENABLED:
+  client = google.cloud.logging.Client()
+  client.setup_logging()
+  logging.basicConfig(format="%(asctime)s:%(levelname)s:%(message)s",
+                      level=logging.INFO)
+else:
+  logging.basicConfig(level=logging.INFO)
 
 
-class Logger():
+class Logger:
   """class def handling logs."""
 
-  @staticmethod
-  def info(message):
-    """Display info logs."""
-    logging.info(message)
+  def __init__(self, name):
+    dirname = os.path.dirname(name)
+    filename = os.path.split(name)[1]
+    folder = os.path.split(dirname)[1]
+    module_name = f"{folder}/{filename}"
+    self.logger = logging.getLogger(module_name)
+    handler = logging.StreamHandler(sys.stdout)
+    log_format = "%(levelname)s: [%(name)s:%(lineno)d - " \
+                 "%(funcName)s()] %(message)s"
+    handler.setFormatter(logging.Formatter(log_format))
+    self.logger.addHandler(handler)
+    self.logger.propagate = False
 
-  @staticmethod
-  def warning(message):
-    """Display warning logs."""
-    logging.warning(message)
-
-  @staticmethod
-  def error(message):
-    """Display error logs."""
-    logging.error(message)
+  @classmethod
+  def get_logger(cls, name) -> logging.Logger:
+    logger_instance = cls(name)
+    return logger_instance.logger
