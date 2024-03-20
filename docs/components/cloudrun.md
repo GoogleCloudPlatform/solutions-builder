@@ -90,7 +90,8 @@ Open the link http://127.0.0.1:9001 or http://localhost:9001 in a browser to see
 You could use Cloud Run proxy service directly to test the service:
 
 ```shell
-gcloud beta run services proxy $SERVICE-NAME --region=$REGION --project=$PROJECT_ID
+gcloud beta run services proxy $SERVICE-NAME --region=$REGION --project=$PROJECT_ID --port 9001
+
 ```
 
 ### Allowing public (unauthenticated) access to a Cloud Run service
