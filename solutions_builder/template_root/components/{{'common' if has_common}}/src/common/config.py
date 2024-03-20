@@ -27,3 +27,6 @@ if PROJECT_ID != "":
 DATABASE_PREFIX = os.getenv("DATABASE_PREFIX", "")
 
 NEO4J_URI = "bolt://neo4j-neo4j:7687"
+
+CLOUD_LOGGING_ENABLED = bool(
+  os.getenv("CLOUD_LOGGING_ENABLED", "true").lower() in ("true",))
