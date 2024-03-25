@@ -1,0 +1,11 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: frontend
+spec:
+  template:
+    spec:
+      containers:
+        - image: frontend
+          ports:
+            - containerPort: 80

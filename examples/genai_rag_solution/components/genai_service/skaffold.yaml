@@ -1,0 +1,76 @@
+apiVersion: skaffold/v4beta1
+kind: Config
+metadata:
+  name: genai_service
+
+# Requires the common image for shared data models or utils.
+requires:
+- configs:
+  - common
+  path: ../common
+
+build:
+  artifacts:
+  - image: genai-service
+    sync:
+      infer:
+      - '**/*.py'
+      - '**/*.json'
+    docker:
+      cacheFrom:
+      - genai-service
+      - genai-service:latest
+
+    requires:
+    - image: common
+      alias: COMMON_IMAGE
+  googleCloudBuild: {}
+
+# Portforwarding when running `skaffold dev` locally.
+portForward:
+- resourceType: service
+  resourceName: genai-service
+  port: 80
+  localPort: 9002 # Change this when adding other microservice.
+
+profiles:
+# Profile for building images locally.
+- name: local_build
+  build:
+    artifacts:
+    - image: genai-service
+      requires:
+      - image: common
+        alias: COMMON_IMAGE
+      sync:
+        infer:
+        - '**/*.py'
+        - '**/*.json'
+    tagPolicy:
+      gitCommit: {}
+    local:
+      concurrency: 0
+
+
+
+# Profile for Cloud Run deployment, building images via CloudBuild
+- &cloudrun-profile # YAML anchor used by "default" profile.
+  name: cloudrun
+  manifests:
+    rawYaml:
+      - manifests/cloudrun-service.yaml
+  deploy:
+    cloudrun:
+      projectid: sb-genai-0320
+      region: us-central1
+  portForward:
+  - resourceType: service
+    resourceName: genai-service
+    port: 80
+    localPort: 9002 # Change this when adding other microservice.
+
+# The default-deploy profile refer to cloudrun profile above.
+- <<: *cloudrun-profile
+  name: default-deploy
+
+

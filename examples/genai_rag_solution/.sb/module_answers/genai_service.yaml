@@ -1,0 +1,14 @@
+# Changes here will be overwritten by Copier
+_src_path: /Users/jonchen/workspace/solutions-builder/solutions_builder/cli/../modules/blank_service
+cloudrun_neg: true
+component_name: genai_service
+default_deploy: cloudrun
+depend_on_common: true
+deploy_cloudrun: true
+deploy_gke: false
+gcp_region: us-central1
+local_port: '9002'
+module_version: '1.0'
+resource_name: genai-service
+service_path: genai-service
+use_github_action: false

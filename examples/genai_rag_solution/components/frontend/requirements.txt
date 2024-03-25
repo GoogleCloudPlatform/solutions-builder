@@ -1,0 +1,7 @@
+streamlit==1.30.0
+streamlit-chat==0.1.1
+streamlit-javascript==0.1.5
+streamlit-extras==0.3.6
+streamlit-google-oauth @ git+https://github.com/hunkim/streamlit-google-oauth@5feb84d2b8298f0a512a017bf7ffa9672b449342
+moment==0.12.1
+python-dotenv==1.0.1

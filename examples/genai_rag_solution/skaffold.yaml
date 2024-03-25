@@ -1,0 +1,14 @@
+apiVersion: skaffold/v4beta1
+kind: Config
+metadata:
+  name: all-services
+requires:
+- configs:
+  - common
+  path: ./components/common
+- configs:
+  - frontend
+  path: ./components/frontend
+- configs:
+  - genai_service
+  path: ./components/genai_service

@@ -1,0 +1,11 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: genai-service
+spec:
+  template:
+    spec:
+      containers:
+        - image: genai-service
+          ports:
+            - containerPort: 80
