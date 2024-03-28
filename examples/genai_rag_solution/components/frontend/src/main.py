@@ -17,14 +17,19 @@
 import logging
 import os
 import streamlit as st
-import streamlit_google_oauth as oauth
+from streamlit_oauth import OAuth2Component
 from dotenv import load_dotenv
 
 load_dotenv()
-client_id = os.environ["GOOGLE_CLIENT_ID"]
-client_secret = os.environ["GOOGLE_CLIENT_SECRET"]
-# redirect_uri = os.environ["GOOGLE_REDIRECT_URI"]
-redirect_uri = "http://localhost:8501"
+
+AUTHORIZE_URL = "https://accounts.google.com/o/oauth2/v2/auth"
+TOKEN_URL = "https://oauth2.googleapis.com/token"
+REFRESH_TOKEN_URL = "https://oauth2.googleapis.com/token"
+REVOKE_TOKEN_URL = "https://oauth2.googleapis.com/revoke"
+GOOGLE_CLIENT_ID = os.environ["GOOGLE_CLIENT_ID"]
+GOOGLE_CLIENT_SECRET = os.environ["GOOGLE_CLIENT_SECRET"]
+REDIRECT_URI = os.environ["REDIRECT_URI"]
+SCOPE = "openid profile email"
 
 
 def app():
@@ -37,17 +42,23 @@ def app():
 
   st.title("Hello")
 
-  login_info = oauth.login(
-      client_id=client_id,
-      client_secret=client_secret,
-      redirect_uri=redirect_uri,
-      # login_button_text="Continue with Google",
-      logout_button_text="Logout",
-  )
-  if login_info:
-    user_id, user_email = login_info
-    st.write(f"Welcome {user_email}")
+  # Streamlit component: https://github.com/dnplus/streamlit-oauth
+  oauth2 = OAuth2Component(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET,
+                           AUTHORIZE_URL, TOKEN_URL, REFRESH_TOKEN_URL, REVOKE_TOKEN_URL)
+
+  # Check if token exists in session state
+  if "token" not in st.session_state:
+    # If not, show authorize button
+    result = oauth2.authorize_button(
+        "Continue with Google", REDIRECT_URI, SCOPE)
+    if result and "token" in result:
+      # If authorization successful, save token in session state
+      st.session_state.token = result.get("token")
+      st.rerun()
+  else:
+    # If token exists in session state, navigate to Chat page.
     st.switch_page("pages/Chat.py")
+
 
 if __name__ == "__main__":
   app()

@@ -19,7 +19,7 @@ import requests
 import streamlit as st
 
 
-API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost/genai-service")
+API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:9002/genai-service")
 
 def send_chat(prompt, chat_session_id=None):
   url = f"{API_BASE_URL}/chat/send_message"
@@ -64,21 +64,15 @@ def get_chat_messages(chat_session_id=None):
   return messages
 
 
-def get_chat_session_id():
-  values = st.experimental_get_query_params().get("chat_session_id")
-  if values:
-    return values[0]
-  else:
-    return None
-
-
 # Main content of the Chat page.
 if __name__ == "__main__":
   if "token" not in st.session_state:
     st.switch_page("main.py")
 
   # Get chat session id from query params.
-  st.session_state.chat_session_id = get_chat_session_id()
+  st.session_state.chat_session_id = st.query_params.get("chat_session_id")
+  print(st.session_state.chat_session_id)
+
   st.session_state.messages = get_chat_messages(
       st.session_state.chat_session_id)
 
@@ -87,7 +81,7 @@ if __name__ == "__main__":
     if st.button("New session"):
       st.session_state.chat_session_id = None
       st.session_state.messages = []
-      st.experimental_set_query_params()
+      st.query_params.clear()
 
     st.subheader("Previous sessions")
     with st.spinner("Loading chat sessions..."):
@@ -97,7 +91,7 @@ if __name__ == "__main__":
         if st.button(f"- {chat_session['id']}"):
           st.session_state.chat_session_id = chat_session["id"]
           st.session_state.messages = get_chat_messages(chat_session["id"])
-          st.experimental_set_query_params(chat_session_id=chat_session["id"])
+          st.query_params["chat_session_id"] = chat_session["id"]
 
   # Render chat page.
   st.title("Chat")
@@ -137,5 +131,4 @@ if __name__ == "__main__":
           "content": result["response"]})
 
         st.write(result["response"])
-        st.experimental_set_query_params(
-            chat_session_id=result["chat_session_id"])
+        st.query_params["chat_session_id"] = result["chat_session_id"]
