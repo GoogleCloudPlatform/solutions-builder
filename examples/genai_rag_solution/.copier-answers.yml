@@ -7,7 +7,7 @@ has_common: true
 ip_cidr_range: 10.0.0.0/16
 jump_host_zone: us-central1-a
 master_ipv4_cidr_block: 172.16.0.0/28
-project_id: sb-genai-0320
+project_id: your-project-id
 project_name: simple_restful_apis
 project_number: 561278228515
 secondary_pod_ip_cidr_range: 10.1.0.0/16

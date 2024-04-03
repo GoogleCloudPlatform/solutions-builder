@@ -9,6 +9,7 @@ COPY requirements.txt service_requirements.txt
 # add endline in case not there
 RUN awk 1 requirements.txt > requirements.txt
 RUN cat service_requirements.txt >> requirements.txt
+RUN apt-get install poppler-utils tesseract-ocr
 
 RUN pip install -r requirements.txt
 

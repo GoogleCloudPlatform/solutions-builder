@@ -15,10 +15,11 @@
  *
  */
 
-terraform {
-  backend "gcs" {
-    # Uncomment below and specify a GCS bucket for TF state.
-    bucket = "your-project-id-tfstate" # sb-var:project_id:{{project_id}}-tfstate
-    prefix = "stage/2-foundation"
-  }
+resource "google_storage_bucket" "llm_doc_storage" {
+  project                     = var.project_id
+  name                        = "${var.project_id}-sample-docs"
+  location                    = "US"
+  storage_class               = "STANDARD"
+  uniform_bucket_level_access = true
+  force_destroy               = true
 }

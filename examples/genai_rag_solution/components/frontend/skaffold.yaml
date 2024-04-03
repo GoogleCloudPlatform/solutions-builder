@@ -61,7 +61,7 @@ profiles:
       - manifests/cloudrun-service.yaml
   deploy:
     cloudrun:
-      projectid: sb-genai-0320
+      projectid: your-project-id # sb-var:project_id
       region: us-central1
   portForward:
   - resourceType: service

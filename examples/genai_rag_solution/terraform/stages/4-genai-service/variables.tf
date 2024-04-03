@@ -15,10 +15,17 @@
  *
  */
 
-terraform {
-  backend "gcs" {
-    # Uncomment below and specify a GCS bucket for TF state.
-    bucket = "your-project-id-tfstate" # sb-var:project_id:{{project_id}}-tfstate
-    prefix = "stage/2-foundation"
+variable "project_id" {
+  type        = string
+  description = "GCP Project ID"
+
+  validation {
+    condition     = length(var.project_id) > 0
+    error_message = "The project_id value must be an non-empty string."
   }
+}
+
+variable "region" {
+  type        = string
+  description = "GCP region"
 }

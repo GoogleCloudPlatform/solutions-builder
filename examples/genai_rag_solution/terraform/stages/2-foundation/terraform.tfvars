@@ -1,4 +1,4 @@
-project_id              = "sb-genai-0320" # sb-var:project_id
+project_id              = "your-project-id" # sb-var:project_id
 project_number          = "561278228515" # sb-var:project_number
 region                  = "us-central1"     # sb-var:gcp_region
 storage_multiregion     = "US"

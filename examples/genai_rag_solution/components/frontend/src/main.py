@@ -31,6 +31,11 @@ GOOGLE_CLIENT_SECRET = os.environ["GOOGLE_CLIENT_SECRET"]
 REDIRECT_URI = os.environ["REDIRECT_URI"]
 SCOPE = "openid profile email"
 
+assert GOOGLE_CLIENT_ID, "GOOGLE_CLIENT_ID environment variable not set"
+assert GOOGLE_CLIENT_SECRET, \
+    "GOOGLE_CLIENT_SECRET environment variable not set"
+assert REDIRECT_URI, "REDIRECT_URI environment variable not set"
+
 
 def app():
   st.set_page_config(
