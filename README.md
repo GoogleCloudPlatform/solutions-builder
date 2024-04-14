@@ -10,12 +10,13 @@ solutions with the best practices in architecture on Google Cloud, including GKE
 clusters, Cloud Run, Test Automation, CI/CD, as well as development process.
 
 This template provides built-in and ready-to-ship modules including:
-* Easy-to-deploy [Terraform](https://www.terraform.io/) boilerplate modules
-* Container-based microservices, can be deployed to a Kubernetes cluster or Cloud Run.
-* Unified deployment using Skaffold.
-* Automatically generated API documentation with Swagger UI.
-* CI/CD deployment (with GitHub Actions).
-* Cloud Run templates.
+
+- Easy-to-deploy [Terraform](https://www.terraform.io/) boilerplate modules
+- Container-based microservices, can be deployed to a Kubernetes cluster or Cloud Run.
+- Unified deployment using Skaffold.
+- Automatically generated API documentation with Swagger UI.
+- CI/CD deployment (with GitHub Actions).
+- Cloud Run templates.
 
 ## Roadmap
 
@@ -24,8 +25,8 @@ Please see [Feature Requests in the GitHub issue list](https://github.com/Google
 ## Prerequisite
 
 | Tool       | Required Version | Installation                                        |
-|------------|------------------|-----------------------------------------------------|
-| Python     | &gt;= 3.9        |                                                     |
+| ---------- | ---------------- | --------------------------------------------------- |
+| Python     | &gt;= 3.11       |                                                     |
 | gcloud CLI | Latest           | https://cloud.google.com/sdk/docs/install           |
 | Terraform  | &gt;= v1.3.7     | https://developer.hashicorp.com/terraform/downloads |
 | Skaffold   | &gt;= v2.4.0     | https://skaffold.dev/docs/install/                  |
@@ -33,17 +34,19 @@ Please see [Feature Requests in the GitHub issue list](https://github.com/Google
 [Optional] If you plan to deploy services on a GKE cluster, please install the following:
 
 | Tool      | Required Version | Installation                                               |
-|-----------|------------------|------------------------------------------------------------|
+| --------- | ---------------- | ---------------------------------------------------------- |
 | Kustomize | &gt;= v5.0.0     | https://kubectl.docs.kubernetes.io/installation/kustomize/ |
 
 ## Installing Solutions Builder CLI
 
 With `pip`:
+
 ```
 pip install solutions-builder
 ```
 
 With `pipx`:
+
 ```
 pip install --user pipx
 pipx install solutions-builder
@@ -52,11 +55,13 @@ pipx install solutions-builder
 ## Quick Start
 
 This quick start steps will do the following:
+
 - Create a new GCP project and initialize Cloud foundation.
 - Add a RESTful API service for managing Todo list.
 - Deploy the service to Cloud Run.
 
 Set up GCP project
+
 ```
 export PROJECT_ID=my-solution-gcp-id
 
@@ -68,11 +73,13 @@ gcloud config set project $PROJECT_ID
 ```
 
 Generate a new solution folder.
+
 ```
 sb new my-solution
 ```
 
 This will prompt options and variables:
+
 ```
 🎤 What is your project name? (Spaces are allowed.)
    my-solution
@@ -87,24 +94,29 @@ This will prompt options and variables:
 ```
 
 Go to the newly created project folder
+
 ```
 cd my-solution
 sb infra apply 1-bootstrap
 ```
 
 Initialize Cloud infrastructure
+
 - Option 1: (Recommended) Log in to the jump host and run the following command(s) in the solution folder.
 - Option 2: Run the following commands in your local machine.
+
 ```
 sb infra apply 2-foundation
 ```
 
 Add a RESTful API service with **Todo** data model to this solution.
+
 ```
 sb components add -t restful_service todo_service
 ```
 
 Fill details in the prompt:
+
 - Component name: **todo_service**
 - Resource name: **todo-service**
 - Relative path: **todo-service**
@@ -115,16 +127,18 @@ Fill details in the prompt:
 - Default deploy method? (cloudrun or gke): **Cloud Run**
 
 Add an HTTP Load Balancer for Cloud Run service(s)
+
 ```
 sb components add -t terraform_httplb_cloudrun terraform_httplb_cloudrun
 sb infra apply 3-httplb-cloudrun
 ```
 
 Build and deploy
+
 ```
-NAMESPACE=default
-sb deploy -n $NAMESPACE
+sb deploy
 ```
+
 - See other deployment options in [solutions_builder/modules](solutions_builder/modules).
 
 ## CLI Usage
@@ -134,19 +148,24 @@ For more information on how to use the CLI, please refer to the [CLI_USAGE.md](d
 ## Additional Documentations
 
 You can find more documentations in [docs](docs) folder. In a nutshell, it covers the following:
+
 - [INSTALLATION.md](docs/INSTALLATION.md) - The overall installation guide.
 - [DEVELOPMENT.md](docs/DEVELOPMENT.md) - Development guide and code submission process.
 - [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) - Development guide and code submission process.
 
 In the [docs/components](docs/components) folder, it contains a few more guidance based on each component/feature available in this template.
+
 - [gke.md](docs/components/gke.md) covers the overall development guidance on Google Kubernetes Engine.
 - [cloudrun.md](docs/components/cloudrun.md) covers the guidance if you want to deploy microservice to Cloud Run.
 
 ## FAQ
+
 - Who are the target audience/users for this Solutions Builder?
+
   - A: Any engineering team to start a new solution development project.
 
 - Can I choose to deploy microservice just to Cloud Run?
+
   - A: Yes, please refer to [INSTALLATION Guide](docs/INSTALLATION.md) for more details.
 
 - Can I use this template for non-Google or multi-Cloud environments?

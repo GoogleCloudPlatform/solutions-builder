@@ -14,10 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import typer, time
+import typer
+import time
 from typing import Optional
 from typing_extensions import Annotated
-from copier import run_auto
 from .cli_utils import *
 
 infra_app = typer.Typer()
@@ -119,7 +119,8 @@ def apply(stage,
                                           project_id)
   unclock_clause = " -unlock=false" if unlock else ""
   working_dir = f"{solution_path}/terraform/stages/{stage}"
-  exec_shell(f"{env_var_clause} terraform init {unclock_clause}", working_dir=working_dir)
+  exec_shell(f"{env_var_clause} terraform init {unclock_clause}",
+             working_dir=working_dir)
   exec_shell(f"{env_var_clause} terraform apply {auto_approve_flag} {unclock_clause}",
              working_dir=working_dir)
   exec_shell(f"{env_var_clause} terraform output > tf_output.tfvars",
@@ -166,7 +167,8 @@ def destroy(stage,
                                           project_id)
   unclock_clause = " -unlock=false" if unlock else ""
   working_dir = f"{solution_path}/terraform/stages/{stage}"
-  exec_shell(f"{env_var_clause} terraform init {unclock_clause}", working_dir=working_dir)
+  exec_shell(f"{env_var_clause} terraform init {unclock_clause}",
+             working_dir=working_dir)
   exec_shell(f"{env_var_clause} terraform destroy {auto_approve_flag} {unclock_clause}",
              working_dir=working_dir)
 

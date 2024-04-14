@@ -38,3 +38,6 @@ node_modules
 
 # VSCode related
 *.code-workspace
+
+# Jupyter notebook temp files
+.ipynb_checkpoints

@@ -17,7 +17,7 @@ limitations under the License.
 import typer
 from typing import Optional
 from typing_extensions import Annotated
-from copier import run_auto
+from copier import run_copy
 from .cli_utils import *
 
 component_app = typer.Typer()
@@ -25,7 +25,8 @@ component_app = typer.Typer()
 
 @component_app.command()
 def add(component_name,
-        component_template: Annotated[str, typer.Option("--template", "-t")] = None,
+        component_template: Annotated[str,
+                                      typer.Option("--template", "-t")] = None,
         solution_path: Annotated[Optional[str],
                                  typer.Argument()] = ".",
         yes: Optional[bool] = False,
@@ -34,13 +35,13 @@ def add(component_name,
 
   # Check if component_template is empty.
   if not component_template:
-    print("Missing component_template. Please set --template or -t with one " \
+    print("Missing component_template. Please set --template or -t with one "
           " of the component templates:")
     list_component_templates()
     return
 
   confirm(
-      f"This will add component '{component_name}' to " \
+      f"This will add component '{component_name}' to "
       f"{solution_path}/components folder. Continue?",
       skip=yes)
 
@@ -61,7 +62,7 @@ def update(component_name,
            answers=None):
   validate_solution_folder(solution_path)
   confirm(
-      f"This will update '{component_name}' in " \
+      f"This will update '{component_name}' in "
       f"'{solution_path}/components'. Continue?",
       skip=yes)
 
@@ -81,22 +82,6 @@ def update(component_name,
       f"Complete. Component {component_name} updated to solution at {solution_path}\n"
   )
 
-
-@component_app.command()
-def init(component_name,
-          solution_path: Annotated[Optional[str],
-                                  typer.Argument()] = ".",
-          yes: Optional[bool] = False):
-
-  pass
-
-@component_app.command()
-def fix_skaffold(component_name,
-          solution_path: Annotated[Optional[str],
-                                  typer.Argument()] = ".",
-          yes: Optional[bool] = False):
-
-  pass
 
 def update_component_to_root_yaml(component_name, answers, solution_path):
   # Update Solution root YAML with new component name.
@@ -132,7 +117,6 @@ def process_component(method,
 
   # Otherwise, try to locate the component in local modules/ folder.
   else:
-
     if method == "update":
       data["component_name"] = component_name
       if component_name not in sb_yaml["components"]:
@@ -169,14 +153,16 @@ def process_component(method,
   data["template_path"] = template_path
 
   # Run copier with data.
-  worker = run_auto(template_path,
+  worker = run_copy(template_path,
                     destination_path,
                     data=data,
-                    answers_file=answers_file)
+                    answers_file=answers_file,
+                    unsafe=True)
 
   # Get answer values inputed by user.
   answers = worker.answers.user
-  for key, value in worker.answers.default.items():
+
+  for key, value in worker.answers.user_defaults.items():
     if key not in answers:
       answers[key] = component_answers.get(key) or value
   answers["component_template"] = component_template
@@ -199,8 +185,10 @@ def process_component(method,
   print()
 
 # List installed components.
+
+
 @component_app.command()
-def info(solution_path: Annotated[Optional[str], typer.Argument()] = ".", ):
+def list(solution_path: Annotated[Optional[str], typer.Argument()] = "."):
   sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
   components = sb_yaml.get("components", [])
   print("Installed components:")
@@ -215,6 +203,6 @@ def info(solution_path: Annotated[Optional[str], typer.Argument()] = ".", ):
 
 # List available components to add.
 @component_app.command()
-def list():
+def available():
   print("Available components to add:\n")
   list_component_templates()
