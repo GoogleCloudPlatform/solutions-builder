@@ -38,6 +38,7 @@ def chat_history_to_list(chat_history: list):
     output.append(item.to_dict())
   return output
 
+
 def chat_history_to_contents(chat_history: list):
   output = []
   for item in chat_history:
@@ -45,6 +46,8 @@ def chat_history_to_contents(chat_history: list):
   return output
 
 # Get all chat sessions of a user.
+
+
 @router.get("/get_chat_sessions")
 async def get_chat_sessions(user_data: dict = Depends(verify_oauth2_token)):
   print(user_data)
@@ -72,9 +75,11 @@ async def get_chat_session(chat_session_id):
   }
 
 # Send a chat message to model.
+
+
 @router.post("/send_message")
 async def send_message(
-    data: dict, user_data: dict = Depends(verify_oauth2_token)):
+        data: dict, user_data: dict = Depends(verify_oauth2_token)):
 
   print(f"data: {data}")
   if "prompt" not in data:

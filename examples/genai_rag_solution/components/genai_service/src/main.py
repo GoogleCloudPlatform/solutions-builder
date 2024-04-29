@@ -25,7 +25,7 @@ import config
 from fastapi import FastAPI, Depends
 from fastapi.responses import HTMLResponse
 from routes import sample, chat, query
-from common.utils.auth import verify_oauth2_token
+from utils.auth import verify_oauth2_token
 service_title = "RESTful API"
 service_path = "genai-service"
 version = "v1"
