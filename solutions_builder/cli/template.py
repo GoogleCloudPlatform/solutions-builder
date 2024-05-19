@@ -18,7 +18,7 @@ import typer
 import traceback
 from typing import Optional
 from typing_extensions import Annotated
-from copier import run_auto
+from copier import run_copy
 from .cli_utils import *
 
 template_app = typer.Typer()
@@ -39,6 +39,6 @@ def new(module_name,
   answers_dict = get_answers_dict(answers)
   answers_dict["module_name"] = module_name
   module_path = f"{modules_folder}/{module_name}"
-  run_auto(module_template_path, module_path, data=answers_dict)
+  run_copy(module_template_path, module_path, data=answers_dict, unsafe=True)
 
   print_success(f"Complete. New module folder created at {module_path}.\n")

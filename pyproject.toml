@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "solutions-builder"
-version = "1.17.23"
+version = "1.18.1"
 description = "A solution framework to generate a project with built-in structure and modules"
 authors = ["Jon Chen <jonchen@google.com>"]
 license = "Apache"
@@ -20,23 +20,23 @@ exclude = [
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4.0"
-copier = "^7.2.0"
+copier = ">=9.2.0"
 pyyaml = "^6.0"
-typer = "^0.9.0"
+typer = ">=0.9.0"
 jinja2-time = "^0.2.0"
 copier-templates-extensions = "^0.3.0"
 pathlib = "^1.0.1"
 jinja2 = "^3.1.2"
 jinja2-strcase = "^0.0.2"
-pydantic = "<=1.10.12"
+pydantic = ">=2"
 
 [tool.poetry.group.dev.dependencies]
 python = ">=3.9,<4.0"
 copier-templates-extensions = "^0.3.0"
-copier = "^7.2.0"
+copier = ">=9.2.0"
 PyYAML = "^6.0"
 jinja2-time = "^0.2.0"
-typer = "^0.9.0"
+typer = ">=0.9.0"
 
 [tool.poetry.scripts]
 sb = "solutions_builder.cli.cli:main"

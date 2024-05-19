@@ -19,7 +19,7 @@ terraform {
   {% if terraform_backend_gcs == true -%}
   backend "gcs" {
     # Uncomment below and specify a GCS bucket for TF state.
-    bucket = "{{project_id}}-tfstate"
+    bucket = "{{project_id}}-tfstate" # sb-var:project_id:{{project_id}}-tfstate
     prefix = "stage/3-ingress-serverless"
   }
   {%- endif %}

@@ -18,7 +18,6 @@ import re
 import jinja2
 from typing import Optional
 from typing_extensions import Annotated
-from copier import run_auto
 from .cli_utils import *
 from .cli_constants import DEBUG
 
@@ -28,9 +27,12 @@ vars_app = typer.Typer()
 INCLUDE_PATTERNS = [
     "*.yaml", "*.yml", "*.env", "*.tfvars", "*.tf", "*.sh"
 ]
-EXCLUDE_PATTERNS = ["**/.terraform/**/*.*", "**/node_modules/**/*.*", "**/.venv/**/*.*"]
+EXCLUDE_PATTERNS = ["**/.terraform/**/*.*",
+                    "**/node_modules/**/*.*", "**/.venv/**/*.*"]
 
 # Replace a variable with a given text content.
+
+
 def replace_var_to_template(var_name, text, custom_template=False):
   # Regex test: https://regex101.com/r/XtnJQI/4
   # match_pattern matches lines with sb-var anchor in the comment at the end.
@@ -55,6 +57,7 @@ def replace_var_to_template(var_name, text, custom_template=False):
   text, count = re.subn(match_pattern, output_pattern, text)
 
   return (text, count)
+
 
 def restore_template_in_comment(var_name, var_value, text):
   # Restore jinja2 variables in the custom content comment.
@@ -95,6 +98,8 @@ def replace_var_to_value(var_name, var_value, text):
   return (text, overall_count)
 
 # Apply a specific variable with a new value.
+
+
 def apply_var_to_folder(solution_path, var_name, var_value):
   file_set = set()
 
@@ -130,6 +135,8 @@ def apply_var_to_folder(solution_path, var_name, var_value):
   return modified_files_list
 
 # CLI command for `sb vars set <var_name> <var_value>`
+
+
 @vars_app.command(name="set")
 def set_var(
     var_name,
@@ -154,6 +161,8 @@ def set_var(
   )
 
 # CLI command for `sb vars apply-all`
+
+
 @vars_app.command(name="apply-all")
 def apply_all(
     solution_path: Annotated[Optional[str], typer.Argument()] = ".",

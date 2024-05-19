@@ -15,8 +15,47 @@ limitations under the License.
 """
 
 """
-  Blank Microservice
+  Sample Microservice
 """
 
+
+# Basic API config
+import uvicorn
+import config
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
+from google.cloud.firestore import Client
+from routes import sample
+service_title = "RESTful API"
+service_path = "{{service_path}}"
+version = "v1"
+
+# Init FastAPI app
+app = FastAPI(title=service_title)
+
+
+@app.get("/ping")
+def health_check():
+  return True
+
+
+@app.get("/", response_class=HTMLResponse)
+@app.get(f"/{service_path}", response_class=HTMLResponse)
+@app.get(f"/{service_path}/", response_class=HTMLResponse)
+def hello():
+  return f"You've reached the {service_title}: See <a href='/{service_path}/docs'>API docs</a>"
+
+
+api = FastAPI(title=service_title, version=version)
+
+# Append {{data_model_plural | capitalize}} CRUD APIs to the app.
+api.include_router(sample.router)
+
+app.mount(f"/{service_path}", api)
+
 if __name__ == "__main__":
-  print("Hello World.")
+  uvicorn.run("main:app",
+              host="0.0.0.0",
+              port=int(config.PORT),
+              log_level="info",
+              reload=True)

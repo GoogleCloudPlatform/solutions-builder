@@ -14,12 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import typer, traceback, os
+import typer
+import traceback
+import os
 import importlib.metadata
 from typing import Optional
 from typing_extensions import Annotated
-from copier import run_auto
-from .component import component_app, info as components_info
+from copier import run_copy
+from .component import component_app, list as components_list
 from .infra import infra_app
 from .template import template_app
 from .set import set_app, project_id as set_project_id
@@ -32,8 +34,7 @@ DEFAULT_DEPLOY_PROFILE = "default-deploy"
 
 app = typer.Typer(
     add_completion=False,
-    help=
-    "Solutions Builder CLI. See https://github.com/GoogleCloudPlatform/solutions-builder for details."
+    help="Solutions Builder CLI. See https://github.com/GoogleCloudPlatform/solutions-builder for details."
 )
 app.add_typer(component_app,
               name="components",
@@ -78,7 +79,7 @@ def new(folder_name,
   # Copy template_root to destination.
   print(f"template_path = {template_path}")
   answers_dict["folder_name"] = folder_name
-  run_auto(template_path, output_path, data=answers_dict)
+  run_copy(template_path, output_path, data=answers_dict, unsafe=True)
 
   print_success(f"Complete. New solution folder created at {output_path}.\n")
 
@@ -99,9 +100,11 @@ def update(solution_path: Annotated[Optional[str],
   if not os.path.exists(solution_path):
     raise FileNotFoundError(f"Solution folder {solution_path} does not exist.")
 
-  confirm(
-      f"\nThis will update solution root folder at '{solution_path}'. Continue?"
-  )
+  confirm_msg = "This will update the current solution folder. Continue?"
+  if solution_path != ".":
+    confirm_msg = "This will update solution root folder at " \
+        "'{solution_path}'. Continue?"
+  confirm(confirm_msg)
 
   # Copy template_root to destination, excluding skaffold.yaml.
   orig_sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
@@ -111,9 +114,11 @@ def update(solution_path: Annotated[Optional[str],
     template_path = f"{current_dir}/../template_root"
     if not os.path.exists(template_path):
       raise FileNotFoundError(f"{template_path} does not exist.")
-  worker = run_auto(template_path,
+
+  worker = run_copy(template_path,
                     solution_path,
-                    exclude=["skaffold.yaml", "sb.yaml"])
+                    exclude=["skaffold.yaml", "sb.yaml"],
+                    unsafe=True)
   answers = worker.answers.last
 
   # Restore some fields in sb.yaml.
@@ -128,14 +133,16 @@ def update(solution_path: Annotated[Optional[str],
 # Build and deploy services.
 @app.command()
 def deploy(
-    profile: Annotated[str, typer.Option("--profile", "-p")] = DEFAULT_DEPLOY_PROFILE,
-    component: Annotated[str, typer.Option("--component", "-c", "-m")] = None,
-    namespace: Annotated[str, typer.Option("--namespace", "-n")] = None,
-    dev: Optional[bool] = False,
-    solution_path: Annotated[Optional[str],
-                            typer.Argument()] = ".",
-    skaffold_args: Optional[str] = "",
-    yes: Optional[bool] = False):
+        profile: Annotated[str, typer.Option(
+          "--profile", "-p")] = DEFAULT_DEPLOY_PROFILE,
+        component: Annotated[str, typer.Option(
+          "--component", "-c", "-m")] = None,
+        namespace: Annotated[str, typer.Option("--namespace", "-n")] = None,
+        dev: Optional[bool] = False,
+        solution_path: Annotated[Optional[str],
+                                 typer.Argument()] = ".",
+        skaffold_args: Optional[str] = "",
+        yes: Optional[bool] = False):
   """
   Build and deploy services.
   """
@@ -149,8 +156,9 @@ def deploy(
   assert project_id, "project_id is not set in 'global_variables' in sb.yaml."
 
   # Check namespace
-  allow_deploy_without_namespace = sb_yaml.get("allow_deploy_without_namespace")
-  if allow_deploy_without_namespace in [None, False, ""] and not namespace:
+  deploy_config = sb_yaml.get("deploy", {})
+  if deploy_config.get("require_namespace") not in [None, False, ""] \
+          and not namespace:
     assert namespace, "Please set namespace with --namespace or -n"
 
   if project_id in PLACEHOLDER_VALUES:
@@ -176,8 +184,10 @@ def deploy(
   else:
     component_flag = ""
 
+  port_forwarding_flag = ""
   if dev:
     skaffold_command = "skaffold dev"
+    port_forwarding_flag = "--port-forward"
   else:
     skaffold_command = "skaffold run"
 
@@ -193,9 +203,9 @@ def deploy(
 
   # Add skaffold command.
   commands.append(
-      f"{skaffold_command} -p {profile} {component_flag} {namespace_flag} --default-repo=\"gcr.io/{project_id}\" {skaffold_args}"
+      f"{skaffold_command} -p {profile} {component_flag} {namespace_flag} --default-repo=\"gcr.io/{project_id}\" {skaffold_args} {port_forwarding_flag}"
   )
-  print("This will build and deploy all services using the command "\
+  print("This will build and deploy all services using the command "
         "and variables below:")
   for command in commands:
     print_success(f"- {command}")
@@ -221,9 +231,12 @@ def deploy(
     exec_shell(env_var_str + command, working_dir=solution_path)
 
 # Destory deployment.
+
+
 @app.command()
 def delete(profile: str = DEFAULT_DEPLOY_PROFILE,
-           component: Annotated[str, typer.Option("--component", "-c", "-m")] = None,
+           component: Annotated[str, typer.Option(
+             "--component", "-c", "-m")] = None,
            namespace: Annotated[str, typer.Option("--namespace", "-n")] = None,
            solution_path: Annotated[Optional[str],
                                     typer.Argument()] = ".",
@@ -257,7 +270,7 @@ def delete(profile: str = DEFAULT_DEPLOY_PROFILE,
 
 @app.command()
 def info(solution_path: Annotated[Optional[str],
-                                    typer.Argument()] = "."):
+                                  typer.Argument()] = "."):
   """
   Print info from ./sb.yaml.
   """
@@ -271,7 +284,7 @@ def info(solution_path: Annotated[Optional[str],
   print()
 
   # List of installed components.
-  components_info()
+  components_list()
 
 
 @app.command()
@@ -294,10 +307,16 @@ def main():
   except Exception as e:
     if DEBUG:
       traceback.print_exc()
-    print_error(e)
+      print_error(f"Error: {e}")
+    else:
+      print_error(f"Error: {e}")
+      print("\nTip: try adding 'SB_DEBUG=true' to your environment variables to get more details.")
+      print("E.g. SB_DEBUG=true sb new your-project\n")
+
     return -1
 
   return 0
+
 
 if __name__ == "__main__":
   main()

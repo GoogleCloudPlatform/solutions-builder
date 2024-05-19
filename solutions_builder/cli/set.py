@@ -19,7 +19,6 @@ import glob
 import pathlib
 from typing import Optional
 from typing_extensions import Annotated
-from copier import run_auto
 from .cli_utils import *
 from .vars import set_var
 

@@ -50,7 +50,8 @@ class {{data_model | capitalize}}(Model):
   @classmethod
   def find_by_id(cls, id):
     try:
-      {{data_model}} = {{data_model | capitalize}}.collection.get(id)
+      {{data_model}} = {{data_model | capitalize}}.collection.get(
+          DATABASE_PREFIX + "{{data_model_plural}}" + "/" + id)
     except ReferenceDocNotExist:
       return None
 
