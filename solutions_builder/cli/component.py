@@ -36,8 +36,8 @@ def add_component(component_name,
 
   # Check if template_path is empty.
   if not template_path:
-    print("Missing template_path. Please set --template or -t with one "
-          " of the component templates:")
+    print("Please set --template or -t to a local folder path, "
+          "remote git repo, or one of modules below:")
     list_component_templates()
     return
 
@@ -191,8 +191,7 @@ def process_component(method,
     if key not in answers:
       answers[key] = component_answers.get(key) or value
   answers["template_path"] = template_path
-  answers["destination_path"] = copier_dict["_metadata"].get(
-      "destination_path")
+  answers["destination_path"] = destination_path
 
   # Update component's answer back to sb.yaml.
   update_component_to_root_yaml(answers["component_name"], answers,
@@ -229,4 +228,4 @@ def list_components(solution_path: Annotated[Optional[str], typer.Argument()] = 
 # List available components to add.
 def list_available_components():
   print("Available components to add:\n")
-  list_template_paths()
+  list_component_templates()
