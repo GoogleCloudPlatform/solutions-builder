@@ -4,10 +4,15 @@ _metadata:
   destination_path: .
 
 # questions
-module_version:
+# module_version:
+#   type: str
+#   help: Module version (Default to 1.0)?
+#   default: "1.0"
+
+destination_path:
   type: str
-  help: Module version (Default to 1.0)?
-  default: "1.0"
+  help: Destination path?
+  default: "{{destination_path}}"
 
 component_name:
   type: str
@@ -21,33 +26,12 @@ resource_name:
   default: "{{ component_name | to_kebab }}"
   validator: "{% if not resource_name %}Required{% endif %}"
 
-service_path:
-  type: str
-  help: "The relative path used in ingress as http://my-domain/[service_path]"
-  default: "{{resource_name}}"
-
 gcp_region:
   type: str
   help: Which Google Cloud region?
   default: us-central1
 
-deploy_cloudrun:
-  type: bool
-  help: Add Cloud Run to deployment methods (using Skaffold)?
-  default: yes
-
-cloudrun_neg:
-  type: bool
-  help: Create network endpoint group (NEG) for serverless ingress?
-  default: yes
-  when: "{{deploy_cloudrun}}"
-
-deploy_gke:
-  type: bool
-  help: Add GKE to deployment methods (using Skaffold)?
-  default: yes
-
-default_deploy:
+deploy_method:
   type: str
   help: Default deploy method? (cloudrun or gke)
   choices:
@@ -58,19 +42,14 @@ default_deploy:
 depend_on_common:
   type: bool
   help: Does this component require the Common image?
-  default: yes
+  default: false
 
 local_port:
   type: str
   help: What's the port for local port forwarding?
   default: 9001
 
-use_github_action:
-  type: bool
-  help: Use Github Action as the default CI/CD?
-  default: yes
-
-_subdirectory: "{{module_version}}"
+# _subdirectory: "{{module_version}}"
 
 _answers_file: ".st/module_answers/{{component_name}}.yaml"
 

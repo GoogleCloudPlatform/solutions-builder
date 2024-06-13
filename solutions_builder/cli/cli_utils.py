@@ -21,12 +21,15 @@ import subprocess
 import re
 
 
-def confirm(msg, skip=False, default=True):
-  if not skip:
-    typer.confirm(msg, abort=True, default=default)
+def confirm(msg, skip=False, abort=True, default=True):
+  if skip:
+    return True
 
+  return typer.confirm(msg, abort=abort, default=default)
 
 # Check if the solution folder has sb.yaml file.
+
+
 def validate_solution_folder(path):
   if not os.path.isfile(path + "/sb.yaml"):
     raise FileNotFoundError(
@@ -91,12 +94,16 @@ def dedupe(obj):
 
 # Read YAML file and convert to a dict.
 def read_yaml(filepath):
-  with open(filepath) as f:
-    data = yaml.safe_load(f)
-  return data
-
+  try:
+    with open(filepath) as f:
+      data = yaml.safe_load(f)
+    return data
+  except FileNotFoundError as e:
+    return {}
 
 # Write a dict as a YAML file.
+
+
 def write_yaml(filepath, dict_data):
   with open(filepath, "w") as f:
     yaml.dump(dict_data, f)

@@ -21,7 +21,9 @@ import importlib.metadata
 from typing import Optional
 from typing_extensions import Annotated
 from copier import run_copy
-from .component import component_app, list as components_list
+from .add import add_command
+from .update import update_command
+from .component import list_components
 from .infra import infra_app
 from .template import template_app
 from .set import set_app, project_id as set_project_id
@@ -36,12 +38,15 @@ app = typer.Typer(
     add_completion=False,
     help="Solutions Builder CLI. See https://github.com/GoogleCloudPlatform/solutions-builder for details."
 )
-app.add_typer(component_app,
-              name="components",
-              help="Add or update components.")
-app.add_typer(component_app,
-              name="component",
-              help="Add or update components.")
+app.add_typer(add_command,
+              name="add",
+              help="Add components.")
+app.add_typer(update_command,
+              name="update",
+              help="Update components.")
+# app.add_typer(component_app,
+#               name="component",
+#               help="Add or update components.")
 app.add_typer(infra_app,
               name="infra",
               help="Manage infrastructure (terraform).")
@@ -82,52 +87,6 @@ def new(folder_name,
   run_copy(template_path, output_path, data=answers_dict, unsafe=True)
 
   print_success(f"Complete. New solution folder created at {output_path}.\n")
-
-
-# Update a solution
-@app.command()
-def update(solution_path: Annotated[Optional[str],
-                                    typer.Argument()] = ".",
-           template_path=None):
-  """
-  Update an existing solution folder.
-  """
-  if not solution_path:
-    solution_path = "."
-
-  validate_solution_folder(solution_path)
-
-  if not os.path.exists(solution_path):
-    raise FileNotFoundError(f"Solution folder {solution_path} does not exist.")
-
-  confirm_msg = "This will update the current solution folder. Continue?"
-  if solution_path != ".":
-    confirm_msg = "This will update solution root folder at " \
-        "'{solution_path}'. Continue?"
-  confirm(confirm_msg)
-
-  # Copy template_root to destination, excluding skaffold.yaml.
-  orig_sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
-
-  if not template_path:
-    current_dir = os.path.dirname(__file__)
-    template_path = f"{current_dir}/../template_root"
-    if not os.path.exists(template_path):
-      raise FileNotFoundError(f"{template_path} does not exist.")
-
-  worker = run_copy(template_path,
-                    solution_path,
-                    exclude=["skaffold.yaml", "sb.yaml"],
-                    unsafe=True)
-  answers = worker.answers.last
-
-  # Restore some fields in sb.yaml.
-  sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
-  sb_yaml["created_at"] = orig_sb_yaml["created_at"]
-  sb_yaml["components"] = orig_sb_yaml["components"]
-  write_yaml(f"{solution_path}/sb.yaml", sb_yaml)
-
-  print_success(f"Complete. Solution folder updated at {solution_path}.\n")
 
 
 # Build and deploy services.
@@ -284,7 +243,7 @@ def info(solution_path: Annotated[Optional[str],
   print()
 
   # List of installed components.
-  components_list()
+  list_components()
 
 
 @app.command()

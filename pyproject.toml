@@ -1,21 +1,19 @@
 [tool.poetry]
 name = "solutions-builder"
-version = "1.18.1"
+version = "2.0.0"
 description = "A solution framework to generate a project with built-in structure and modules"
 authors = ["Jon Chen <jonchen@google.com>"]
 license = "Apache"
 readme = "README.md"
 homepage = "https://github.com/GoogleCloudPlatform/solutions-builder"
 repository = "https://github.com/GoogleCloudPlatform/solutions-builder"
-packages = [
-  { include = "solutions_builder" }
-]
+packages = [{ include = "solutions_builder" }]
 exclude = [
   "**/node_modules/**/*",
   "**/.terraform/**/*",
   "**/.terraform/providers/**/*",
   "**/.terraform.lock.hcl",
-  "**/__pycache__/**/*"
+  "**/__pycache__/**/*",
 ]
 
 [tool.poetry.dependencies]
@@ -29,6 +27,7 @@ pathlib = "^1.0.1"
 jinja2 = "^3.1.2"
 jinja2-strcase = "^0.0.2"
 pydantic = ">=2"
+gitpython = "^3.1.43"
 
 [tool.poetry.group.dev.dependencies]
 python = ">=3.9,<4.0"

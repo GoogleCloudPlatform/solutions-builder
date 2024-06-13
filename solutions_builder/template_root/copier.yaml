@@ -23,21 +23,16 @@ gcp_region:
   help: Which Google Cloud region?
   default: us-central1
 
-use_jump_host:
-  type: bool
-  help: Use a jump-host for running terraform foundations?
-  default: true
-
-jump_host_zone:
-  type: str
-  help: Google Cloud zone for creating the jump host?
-  default: us-central1-a
-  when: "{{use_jump_host}}"
-
 has_common:
   type: bool
   help: Include a common container image for shared libraries, data models, utils, etc?
-  default: true
+  default: false
+
+common_folder_path:
+  type: str
+  help: Destination path of this common folder?
+  default: "common"
+  when: "{{has_common}}"
 
 terraform_backend_gcs:
   type: bool
