@@ -39,14 +39,10 @@ def component(component_name,
 
 
 @add_command.command()
-def terraform(module_name,
-              template_path: Annotated[str,
-                                       typer.Option("--template", "-t")] = None,
-              solution_path: Annotated[Optional[str],
-                                       typer.Argument()] = ".",
-              destination_path: Annotated[str,
-                                          typer.Option("--dest", "-d")] = "terraform",
-              yes: Optional[bool] = False,
-              answers=None):
-  add_component(module_name, template_path,
-                solution_path, destination_path, yes, answers)
+def infra(module_name,
+          solution_path: Annotated[Optional[str],
+                                   typer.Argument()] = ".",
+          yes: Optional[bool] = False,
+          answers=None):
+  add_component(module_name, module_name,
+                solution_path, ".", yes, answers)

@@ -87,12 +87,21 @@ def update_component(component_name,
   )
 
 
-def update_component_to_root_yaml(component_name, answers, solution_path):
+def update_root_yaml(component_name, answers, solution_path):
   # Update Solution root YAML with new component name.
   solution_yaml_dict = read_yaml(f"{solution_path}/sb.yaml") or {}
   components = solution_yaml_dict.get("components", {})
   components[component_name] = answers
   solution_yaml_dict["components"] = components
+
+  # Update global variables.
+  global_variables = solution_yaml_dict.get("global_variables", {})
+  if "project_id" in answers:
+    global_variables["project_id"] = answers["project_id"]
+  if "project_number" in answers:
+    global_variables["project_number"] = answers["project_number"]
+  solution_yaml_dict["global_variables"] = global_variables
+
   write_yaml(f"{solution_path}/sb.yaml", solution_yaml_dict)
 
 
@@ -172,8 +181,10 @@ def process_component(method,
 
   copier_dict = get_copier_yaml(template_dir)
   data["component_name"] = component_name
-  data["project_id"] = global_variables.get("project_id")
-  data["project_number"] = global_variables.get("project_number")
+  if "project_id" in data:
+    data["project_id"] = global_variables.get("project_id")
+  if "project_number" in data:
+    data["project_number"] = global_variables.get("project_number")
   data["solution_path"] = solution_path
   data["template_path"] = template_path
 
@@ -194,8 +205,9 @@ def process_component(method,
   answers["destination_path"] = destination_path
 
   # Update component's answer back to sb.yaml.
-  update_component_to_root_yaml(answers["component_name"], answers,
-                                solution_path)
+  update_root_yaml(component_name,
+                   answers,
+                   solution_path)
 
   # Patch skaffold.yaml
   for patch_file in copier_dict.get("_patch", []):
