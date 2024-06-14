@@ -50,6 +50,19 @@ Open up the URL like **https://frontend-angular-<hash>.a.run.app** in a browser 
 
 ### Deploy with live-reload for debugging
 
+Install log-streaming:
+
+```shell
+sudo gcloud components install log-streaming
+```
+
+
+Install cloud-run-proxy:
+
+```shell
+sudo gcloud components install cloud-run-proxy
+```
+
 Run the following to build and deploy to Cloud Run with port forwarding to test via localhost:
 
 ```
@@ -73,6 +86,13 @@ Open the link http://127.0.0.1:9001 or http://localhost:9001 in a browser to see
 - At this point, every changes in local files will trigger files hot-swap and update to the remote instance automatically. See [Skaffold File Sync](https://skaffold.dev/docs/pipeline-stages/filesync/) for more details.
 - When clicked Ctrl+C, it will remove the Cloud Run service.
 
+
+You could use Cloud Run proxy service directly to test the service:
+
+```shell
+gcloud beta run services proxy $SERVICE-NAME --region=$REGION --project=$PROJECT_ID --port 9001
+
+```
 
 ### Allowing public (unauthenticated) access to a Cloud Run service
 
