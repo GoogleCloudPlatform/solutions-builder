@@ -15,9 +15,22 @@
  *
  */
 
-terraform {
-  backend "gcs" {
-    bucket = "{{project_id}}-tfstate" # sb-var:project_id:{{project_id}}-tfstate
-    prefix = "stage/{{terraform_stage_name}}"
+variable "project_id" {
+  type        = string
+  description = "GCP Project ID"
+
+  validation {
+    condition     = length(var.project_id) > 0
+    error_message = "The project_id value must be an non-empty string."
+  }
+}
+
+variable "region" {
+  type        = string
+  description = "Default GCP region"
+
+  validation {
+    condition     = length(var.region) > 0
+    error_message = "The region value must be an non-empty string."
   }
 }

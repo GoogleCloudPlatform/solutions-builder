@@ -38,29 +38,19 @@ data_model_plural:
   default: "{{data_model}}s"
   validator: "{% if not data_model_plural %}Required{% endif %}"
 
-deploy_cloudrun:
-  type: bool
-  help: Add Cloud Run to deployment methods (using Skaffold)?
-  default: yes
-
-cloudrun_neg:
-  type: bool
-  help: Create network endpoint group (NEG) for serverless ingress?
-  default: yes
-  when: "{{deploy_cloudrun}}"
-
-deploy_gke:
-  type: bool
-  help: Add GKE to deployment methods (using Skaffold)?
-  default: no
-
-default_deploy:
+deploy_method:
   type: str
   help: Default deploy method? (cloudrun or gke)
   choices:
     Cloud Run: cloudrun
     GKE: gke
   default: cloudrun
+
+cloudrun_neg:
+  type: bool
+  help: Create network endpoint group (NEG) for serverless ingress?
+  default: yes
+  when: "{{deploy_method == 'cloudrun'}}"
 
 depend_on_common:
   type: bool
@@ -71,11 +61,6 @@ local_port:
   type: str
   help: What's the port for local port forwarding?
   default: 9001
-
-use_github_action:
-  type: bool
-  help: Use Github Action as the default CI/CD?
-  default: yes
 
 _answers_file: ".st/module_answers/{{component_name}}.yaml"
 

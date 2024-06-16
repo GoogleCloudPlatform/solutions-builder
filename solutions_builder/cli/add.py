@@ -28,10 +28,9 @@ add_command = typer.Typer()
 def component(component_name,
               template_path: Annotated[str,
                                        typer.Option("--template", "-t")] = None,
-              solution_path: Annotated[Optional[str],
-                                       typer.Argument()] = ".",
               destination_path: Annotated[str,
                                           typer.Option("--dest", "-d")] = "components",
+              solution_path: Optional[str] = ".",
               yes: Optional[bool] = False,
               answers=None):
   add_component(component_name, template_path,
@@ -40,8 +39,7 @@ def component(component_name,
 
 @add_command.command()
 def infra(module_name,
-          solution_path: Annotated[Optional[str],
-                                   typer.Argument()] = ".",
+          solution_path: Optional[str] = ".",
           yes: Optional[bool] = False,
           answers=None):
   add_component(module_name, module_name,

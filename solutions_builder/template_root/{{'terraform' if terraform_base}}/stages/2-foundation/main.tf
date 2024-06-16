@@ -95,32 +95,3 @@ resource "google_project_iam_member" "default-compute-sa-iam" {
   member     = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
   project    = var.project_id
 }
-
-module "deployment_service_account" {
-  depends_on   = [module.project_services]
-  source       = "../../modules/service_account"
-  project_id   = var.project_id
-  name         = "deployment"
-  display_name = "deployment"
-  description  = "Service Account for deployment"
-  roles = [
-    "roles/aiplatform.admin",
-    "roles/artifactregistry.admin",
-    "roles/cloudbuild.builds.builder",
-    "roles/cloudtrace.agent",
-    "roles/compute.admin",
-    "roles/container.admin",
-    "roles/containerregistry.ServiceAgent",
-    "roles/datastore.owner",
-    "roles/firebase.admin",
-    "roles/iam.serviceAccountTokenCreator",
-    "roles/iam.serviceAccountUser",
-    "roles/iam.workloadIdentityUser",
-    "roles/logging.admin",
-    "roles/logging.viewer",
-    "roles/run.admin",
-    "roles/secretmanager.secretAccessor",
-    "roles/storage.admin",
-    "roles/viewer",
-  ]
-}

@@ -41,37 +41,6 @@ resource "time_sleep" "wait_60_seconds" {
   create_duration = "60s"
 }
 
-module "terraform_runner_service_account" {
-  depends_on   = [time_sleep.wait_60_seconds]
-  source       = "../../modules/service_account"
-  project_id   = var.project_id
-  name         = "terraform-runner"
-  display_name = "terraform-runner"
-  description  = "Service Account for Terraform"
-  roles = [
-    "roles/appengine.appAdmin",
-    "roles/aiplatform.admin",
-    "roles/artifactregistry.admin",
-    "roles/cloudbuild.builds.builder",
-    "roles/cloudtrace.agent",
-    "roles/compute.admin",
-    "roles/container.admin",
-    "roles/containerregistry.ServiceAgent",
-    "roles/datastore.owner",
-    "roles/editor",
-    "roles/firebase.admin",
-    "roles/iam.serviceAccountTokenCreator",
-    "roles/iam.serviceAccountUser",
-    "roles/iam.workloadIdentityUser",
-    "roles/logging.admin",
-    "roles/logging.viewer",
-    "roles/resourcemanager.projectIamAdmin",
-    "roles/run.admin",
-    "roles/secretmanager.secretAccessor",
-    "roles/storage.admin",
-  ]
-}
-
 {% if terraform_backend_gcs == true -%}
 resource "google_storage_bucket" "tfstate-bucket" {
   name                        = "${var.project_id}-tfstate"

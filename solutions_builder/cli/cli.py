@@ -50,6 +50,9 @@ app.add_typer(update_command,
 app.add_typer(infra_app,
               name="infra",
               help="Manage infrastructure (terraform).")
+app.add_typer(infra_app,
+              name="terraform",
+              help="Manage infrastructure (terraform).")
 app.add_typer(template_app,
               name="template",
               help="Create or update module templates.")
@@ -269,8 +272,8 @@ def main():
       print_error(f"Error: {e}")
     else:
       print_error(f"Error: {e}")
-      print("\nTip: try adding 'SB_DEBUG=true' to your environment variables to get more details.")
-      print("E.g. SB_DEBUG=true sb new your-project\n")
+      print("\nTip: try adding 'DEBUG=true' to your environment variables to get more details.")
+      print("E.g. DEBUG=true sb new your-project\n")
 
     return -1
 

@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.0.0
+
+### Refactor CLI structure
+
+- Chagne "sb component add" to "sb new component ..." CLI collection.
+
+### Misc updates
+
+- Added support for Python 3.10.x
+
 ## 1.18.0
 
 - Adding support for Python 3.11.x

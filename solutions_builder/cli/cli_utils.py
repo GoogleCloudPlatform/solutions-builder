@@ -19,6 +19,7 @@ import yaml
 import typer
 import subprocess
 import re
+from .cli_constants import DEBUG
 
 
 def confirm(msg, skip=False, abort=True, default=True):
@@ -27,13 +28,13 @@ def confirm(msg, skip=False, abort=True, default=True):
 
   return typer.confirm(msg, abort=abort, default=default)
 
-# Check if the solution folder has sb.yaml file.
-
 
 def validate_solution_folder(path):
+  """Check if the solution folder has sb.yaml file."""
   if not os.path.isfile(path + "/sb.yaml"):
     raise FileNotFoundError(
-        f"Path {path} is not a valid solution folder: missing sb.yaml")
+        f"Path {path} is not a valid solution folder: missing sb.yaml.\n"
+        "Please run `sb init` to initialize the folder.")
   return True
 
 
@@ -52,10 +53,10 @@ def get_copier_yaml(path):
 
 
 def get_immediate_subdirectories(a_dir):
-  return [
+  return sorted([
       name for name in os.listdir(a_dir)
       if os.path.isdir(os.path.join(a_dir, name))
-  ]
+  ])
 
 
 def patch_yaml(dest_path, patch_path):
@@ -64,8 +65,8 @@ def patch_yaml(dest_path, patch_path):
   return merge_dict(orig_yaml, patch_yaml)
 
 
-# Merge two dict based on first level of properties.
 def merge_dict(dict1, dict2):
+  """Merge two dict based on first level of properties."""
   for key in dict1.keys():
     if isinstance(dict1[key], list):
       dict1[key] += dict2.get(key, [])
@@ -92,8 +93,8 @@ def dedupe(obj):
     return obj
 
 
-# Read YAML file and convert to a dict.
 def read_yaml(filepath):
+  """Read YAML file and convert to a dict."""
   try:
     with open(filepath) as f:
       data = yaml.safe_load(f)
@@ -101,16 +102,15 @@ def read_yaml(filepath):
   except FileNotFoundError as e:
     return {}
 
-# Write a dict as a YAML file.
-
 
 def write_yaml(filepath, dict_data):
+  """Write a dict as a YAML file"""
   with open(filepath, "w") as f:
     yaml.dump(dict_data, f)
 
 
-# Execute shell commands
 def exec_shell(command, working_dir=".", stop_when_error=True, stdout=None):
+  """Execute shell commands"""
   proc = subprocess.Popen(command, cwd=working_dir, shell=True, stdout=stdout)
   exit_status = proc.wait()
 
@@ -121,8 +121,8 @@ def exec_shell(command, working_dir=".", stop_when_error=True, stdout=None):
   return exit_status
 
 
-# Execute shell commands
 def exec_output(command, working_dir=".", stop_when_error=True):
+  """Execute shell commands"""
   output = subprocess.check_output(command,
                                    cwd=working_dir,
                                    shell=True,
@@ -144,7 +144,7 @@ def exec_gcloud_output(command, working_dir="."):
 
 def list_subfolders(path):
   modules = get_immediate_subdirectories(path)
-  for module_name in sorted(modules):
+  for module_name in modules:
     print_highlight(f"- {module_name}")
   print()
 
@@ -183,8 +183,21 @@ def get_project_number(project_id):
   return project_number
 
 
-# Print success message with styling.
+def set_gcloud_project(project_id):
+  """
+    Set GCP project based on project_id using gcloud command.
+    """
+  if project_id:
+    print(f"(Setting gcloud to project '{project_id}'...)")
+    f"gcloud config set project {project_id}"
+
+
+def set_debug_flag(is_debug):
+  DEBUG = is_debug
+
+
 def print_success(msg):
+  """Print success message with styling."""
   typer.echo(typer.style(msg, fg=typer.colors.GREEN, bold=True))
 
 

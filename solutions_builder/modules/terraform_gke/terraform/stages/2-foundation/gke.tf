@@ -25,8 +25,54 @@ locals {
   master_ipv4_cidr_block    = data.terraform_remote_state.foundation.outputs.master_ipv4_cidr_block
 }
 
-data "google_project" "project" {}
+# Used by module.gke.
+provider "kubernetes" {
+  host                   = "https://${module.gke.endpoint}"
+  token                  = data.google_client_config.default.access_token
+  cluster_ca_certificate = base64decode(module.gke.ca_certificate)
+}
 
+# Used by module.ingress.
+provider "kubectl" {
+  host                   = "https://${module.gke.endpoint}"
+  token                  = data.google_client_config.default.access_token
+  cluster_ca_certificate = base64decode(module.gke.ca_certificate)
+  load_config_file       = false
+}
+
+provider "helm" {
+  kubernetes {
+    host                   = "https://${module.gke.endpoint}"
+    token                  = data.google_client_config.default.access_token
+    cluster_ca_certificate = base64decode(module.gke.ca_certificate)
+  }
+}
+
+provider "google" {
+  project = var.project_id
+}
+
+# Terraform Block
+terraform {
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = ">= 4.50.0"
+    }
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = ">= 1.14.0"
+    }
+    helm = {
+      source  = "hashicorp/helm"
+      version = ">= 2.7.0"
+    }
+  }
+}
+
+data "google_client_config" "default" {}
+
+data "google_project" "project" {}
 
 data "terraform_remote_state" "foundation" {
   backend = "gcs"
@@ -59,4 +105,49 @@ module "gke" {
 
   # See latest stable version at https://cloud.google.com/kubernetes-engine/docs/release-notes-stable
   kubernetes_version = var.kubernetes_version
+}
+
+# Variables
+
+variable "project_id" {
+  type        = string
+  description = "GCP Project ID"
+
+  validation {
+    condition     = length(var.project_id) > 0
+    error_message = "The project_id value must be an non-empty string."
+  }
+}
+
+variable "region" {
+  type        = string
+  description = "Default GCP region"
+  default     = "us-central1"
+
+  validation {
+    condition     = length(var.region) > 0
+    error_message = "The region value must be an non-empty string."
+  }
+}
+
+variable "cluster_name" {
+  type    = string
+  default = "main-cluster"
+}
+
+variable "kubernetes_version" {
+  type        = string
+  description = "Kubernetes version. See https://cloud.google.com/kubernetes-engine/docs/release-notes-stable"
+}
+
+variable "node_machine_type" {
+  type        = string
+  description = "VM machine time"
+  default     = "n2-standard-2"
+}
+
+variable "private_cluster" {
+  type        = bool
+  description = "Whether to use private nodes"
+  default     = true
 }

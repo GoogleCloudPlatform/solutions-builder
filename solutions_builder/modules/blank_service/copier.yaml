@@ -31,6 +31,16 @@ gcp_region:
   help: Which Google Cloud region?
   default: us-central1
 
+sample_service:
+  type: bool
+  help: Add a sample service?
+  default: false
+
+depend_on_common:
+  type: bool
+  help: Does this component require the Common image?
+  default: false
+
 deploy_method:
   type: str
   help: Default deploy method? (cloudrun or gke)
@@ -38,11 +48,6 @@ deploy_method:
     Cloud Run: cloudrun
     GKE: gke
   default: cloudrun
-
-depend_on_common:
-  type: bool
-  help: Does this component require the Common image?
-  default: false
 
 local_port:
   type: str

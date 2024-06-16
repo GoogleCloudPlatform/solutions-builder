@@ -15,7 +15,7 @@
 import os
 
 # Global DEBUG flag for all CLI routes.
-DEBUG = (os.environ.get("SB_DEBUG", "").lower() == "true")
+DEBUG = (os.environ.get("DEBUG", "").lower() == "true")
 PLACEHOLDER_VALUES = [
   "your-project-id",
   "project-id-placeholder",

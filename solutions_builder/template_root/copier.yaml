@@ -34,10 +34,25 @@ common_folder_path:
   default: "common"
   when: "{{has_common}}"
 
+terraform_base:
+  type: bool
+  help: Add Terraform foundation?
+  default: true
+
 terraform_backend_gcs:
   type: bool
   help: Use GCS Bucket for Terraform backend?
   default: true
+  when: "{{terraform_base}}"
+
+cicd:
+  type: str
+  help: Set up a default CI/CD?
+  choices:
+    GitLab: gitlab
+    Githuab: github
+    None: ""
+  default: ""
 
 advanced_settings:
   type: bool
