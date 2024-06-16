@@ -49,11 +49,6 @@ deploy_method:
     GKE: gke
   default: cloudrun
 
-local_port:
-  type: str
-  help: What's the port for local port forwarding?
-  default: 9001
-
 # _subdirectory: "{{module_version}}"
 
 _answers_file: ".st/module_answers/{{component_name}}.yaml"

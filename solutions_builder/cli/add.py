@@ -33,6 +33,7 @@ def component(component_name,
               solution_path: Optional[str] = ".",
               yes: Optional[bool] = False,
               answers=None):
+
   add_component(component_name, template_path,
                 solution_path, destination_path, yes, answers)
 

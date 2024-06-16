@@ -162,6 +162,11 @@ def check_git_url(url):
   return match is not None
 
 
+def get_package_dir():
+  current_dir = os.path.dirname(__file__)
+  return current_dir + "/../"
+
+
 def get_answers_dict(data):
   if data:
     return dict(s.split("=") for s in data.split(","))

@@ -57,11 +57,6 @@ depend_on_common:
   help: Does this component require the Common image?
   default: no
 
-local_port:
-  type: str
-  help: What's the port for local port forwarding?
-  default: 9001
-
 _answers_file: ".st/module_answers/{{component_name}}.yaml"
 
 _templates_suffix: ""

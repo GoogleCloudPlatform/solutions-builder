@@ -231,8 +231,23 @@ def delete(profile: str = DEFAULT_DEPLOY_PROFILE,
 
 
 @app.command()
-def info(solution_path: Annotated[Optional[str],
-                                  typer.Argument()] = "."):
+def init(solution_path: Annotated[Optional[str], typer.Argument()] = "."):
+  """
+  Initialize sb.yaml for a solution folder.
+  """
+  if os.path.isfile(solution_path + "/sb.yaml"):
+    confirm(f"This will override the existing 'sb.yaml' in '{solution_path}'. "
+            "Continue?", default=False)
+  else:
+    confirm(f"This will create a new 'sb.yaml' in '{solution_path}'. "
+            "Continue?", default=True)
+
+  template_path = get_package_dir() + "/submodules/template_root_init"
+  run_copy(template_path, solution_path, data={}, unsafe=True)
+
+
+@app.command()
+def info(solution_path: Annotated[Optional[str], typer.Argument()] = "."):
   """
   Print info from ./sb.yaml.
   """

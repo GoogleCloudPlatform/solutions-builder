@@ -35,7 +35,7 @@ portForward:
 - resourceType: service
   resourceName: {{resource_name}}
   port: 80
-  localPort: {{local_port}} # Change this when adding other microservice.
+  localPort: 9001 # Change this when adding other microservice.
 
 profiles:
 # Profile for building images locally.
@@ -78,7 +78,12 @@ profiles:
           command: ["sh", "-c", "rm *.rendered.env"]
   # Simple deployment using kubectl.
   deploy:
-    kubectl: {}
+    kubectl:
+      hooks:
+        before:
+        - host:
+            dir: .
+            command: ["sh", "-c", "gcloud container clusters get-credentials 'main-cluster' --region '{{gcp_region}}' --project '{{project_id}}'"]
 
 # Profile for GKE Horizontal Pod Autoscaler.
 # This profile only works with `gke` profile together.
@@ -107,5 +112,5 @@ profiles:
   - resourceType: service
     resourceName: {{resource_name}}
     port: 80
-    localPort: {{local_port}} # Change this when adding other microservice.
+    localPort: 9001 # Change this when adding other microservice.
 {%- endif %}

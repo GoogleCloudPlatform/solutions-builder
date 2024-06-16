@@ -28,9 +28,9 @@ has_common:
   help: Include a common container image for shared libraries, data models, utils, etc?
   default: false
 
-common_folder_path:
+common_path:
   type: str
-  help: Destination path of this common folder?
+  help: Destination path of this common container?
   default: "common"
   when: "{{has_common}}"
 

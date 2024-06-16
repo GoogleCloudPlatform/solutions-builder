@@ -38,7 +38,7 @@ pubsub_message_retention_duration:
   help: Pub/sub message retention duration?
   default: 86600s
 
-default_deploy:
+deploy_method:
   type: str
   help: "Deploy method for {{component_name}}? (cloudrun or gke)"
   choices:
@@ -50,11 +50,6 @@ depend_on_common:
   type: bool
   help: Does this component require the Common image?
   default: no
-
-local_port:
-  type: str
-  help: What's the port for local port forwarding?
-  default: 9001
 
 eventarc_trigger_name:
   type: str

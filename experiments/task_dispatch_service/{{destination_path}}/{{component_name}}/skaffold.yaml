@@ -35,7 +35,7 @@ portForward:
 - resourceType: service
   resourceName: {{resource_name}}
   port: 80
-  localPort: {{local_port}} # Change this when adding other microservice.
+  localPort: 9001 # Change this when adding other microservice.
 
 profiles:
 # Profile for building images locally.
@@ -114,7 +114,7 @@ profiles:
   - resourceType: service
     resourceName: {{resource_name}}
     port: 80
-    localPort: {{local_port}} # Change this when adding other microservice.
+    localPort: 9001 # Change this when adding other microservice.
 {%- endif %}
 
 {% if default_deploy == "cloudrun" -%}
