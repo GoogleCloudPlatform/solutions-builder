@@ -40,22 +40,6 @@ locals {
     "secretmanager.googleapis.com",        # Secret Manager
     "storage.googleapis.com",              # Cloud Storage
   ]
-
-  roles_for_default_sa = [
-    "roles/compute.admin",
-    "roles/compute.serviceAgent",
-    "roles/eventarc.admin",
-    "roles/eventarc.eventReceiver",
-    "roles/eventarc.serviceAgent",
-    "roles/datastore.owner",
-    "roles/firebase.admin",
-    "roles/iam.serviceAccountTokenCreator",
-    "roles/iam.serviceAccountUser",
-    "roles/run.admin",
-    "roles/run.invoker",
-    "roles/serviceusage.serviceUsageConsumer",
-    "roles/storage.admin",
-  ]
 }
 
 # Used to retrieve project_number later
@@ -78,20 +62,4 @@ module "vpc_network" {
   subnet_ip                 = var.ip_cidr_range
   secondary_ranges_pods     = var.secondary_ranges_pods
   secondary_ranges_services = var.secondary_ranges_services
-}
-
-resource "google_project_iam_member" "cloudbuild-sa-iam" {
-  depends_on = [module.project_services]
-  for_each   = toset(local.roles_for_default_sa)
-  role       = each.key
-  member     = "serviceAccount:${var.project_number}@cloudbuild.gserviceaccount.com"
-  project    = var.project_id
-}
-
-resource "google_project_iam_member" "default-compute-sa-iam" {
-  depends_on = [module.project_services]
-  for_each   = toset(local.roles_for_default_sa)
-  role       = each.key
-  member     = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
-  project    = var.project_id
 }

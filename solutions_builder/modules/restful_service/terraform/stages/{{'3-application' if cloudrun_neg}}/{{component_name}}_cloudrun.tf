@@ -1,6 +1,6 @@
-resource "null_resource" "build_and_deploy_cloudrun" {
+resource "null_resource" "build_container" {
   provisioner "local-exec" {
-    command = "skaffold run -p cloudrun -m {{component_name}} --default-repo=us-docker.pkg.dev/${var.project_id}/default"
+    command = "cd ../../../ && skaffold run -p cloudrun -m test_service --default-repo=us-docker.pkg.dev/${var.project_id}/default"
   }
 }
 

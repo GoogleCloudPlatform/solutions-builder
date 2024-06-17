@@ -105,25 +105,6 @@ def update_root_yaml(component_name, answers, solution_path):
   write_yaml(f"{solution_path}/sb.yaml", solution_yaml_dict)
 
 
-def clone_remote_git(source_url):
-  git_url, git_subfolder = source_url.split(".git")
-  git_url += ".git"
-  current_dir = os.path.dirname(__file__)
-  dest_dir = current_dir + "/../downloaded_repos/" + git_url
-
-  if os.path.exists(dest_dir):
-    if confirm(
-      f"🎤 Git repo '{git_url}' has been downloaded before. \n   "
-            "Do you want to re-download it?", abort=False):
-      shutil.rmtree(dest_dir)
-      git.Repo.clone_from(git_url, dest_dir)
-  else:
-    git.Repo.clone_from(git_url, dest_dir)
-
-  print()
-  return dest_dir + "/" + git_subfolder
-
-
 def process_component(method,
                       component_name,
                       template_path,
@@ -172,7 +153,7 @@ def process_component(method,
         template_dir = template_path
         if not os.path.exists(template_dir):
           raise FileNotFoundError(
-              f"Component {template_path} does not exist.")
+              f"Component '{template_path}' does not exist.")
 
     # # Get destination_path defined in copier.yaml
     # destination_path = solution_path + "/" + copier_dict["_metadata"].get(

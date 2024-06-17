@@ -11,11 +11,11 @@ clusters, Cloud Run, Test Automation, CI/CD, as well as development process.
 
 This template provides built-in and ready-to-ship modules including:
 
-- Easy-to-deploy [Terraform](https://www.terraform.io/) boilerplate modules
-- Container-based microservices, can be deployed to a Kubernetes cluster or Cloud Run.
+- [Terraform](https://www.terraform.io/) boilerplate modules
+- Modular microservice templates, deployable to Cloud Run or a Kubernetes cluster.
 - Unified deployment using Skaffold.
-- Automatically generated API documentation with Swagger UI.
-- CI/CD deployment (with GitHub Actions).
+- Automatically generated OpenAPI schema with [FastAPI](https://fastapi.tiangolo.com/).
+- CI/CD deployment templates.
 - Cloud Run templates.
 
 ## Roadmap
@@ -24,14 +24,14 @@ Please see [Feature Requests in the GitHub issue list](https://github.com/Google
 
 ## Prerequisite
 
-| Tool       | Required Version | Installation                                        |
-| ---------- | ---------------- | --------------------------------------------------- |
-| Python     | &gt;= 3.11       |                                                     |
-| gcloud CLI | Latest           | https://cloud.google.com/sdk/docs/install           |
-| Terraform  | &gt;= v1.3.7     | https://developer.hashicorp.com/terraform/downloads |
-| Skaffold   | &gt;= v2.4.0     | https://skaffold.dev/docs/install/                  |
+| Tool       | Required Version | Installation                                         |
+| ---------- | ---------------- | ---------------------------------------------------- |
+| Python     | &gt;= 3.11       |                                                      |
+| gcloud CLI | Latest           | https://cloud.google.com/sdk/docs/install            |
+| Terraform  | &gt;= v1.3.7     | https://developer.hashicorp.com/terraform/downloads  |
+| Skaffold   | &gt;= v2.4.0     | https://skaffold.dev/docs/install/#standalone-binary |
 
-[Optional] If you plan to deploy services on a GKE cluster, please install the following:
+[Optional] For deploying to a GKE cluster, please install the following:
 
 | Tool      | Required Version | Installation                                               |
 | --------- | ---------------- | ---------------------------------------------------------- |
@@ -48,115 +48,121 @@ pip install solutions-builder
 With `pipx`:
 
 ```
-pip install --user pipx
-pipx install solutions-builder
+pip install --user pipx && pipx install solutions-builder
 ```
 
-## Quick Start
+## Quick Start - Create a new solution
 
-This quick start steps will do the following:
+> This quick start steps will create the following:
+>
+> - Create a new solution folder.
+> - Create a new GCP project and initialize Terraform infrastructure.
+> - Add a FastAPI-based microservice with a sample API.
+> - Deploy the service to Cloud Run.
 
-- Create a new GCP project and initialize Cloud foundation.
-- Add a RESTful API service for managing Todo list.
-- Deploy the service to Cloud Run.
-
-Set up GCP project
-
-```
-export PROJECT_ID=my-solution-gcp-id
-
-# (Optional) Create a new GCP project. You can also use an existing GCP project.
-gcloud projects create $PROJECT_ID
-
-# Set gcloud CLI to the GCP project.
-gcloud config set project $PROJECT_ID
-```
-
-Generate a new solution folder.
+Generate a new solution in `my-solution-folder` folder.
 
 ```
-sb new my-solution
+sb new my-solution-folder
 ```
 
 This will prompt options and variables:
 
 ```
 🎤 What is your project name? (Spaces are allowed.)
-   my-solution
+   my awesome solution name
 🎤 What is your Google Cloud project ID?
-   my-solution-gcp-id
+   my-project-id
+🎤 Create GCP project 'my-project-id'? (yes/no)
+   yes
 🎤 What is your Google Cloud project number?
    12345678
 🎤 Which Google Cloud region?
    us-central1
+🎤 Default deploy method? (cloudrun or gke)
+   Cloud Run
+
+(...Leave the rest as default)
+```
+
+Once answered, it will generate the code from the template:
+
+```
+Copying from template
+    create  .
+    create  .pylintrc
+    create  .copier-answers.yml
+    ...
+```
+
+Answer questions when adding `terraform_base` module:
+
+```
+Adding module 'terraform_base'...
 🎤 Use GCS Bucket for Terraform backend?
    Yes
+
+Copying from template
+ identical  .
+    create  terraform
+    create  terraform/stages
+    ...
+
+
+Complete. New solution folder created at ./my-solution-folder.
 ```
 
-Go to the newly created project folder
+Add a Sample Cloud Run microservice using `blank_service` module template:
 
 ```
-cd my-solution
-sb infra apply 1-bootstrap
+cd my-solution-folder
+sb add component sample_service -t blank_service
 ```
 
-Initialize Cloud infrastructure
-
-- Option 1: (Recommended) Log in to the jump host and run the following command(s) in the solution folder.
-- Option 2: Run the following commands in your local machine.
+And answer the following:
 
 ```
-sb infra apply 2-foundation
+This will add component 'sample_service' to 'components' folder. Continue? [Y/n]:
+🎤 Resource name (lower case, alphanumeric characters, '-')?
+   sample-service
+🎤 Which Google Cloud region?
+   us-central1
+🎤 Add a sample API?
+   Yes
+🎤 Does this component require the Common image?
+   No
+🎤 Default deploy method? (cloudrun or gke)
+   Cloud Run
 ```
 
-Add a RESTful API service with **Todo** data model to this solution.
+Initialize Terraform
 
 ```
-sb components add -t restful_service todo_service
+sb terraform apply --all --yes
 ```
 
-Fill details in the prompt:
+- This will initialize all Terraform stages.
+- Build and deploy the sample service to Cloud Run.
 
-- Component name: **todo_service**
-- Resource name: **todo-service**
-- Relative path: **todo-service**
-- GCP region: **us-central1**
-- Data model name: **todo**
-- Add Cloud Run to deployment methods: **yes**
-- Create network endpoint group (NEG) for serverless ingress: **yes**
-- Default deploy method? (cloudrun or gke): **Cloud Run**
-
-Add an HTTP Load Balancer for Cloud Run service(s)
-
-```
-sb components add -t terraform_httplb_cloudrun terraform_httplb_cloudrun
-sb infra apply 3-httplb-cloudrun
-```
-
-Build and deploy
+Alternatively, build and deploy all components:
 
 ```
 sb deploy
 ```
 
-- See other deployment options in [solutions_builder/modules](solutions_builder/modules).
-
 ## CLI Usage
 
 For more information on how to use the CLI, please refer to the [CLI_USAGE.md](docs/CLI_USAGE.md).
 
-## Additional Documentations
+## Development
 
-You can find more documentations in [docs](docs) folder. In a nutshell, it covers the following:
+- [DEVELOPMENT.md](docs/DEVELOPMENT.md) covers how to contribute this project, code submission process.
+- [cloudrun.md](docs/guides/cloudrun.md) covers the guidance if you want to deploy microservice to Cloud Run.
+- [gke.md](docs/guides/gke.md) covers the overall development guidance on Google Kubernetes Engine.
 
-- [INSTALLATION.md](docs/INSTALLATION.md) - The overall installation guide.
-- [DEVELOPMENT.md](docs/DEVELOPMENT.md) - Development guide and code submission process.
+## Troubleshooting
+
 - [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) - Development guide and code submission process.
-
-In the [docs/components](docs/components) folder, it contains a few more guidance based on each component/feature available in this template.
-
-- [gke.md](docs/components/gke.md) covers the overall development guidance on Google Kubernetes Engine.
-- [cloudrun.md](docs/components/cloudrun.md) covers the guidance if you want to deploy microservice to Cloud Run.
 
 ## FAQ
 
@@ -174,3 +180,15 @@ In the [docs/components](docs/components) folder, it contains a few more guidanc
 ## Troubleshoot
 
 See [TROUBLESHOOTING Guide](docs/TROUBLESHOOTING.md) for details.
+
+```
+
+```
+
+```
+
+```
+
+```
+
+```

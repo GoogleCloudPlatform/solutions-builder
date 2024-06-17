@@ -15,14 +15,9 @@
  *
  */
 
-module "deployment_service_account" {
-  depends_on   = [module.project_services]
-  source       = "../../modules/service_account"
-  project_id   = var.project_id
-  name         = "deployment"
-  display_name = "deployment"
-  description  = "Service Account for deployment"
-  roles = [
+# project-specific locals
+locals {
+  roles_for_default_sa = [
     "roles/aiplatform.admin",
     "roles/artifactregistry.admin",
     "roles/cloudbuild.builds.builder",
@@ -42,4 +37,31 @@ module "deployment_service_account" {
     "roles/storage.admin",
     "roles/viewer",
   ]
+}
+
+
+resource "google_project_iam_member" "cloudbuild-sa-iam" {
+  depends_on = [module.project_services]
+  for_each   = toset(local.roles_for_default_sa)
+  role       = each.key
+  member     = "serviceAccount:${var.project_number}@cloudbuild.gserviceaccount.com"
+  project    = var.project_id
+}
+
+resource "google_project_iam_member" "default-compute-sa-iam" {
+  depends_on = [module.project_services]
+  for_each   = toset(local.roles_for_default_sa)
+  role       = each.key
+  member     = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+  project    = var.project_id
+}
+
+module "deployment_service_account" {
+  depends_on   = [module.project_services]
+  source       = "../../modules/service_account"
+  project_id   = var.project_id
+  name         = "deployment"
+  display_name = "deployment"
+  description  = "Service Account for deployment"
+  roles        = roles_for_default_sa
 }

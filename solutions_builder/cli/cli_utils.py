@@ -19,6 +19,8 @@ import yaml
 import typer
 import subprocess
 import re
+import shutil
+import git
 from copier import run_copy
 from .cli_constants import DEBUG
 
@@ -163,6 +165,25 @@ def check_git_url(url):
   regex = re.compile(regex_str)
   match = regex.match(url)
   return match is not None
+
+
+def clone_remote_git(source_url):
+  git_url, git_subfolder = source_url.split(".git")
+  git_url += ".git"
+  current_dir = os.path.dirname(__file__)
+  dest_dir = current_dir + "/../downloaded_repos/" + git_url
+
+  if os.path.exists(dest_dir):
+    if confirm(
+      f"🎤 Git repo '{git_url}' has been downloaded before. \n   "
+            "Do you want to re-download it?", abort=False):
+      shutil.rmtree(dest_dir)
+      git.Repo.clone_from(git_url, dest_dir)
+  else:
+    git.Repo.clone_from(git_url, dest_dir)
+
+  print()
+  return dest_dir + "/" + git_subfolder
 
 
 def get_package_dir():

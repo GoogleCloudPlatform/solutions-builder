@@ -70,7 +70,8 @@ app.add_typer(list_app,
 @app.command()
 def new(folder_name,
         output_dir: Annotated[Optional[str], typer.Argument()] = ".",
-        template_path=None,
+        template_path: Annotated[str,
+                                 typer.Option("--template", "-t")] = None,
         answers=None):
   """
   Create a new solution folder.
@@ -79,12 +80,20 @@ def new(folder_name,
   output_path = output_path.replace("//", "/")
   answers_dict = get_answers_dict(answers)
 
-  if not template_path:
-    current_dir = os.path.dirname(__file__)
-    template_path = f"{current_dir}/../template_root"
-
   if os.path.exists(output_path):
     raise FileExistsError(f"Solution folder {output_path} already exists.")
+
+  # If the component name is a Git URL, use the URL as-is in copier.
+  if template_path:
+    if check_git_url(template_path):
+      template_path = clone_remote_git(template_path)
+    else:
+      if not os.path.exists(template_path):
+        raise FileNotFoundError(
+            f"Template '{template_path}' does not exist.")
+  else:
+    current_dir = os.path.dirname(__file__)
+    template_path = f"{current_dir}/../template_root"
 
   # Copy template_root to destination.
   print(f"template_path = {template_path}")
