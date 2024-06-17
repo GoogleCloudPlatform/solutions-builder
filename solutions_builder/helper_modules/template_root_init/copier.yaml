@@ -19,6 +19,14 @@ gcp_region:
   help: Which Google Cloud region?
   default: us-central1
 
+default_deploy_method:
+  type: str
+  help: Default deploy method? (cloudrun or gke)
+  choices:
+    Cloud Run: cloudrun
+    GKE: gke
+  default: cloudrun
+
 has_common:
   type: bool
   help: Include a common container image for shared libraries, data models, utils, etc?

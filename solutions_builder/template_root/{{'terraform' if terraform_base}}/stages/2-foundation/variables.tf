@@ -50,6 +50,12 @@ variable "region" {
   }
 }
 
+variable "artifact_registry_region" {
+  type        = string
+  description = "Artifact Registry region"
+  default     = "us"
+}
+
 variable "vpc_network" {
   type    = string
   default = "default-vpc"

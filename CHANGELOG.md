@@ -4,11 +4,17 @@
 
 ### Refactor CLI structure
 
-- Chagne "sb component add" to "sb new component ..." CLI collection.
+- Changed `sb component add` to `sb new component ...` commands.
+- Added `sb terraform *` as alias of `sb infra *` commands.
+  - `sb terraform apply --all` to init an apply all terraform stages.
+- Added `sb init` to restore `sb.yaml`.
+- Added `sb replay` to re-install components according to a `sb.yaml` file.
+- Added template path supports for local folder and remote Git repo.
 
 ### Misc updates
 
-- Added support for Python 3.10.x
+- Added support for Python 3.10.x, 3.11.x
+- Moved `task_dispatch_service` to `experimnets` folder.
 
 ## 1.18.0
 

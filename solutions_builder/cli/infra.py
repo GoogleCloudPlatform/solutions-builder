@@ -42,7 +42,7 @@ def apply(stage: Annotated[Optional[str],
         f"{solution_path}/terraform/stages")
 
   elif stage:
-    terraform_stages = stage.replace("terraform/stages", "")
+    terraform_stages = [stage.replace("terraform/stages", "")]
 
   else:
     print(f"Missing argument 'STAGE' or '--all'. Available stages:")
@@ -182,7 +182,7 @@ def terraform_apply(solution_path, stage, unlock=False,
     project_id, impersonate_email) if impersonate_email else ""
 
   # Get unlock flag
-  unclock_clause = " -unlock=false" if unlock else ""
+  unclock_clause = " -lock=false" if unlock else ""
 
   # Init and apply in a specific stage folder.
   print(f"Applying Terraform stage: '{stage}'...")

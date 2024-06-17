@@ -91,6 +91,8 @@ terraform_stage:
   help: Name of the terraform stage?
   default: "3-{{component_name | to_kebab}}"
 
+_answers_file: ".sb/component_answers/{{component_name}}.yaml"
+
 _templates_suffix: ""
 
 _patch:

@@ -24,7 +24,7 @@ cluster_name:
   help: GKE cluster name?
   default: main-cluster
 
-_answers_file: ".st/module_answers/{{component_name}}.yaml"
+_answers_file: ".sb/module_answers/{{component_name}}.yaml"
 
 _templates_suffix: ""
 

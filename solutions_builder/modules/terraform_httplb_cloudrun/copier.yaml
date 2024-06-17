@@ -28,7 +28,7 @@ cloudrun_services:
   help: Cloud Run service names as the LB backend? (comma-separated string)
   default: "{{project_id | get_cloud_run_services}}"
 
-_answers_file: ".st/module_answers/{{component_name}}.yaml"
+_answers_file: ".sb/module_answers/{{component_name}}.yaml"
 
 _templates_suffix: ""
 

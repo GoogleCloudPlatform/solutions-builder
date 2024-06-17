@@ -156,7 +156,7 @@ def process_component(method,
         )
       component_answers = sb_yaml["components"][component_name]
       template_path = component_answers["template_path"]
-      answers_file = f".st/module_answers/{component_name}.yaml"
+      answers_file = f".sb/module_answers/{component_name}.yaml"
 
       # Use existing answer values in data, skipping the prompt.
       if use_existing_answers:
@@ -214,17 +214,15 @@ def process_component(method,
     print(f"Patching {patch_file}...")
     new_yaml = patch_yaml(f"{solution_path}/{patch_file}",
                           f"{solution_path}/{patch_file}.patch")
-    if "dedupe" in new_yaml:
-      new_yaml["requires"] = dedupe(new_yaml.get("requires"))
+    new_yaml["requires"] = dedupe(new_yaml.get("requires"))
     write_yaml(f"{solution_path}/{patch_file}", new_yaml)
     os.remove(f"{solution_path}/{patch_file}.patch")
 
   print()
 
-# List installed components.
-
 
 def list_components(solution_path: Annotated[Optional[str], typer.Argument()] = "."):
+  """List installed components."""
   sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
   components = sb_yaml.get("components", [])
   print("Installed components:")

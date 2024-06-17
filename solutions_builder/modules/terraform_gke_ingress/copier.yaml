@@ -83,7 +83,7 @@ frontend_config_name:
   default: default-frontend-config
   when: "{{advanced_settings}}"
 
-_answers_file: ".st/module_answers/{{component_name}}.yaml"
+_answers_file: ".sb/module_answers/{{component_name}}.yaml"
 
 _templates_suffix: ""
 

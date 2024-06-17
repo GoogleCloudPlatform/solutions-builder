@@ -51,7 +51,7 @@ deploy_method:
 
 # _subdirectory: "{{module_version}}"
 
-_answers_file: ".st/module_answers/{{component_name}}.yaml"
+_answers_file: ".sb/component_answers/{{component_name}}.yaml"
 
 _templates_suffix: ""
 
