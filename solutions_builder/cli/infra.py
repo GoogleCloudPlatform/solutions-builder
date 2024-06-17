@@ -34,8 +34,6 @@ def apply(stage: Annotated[Optional[str],
           debug: Optional[bool] = False):
   validate_solution_folder(solution_path)
 
-  print(yes)
-
   if all_stages:
     # Get all stage folders in './terraform/stages'
     terraform_stages = get_immediate_subdirectories(

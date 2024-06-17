@@ -31,10 +31,10 @@ gcp_region:
   help: Which Google Cloud region?
   default: us-central1
 
-sample_service:
+sample_api:
   type: bool
-  help: Add a sample service?
-  default: false
+  help: Add a sample API?
+  default: true
 
 depend_on_common:
   type: bool

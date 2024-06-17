@@ -10,6 +10,8 @@
 - Added `sb init` to restore `sb.yaml`.
 - Added `sb replay` to re-install components according to a `sb.yaml` file.
 - Added template path supports for local folder and remote Git repo.
+- Updated `sb new` to support external path.
+- Updated template_root to load other modules dynamically.
 
 ### Misc updates
 

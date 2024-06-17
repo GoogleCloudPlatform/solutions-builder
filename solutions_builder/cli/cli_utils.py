@@ -19,6 +19,7 @@ import yaml
 import typer
 import subprocess
 import re
+from copier import run_copy
 from .cli_constants import DEBUG
 
 
@@ -32,9 +33,11 @@ def confirm(msg, skip=False, abort=True, default=True):
 def validate_solution_folder(path):
   """Check if the solution folder has sb.yaml file."""
   if not os.path.isfile(path + "/sb.yaml"):
-    raise FileNotFoundError(
+    confirm(
         f"Path {path} is not a valid solution folder: missing sb.yaml.\n"
-        "Please run `sb init` to initialize the folder.")
+        "Do you want to initialize with a new `sb.yaml`?")
+    run_module_template("init_sb_yaml", modules_dir="helper_modules")
+
   return True
 
 
@@ -199,6 +202,23 @@ def set_gcloud_project(project_id):
 
 def set_debug_flag(is_debug):
   DEBUG = is_debug
+
+
+def run_module_template(module_name, modules_dir="modules",
+                        dest_dir=".", data={}, answers_file=None):
+  """
+    Run module template.
+    """
+  print(f"Adding module '{module_name}'...\n")
+
+  current_dir = os.path.dirname(__file__)
+  template_dir = f"{current_dir}/../{modules_dir}/{module_name}"
+  worker = run_copy(template_dir,
+                    dest_dir,
+                    data=data,
+                    answers_file=answers_file,
+                    unsafe=True)
+  return worker.answers.user
 
 
 def print_success(msg):

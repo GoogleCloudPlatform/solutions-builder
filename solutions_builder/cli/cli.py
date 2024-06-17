@@ -29,6 +29,7 @@ from .infra import infra_app
 from .template import template_app
 from .set import set_app, project_id as set_project_id
 from .vars import vars_app
+from .list import list_app
 from .cli_utils import *
 from .cli_constants import DEBUG, PLACEHOLDER_VALUES
 
@@ -45,9 +46,6 @@ app.add_typer(add_command,
 app.add_typer(update_command,
               name="update",
               help="Update components.")
-# app.add_typer(component_app,
-#               name="component",
-#               help="Add or update components.")
 app.add_typer(infra_app,
               name="infra",
               help="Manage infrastructure (terraform).")
@@ -63,6 +61,9 @@ app.add_typer(set_app,
 app.add_typer(vars_app,
               name="vars",
               help="Set variables in an existing solutions-builder folder.")
+app.add_typer(list_app,
+              name="list",
+              help="List modules or other resources.")
 
 
 # Create a new solution
@@ -88,7 +89,20 @@ def new(folder_name,
   # Copy template_root to destination.
   print(f"template_path = {template_path}")
   answers_dict["folder_name"] = folder_name
-  run_copy(template_path, output_path, data=answers_dict, unsafe=True)
+  worker = run_copy(template_path, output_path, data=answers_dict, unsafe=True)
+
+  # Get answer values inputed by user.
+  answers = worker.answers.user
+
+  # Optionally set up base terraform
+  if answers.get("terraform_base"):
+    run_module_template("terraform_base", dest_dir=output_path, data=answers)
+
+  # Optionally set up CI/CD
+  cicd_type = answers.get("cicd")
+  if cicd_type:
+    run_module_template(f"cicd_{cicd_type}",
+                        dest_dir=output_path, data=answers)
 
   print_success(f"Complete. New solution folder created at {output_path}.\n")
 
@@ -262,7 +276,7 @@ def init(solution_path: Annotated[Optional[str], typer.Argument()] = "."):
     confirm(f"This will create a new 'sb.yaml' in '{solution_path}'. "
             "Continue?", default=True)
 
-  template_path = get_package_dir() + "/helper_modules/template_root_init"
+  template_path = get_package_dir() + "/helper_modules/init_sb_yaml"
   run_copy(template_path, solution_path, data={}, unsafe=True)
 
   # Restore components.
