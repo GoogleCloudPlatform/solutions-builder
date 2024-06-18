@@ -13,10 +13,10 @@ Solutions Builder provides built-in and ready-to-ship modules including:
 
 - [Terraform](https://www.terraform.io/) boilerplate modules
 - Modular microservice templates, deployable to Cloud Run or a Kubernetes cluster.
+- Support using templates from remote Git repo (e.g. a private Git repo)
 - Unified deployment using Skaffold.
 - Automatically generated OpenAPI schema with [FastAPI](https://fastapi.tiangolo.com/).
 - CI/CD deployment templates.
-- Cloud Run templates.
 
 ## Roadmap
 

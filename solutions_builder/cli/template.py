@@ -25,16 +25,16 @@ template_app = typer.Typer()
 
 
 @template_app.command()
-def new(module_name,
-        modules_folder: Annotated[
+def create(module_name,
+           modules_folder: Annotated[
             Optional[str], typer.Argument()] = "./solutions_builder/modules",
-        module_template_path=None,
-        answers=None,
-        yes: Optional[bool] = False):
+           module_template_path=None,
+           answers=None,
+           yes: Optional[bool] = False):
 
   if not module_template_path:
     current_dir = os.path.dirname(__file__)
-    module_template_path = f"{current_dir}/../module_template"
+    module_template_path = f"{current_dir}/../helper_modules/module_template"
 
   answers_dict = get_answers_dict(answers)
   answers_dict["module_name"] = module_name

@@ -48,7 +48,7 @@ app.add_typer(update_command,
               help="Update components.")
 app.add_typer(infra_app,
               name="infra",
-              help="Manage infrastructure (terraform).")
+              help="Alias of [terraform] commands. Manage infrastructure (terraform).")
 app.add_typer(infra_app,
               name="terraform",
               help="Manage infrastructure (terraform).")
@@ -304,6 +304,7 @@ def set_variable(
     var_value,
     solution_path: Annotated[Optional[str], typer.Argument()] = "."
 ):
+  "Set a specific variable."
   set_var(var_name, var_value, solution_path)
   update_global_var(var_name, var_value, solution_path)
 
@@ -312,7 +313,7 @@ def set_variable(
 def set_project(
         project_id,
         solution_path: Annotated[Optional[str], typer.Argument()] = ".",):
-
+  "Set 'project_id' and 'project_number' variables."
   confirm(
       f"This will set project_id to '{project_id}' and update project_number. "
       + "Continue?")
