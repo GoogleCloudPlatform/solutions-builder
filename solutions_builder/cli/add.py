@@ -45,3 +45,12 @@ def infra(module_name,
           answers=None):
   add_component(module_name, module_name,
                 solution_path, ".", yes, answers)
+
+
+@add_command.command()
+def terraform(module_name,
+              solution_path: Optional[str] = ".",
+              yes: Optional[bool] = False,
+              answers=None):
+  add_component(module_name, module_name,
+                solution_path, ".", yes, answers)
