@@ -144,7 +144,7 @@ def set_var(
     solution_path: Annotated[Optional[str], typer.Argument()] = ".",
 ):
   validate_solution_folder(solution_path)
-  print(f"Setting {var_name} to '{var_value}'...")
+  print(f"Setting variable '{var_name}' to '{var_value}'...")
 
   # Update to the root sb.yaml
   root_st_yaml = read_yaml(f"{solution_path}/sb.yaml")

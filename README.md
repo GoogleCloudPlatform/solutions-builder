@@ -1,15 +1,15 @@
 # Google Cloud Solutions Builder
 
-**A solution framework to generate a new project with built-in structure and modules
+**A solution framework to generate code with built-in structure and modules
 to accelerate your project setup.**
 
 ## TL;DR
 
 Solutions Builder is a boilerplate template for building repeatable
-solutions with the best practices in architecture on Google Cloud, including GKE
-clusters, Cloud Run, Test Automation, CI/CD, as well as development process.
+solutions with the best practices in architecture on Google Cloud, including Cloud Run, GKE
+clusters, Test Automation, CI/CD, etc.
 
-This template provides built-in and ready-to-ship modules including:
+Solutions Builder provides built-in and ready-to-ship modules including:
 
 - [Terraform](https://www.terraform.io/) boilerplate modules
 - Modular microservice templates, deployable to Cloud Run or a Kubernetes cluster.
@@ -154,11 +154,16 @@ sb deploy
 
 For more information on how to use the CLI, please refer to the [CLI_USAGE.md](docs/CLI_USAGE.md).
 
-## Development
+## Additional Guides
 
-- [DEVELOPMENT.md](docs/DEVELOPMENT.md) covers how to contribute this project, code submission process.
-- [cloudrun.md](docs/guides/cloudrun.md) covers the guidance if you want to deploy microservice to Cloud Run.
-- [gke.md](docs/guides/gke.md) covers the overall development guidance on Google Kubernetes Engine.
+- [cloudshell.md](docs/guides/cloudshell.md) - Step-by-step guidance to run Solutions Builder on Google Cloud Shell.
+- [cloudrun.md](docs/guides/cloudrun.md) - The guidance if you want to deploy microservice to Cloud Run.
+- [gke.md](docs/guides/gke.md) - The overall development guidance on Google Kubernetes Engine.
+
+## Development and contributions
+
+- [CONTRIBUTIONS.md](CONTRIBUTIONS.md) - How to contribute this project, code submission process.
+- [DEVELOPMENT.md](docs/DEVELOPMENT.md) - Guidances on developing new templates, modules, and components.
 
 ## Troubleshooting
 
@@ -170,25 +175,5 @@ For more information on how to use the CLI, please refer to the [CLI_USAGE.md](d
 
   - A: Any engineering team to start a new solution development project.
 
-- Can I choose to deploy microservice just to Cloud Run?
-
-  - A: Yes, please refer to [INSTALLATION Guide](docs/INSTALLATION.md) for more details.
-
 - Can I use this template for non-Google or multi-Cloud environments?
   - A: We design this Solutions Builder to work 100% out of the box with Google Cloud products. However, you could customize the solution to meet your needs on multi-Cloud environment. See [Why Google Cloud](https://cloud.google.com/why-google-cloud) for details.
-
-## Troubleshoot
-
-See [TROUBLESHOOTING Guide](docs/TROUBLESHOOTING.md) for details.
-
-```
-
-```
-
-```
-
-```
-
-```
-
-```

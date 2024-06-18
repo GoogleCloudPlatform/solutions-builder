@@ -225,6 +225,23 @@ def set_debug_flag(is_debug):
   DEBUG = is_debug
 
 
+def verify_copier_file(path):
+  "Check if copier.yaml exists in folder path"
+  if not os.path.isfile(path + "/copier.yaml"):
+    confirm(f"No copier.yaml found in {path}. Do you still want to continue?")
+
+
+def update_global_var(var_name, var_value, solution_path="."):
+  """
+    Update global variable.
+    """
+  sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
+  global_variables = sb_yaml.get("global_variables", {})
+  global_variables[var_name] = var_value
+  sb_yaml["global_variables"] = global_variables
+  write_yaml(f"{solution_path}/sb.yaml", sb_yaml)
+
+
 def run_module_template(module_name, modules_dir="modules",
                         dest_dir=".", data={}, answers_file=None):
   """

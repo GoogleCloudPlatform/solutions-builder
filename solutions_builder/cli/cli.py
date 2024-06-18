@@ -28,7 +28,7 @@ from .component import list_components
 from .infra import infra_app
 from .template import template_app
 from .set import set_app, project_id as set_project_id
-from .vars import vars_app
+from .vars import vars_app, set_var
 from .list import list_app
 from .cli_utils import *
 from .cli_constants import DEBUG, PLACEHOLDER_VALUES
@@ -60,7 +60,7 @@ app.add_typer(set_app,
               help="Set properties to an existing solution folder.")
 app.add_typer(vars_app,
               name="vars",
-              help="Set variables in an existing solutions-builder folder.")
+              help="Set variables in an existing solution folder.")
 app.add_typer(list_app,
               name="list",
               help="List modules or other resources.")
@@ -96,8 +96,9 @@ def new(folder_name,
     template_path = f"{current_dir}/../template_root"
 
   # Copy template_root to destination.
-  print(f"template_path = {template_path}")
+  print(f"template_path: {template_path}\n")
   answers_dict["folder_name"] = folder_name
+  verify_copier_file(template_path)
   worker = run_copy(template_path, output_path, data=answers_dict, unsafe=True)
 
   # Get answer values inputed by user.
@@ -295,6 +296,33 @@ def init(solution_path: Annotated[Optional[str], typer.Argument()] = "."):
     write_yaml(f"{solution_path}/sb.yaml", sb_yaml)
 
   print_success("Complete.")
+
+
+@ app.command("set-var")
+def set_variable(
+    var_name,
+    var_value,
+    solution_path: Annotated[Optional[str], typer.Argument()] = "."
+):
+  set_var(var_name, var_value, solution_path)
+  update_global_var(var_name, var_value, solution_path)
+
+
+@ app.command("set-project")
+def set_project(
+        project_id,
+        solution_path: Annotated[Optional[str], typer.Argument()] = ".",):
+
+  confirm(
+      f"This will set project_id to '{project_id}' and update project_number. "
+      + "Continue?")
+
+  set_var("project_id", project_id, solution_path)
+  update_global_var("project_id", project_id, solution_path)
+
+  project_number = get_project_number(project_id)
+  set_var("project_number", project_number, solution_path)
+  update_global_var("project_number", project_number, solution_path)
 
 
 @ app.command()
