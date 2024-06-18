@@ -356,7 +356,7 @@ global_variables:
 Run the following to apply all these values to existing variables in all files.
 
 ```
-$ sb vars apply-all
+sb vars apply-all
 ```
 
 All files with the corresponding anchors will be updated altogether.

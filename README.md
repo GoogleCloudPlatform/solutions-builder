@@ -119,6 +119,11 @@ cd my-solution-folder
 sb add component sample_service -t blank_service
 ```
 
+- Alternatively, use a template from a remote Git repo like:
+  ```
+   sb add component sample_service -t git@github.com:GoogleCloudPlatform/solutions-builder.git/modules/blank_service
+  ```
+
 And answer the following:
 
 ```
