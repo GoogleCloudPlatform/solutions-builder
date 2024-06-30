@@ -12,6 +12,7 @@
 - Updated `sb new` to support external path.
 - Updated template_root to load other modules dynamically.
 - Updated with Artifact Registry from Container Registry.
+- Removed `project_number` in the variable.
 
 ### Misc updates
 
