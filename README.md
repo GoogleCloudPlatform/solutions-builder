@@ -7,20 +7,31 @@ to accelerate your project setup.**
 
 Solutions Builder is a boilerplate tool for building repeatable solutions with the
 best practices in architecture on Google Cloud, including Cloud Run, GKE clusters,
-Test Automation, CI/CD, etc.
-
-Solutions Builder provides built-in and ready-to-ship modules including:
+Test Automation, CI/CD, etc, with built-in modules including:
 
 - [Terraform](https://www.terraform.io/) boilerplate modules
 - Modular microservice templates, deployable to Cloud Run or a Kubernetes cluster.
-- Support using templates from remote Git repo (e.g. a private Git repo)
-- Unified deployment using Skaffold.
-- Auto-generated OpenAPI schema with [FastAPI](https://fastapi.tiangolo.com/).
+- Generating code from templates at remote Git repo (e.g. a private Git repo)
+- Container image building and deploying with [Skaffold](https://skaffold.dev)
+- Modules and templates based on [Copier](https://copier.readthedocs.io/en/stable/).
 - CI/CD deployment templates.
 
-## Roadmap
+## Build a solution by adding modules
 
-Please see [Feature Requests in the GitHub issue list](https://github.com/GoogleCloudPlatform/solutions-builder/issues?q=is%3Aopen+is%3Aissue+label%3A%22feature+request%22).
+Solutions Builder is designed with modules and templates. When creating a new solution
+folder, it starts from a base template with a terraform foundation and project skeleton.
+Then, you can start adding modules into this solution folder.
+
+For example, these are examples of creating a new solution:
+
+- Start a new solution with a base (skeleton) code from a "root template"
+- Add a Cloud Run microservice with APIs
+- Add a Load Balancer with Identity-Aware Proxy
+- Add CI/CD for deployment
+
+![alt text](docs/assets/adding_modules.png)
+
+Check out the [Quick Start](#quick-start---create-a-new-solution) section to create a sample solution.
 
 ## Prerequisite
 
@@ -37,18 +48,24 @@ Please see [Feature Requests in the GitHub issue list](https://github.com/Google
 | --------- | ---------------- | ---------------------------------------------------------- |
 | Kustomize | &gt;= v5.0.0     | https://kubectl.docs.kubernetes.io/installation/kustomize/ |
 
-## Install Solutions Builder CLI
+Install all packages:
 
-With `pip`:
+Mac:
+
+```
+brew install gcloud terraform skaffold
+```
+
+Windows:
+
+```
+choco install gcloud terraform skaffold
+```
+
+## Install Solutions Builder CLI
 
 ```
 pip install solutions-builder
-```
-
-With `pipx`:
-
-```
-pip install --user pipx && pipx install solutions-builder
 ```
 
 ## Quick Start - Create a new solution
@@ -99,6 +116,10 @@ Answer questions when adding `terraform_base` module:
 Adding module 'terraform_base'...
 🎤 Use GCS Bucket for Terraform backend?
    Yes
+🎤 What is your GCP billing account?
+   12345-12345-12345
+🎤 Use GCS Bucket for Terraform backend?
+   Yes
 
 Copying from template
  identical  .
@@ -138,24 +159,30 @@ This will add component 'sample_service' to 'components' folder. Continue? [Y/n]
    Cloud Run
 ```
 
-Initialize Terraform
+Apply all Terraform stages (in `terraform/stages` folder)
 
 ```
 sb terraform apply --all --yes
 ```
 
-- This will initialize all Terraform stages.
-- Build and deploy the sample service to Cloud Run.
+The command above will run the following:
 
-Alternatively, build and deploy all components:
+- Init and apply all Terraform stages. (`terraform init` and `terraform apply`))
+- Build the sample_service container image and published to Artifact Registry. (using [Skaffold](https://skaffold.dev))
+- Deploy the sample_service container to Cloud Run. (using Terraform)
 
-```
-sb deploy
-```
+> Optionally, manually build and deploy sample_service using `sb deploy`.
+>
+> ```
+> sb deploy -m sample_service
+> ```
+
+Once deployed, you can test the Cloud Run instance at:
+https://console.cloud.google.com/run/detail/us-central1/sample-service
 
 ## CLI Usage
 
-For more information on how to use the CLI, please refer to the [CLI_USAGE.md](docs/CLI_USAGE.md).
+Check out [CLI_USAGE.md](docs/CLI_USAGE.md) for more CLI usages and tutorials.
 
 ## Additional Guides
 

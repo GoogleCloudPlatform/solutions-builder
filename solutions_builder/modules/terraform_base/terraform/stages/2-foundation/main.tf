@@ -33,6 +33,7 @@ locals {
     "firestore.googleapis.com",            # Firestore
     "iam.googleapis.com",                  # Cloud IAM
     "identitytoolkit.googleapis.com",      # Identity Toolkit
+    "iap.googleapis.com",                  # Idenity-aware proxy
     "logging.googleapis.com",              # Cloud Logging
     "monitoring.googleapis.com",           # Cloud Operations Suite
     "pubsub.googleapis.com",               # Pub/Sub
