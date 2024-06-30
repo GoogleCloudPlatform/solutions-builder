@@ -19,7 +19,7 @@ resource_name:
   help: Ingress resource name (lower case, alphanumeric characters, '-')?
   default: gke-ingress
 
-gcp_region:
+region:
   type: str
   help: Which Google Cloud region?
   default: us-central1
@@ -45,7 +45,7 @@ private_cluster:
   help: Private cluster?
   default: true
 
-_answers_file: ".st/module_answers/{{component_name}}.yaml"
+_answers_file: ".sb/module_answers/{{component_name}}.yaml"
 
 _templates_suffix: ""
 

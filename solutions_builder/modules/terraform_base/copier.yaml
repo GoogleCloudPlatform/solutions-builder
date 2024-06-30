@@ -1,0 +1,40 @@
+# questions
+project_id:
+  type: str
+  help: What is your Google Cloud project ID?
+
+region:
+  type: str
+  help: Which Google Cloud region?
+  default: us-central1
+
+terraform_create_project:
+  type: bool
+  help: Use Terraform to manage and create a new GCP project?
+  default: "{{not (project_id | check_project_exist)}}"
+
+billing_account_id:
+  type: str
+  help: What is your GCP billing account?
+  default: "{{project_id | get_current_billing_account}}"
+
+terraform_backend_gcs:
+  type: bool
+  help: Use GCS Bucket for Terraform backend?
+  default: true
+
+_templates_suffix: ""
+
+_exclude:
+  - "copier.yaml"
+  - ".terraform*"
+  - ".tmp"
+  - ".venv"
+  - ".pytest_cache"
+  - "__pycache__"
+  - "*-debug.log"
+
+_jinja_extensions:
+  - jinja2_time.TimeExtension
+  - copier_templates_extensions.TemplateExtensionLoader
+  - ../../copier_extensions/sb_helpers.py:SolutionsTemplateHelpersExtension

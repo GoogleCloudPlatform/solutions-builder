@@ -19,18 +19,27 @@ import yaml
 import typer
 import subprocess
 import re
+import shutil
+import git
+from copier import run_copy
+from .cli_constants import DEBUG
 
 
-def confirm(msg, skip=False, default=True):
-  if not skip:
-    typer.confirm(msg, abort=True, default=default)
+def confirm(msg, skip=False, abort=True, default=True):
+  if skip:
+    return True
+
+  return typer.confirm(msg, abort=abort, default=default)
 
 
-# Check if the solution folder has sb.yaml file.
 def validate_solution_folder(path):
+  """Check if the solution folder has sb.yaml file."""
   if not os.path.isfile(path + "/sb.yaml"):
-    raise FileNotFoundError(
-        f"Path {path} is not a valid solution folder: missing sb.yaml")
+    confirm(
+        f"Path {path} is not a valid solution folder: missing sb.yaml.\n"
+        "Do you want to initialize with a new `sb.yaml`?")
+    run_module_template("init_sb_yaml", modules_dir="helper_modules")
+
   return True
 
 
@@ -49,10 +58,10 @@ def get_copier_yaml(path):
 
 
 def get_immediate_subdirectories(a_dir):
-  return [
+  return sorted([
       name for name in os.listdir(a_dir)
       if os.path.isdir(os.path.join(a_dir, name))
-  ]
+  ])
 
 
 def patch_yaml(dest_path, patch_path):
@@ -61,8 +70,8 @@ def patch_yaml(dest_path, patch_path):
   return merge_dict(orig_yaml, patch_yaml)
 
 
-# Merge two dict based on first level of properties.
 def merge_dict(dict1, dict2):
+  """Merge two dict based on first level of properties."""
   for key in dict1.keys():
     if isinstance(dict1[key], list):
       dict1[key] += dict2.get(key, [])
@@ -89,21 +98,24 @@ def dedupe(obj):
     return obj
 
 
-# Read YAML file and convert to a dict.
 def read_yaml(filepath):
-  with open(filepath) as f:
-    data = yaml.safe_load(f)
-  return data
+  """Read YAML file and convert to a dict."""
+  try:
+    with open(filepath) as f:
+      data = yaml.safe_load(f)
+    return data
+  except FileNotFoundError as e:
+    return {}
 
 
-# Write a dict as a YAML file.
 def write_yaml(filepath, dict_data):
+  """Write a dict as a YAML file"""
   with open(filepath, "w") as f:
     yaml.dump(dict_data, f)
 
 
-# Execute shell commands
 def exec_shell(command, working_dir=".", stop_when_error=True, stdout=None):
+  """Execute shell commands"""
   proc = subprocess.Popen(command, cwd=working_dir, shell=True, stdout=stdout)
   exit_status = proc.wait()
 
@@ -114,16 +126,17 @@ def exec_shell(command, working_dir=".", stop_when_error=True, stdout=None):
   return exit_status
 
 
-# Execute shell commands
 def exec_output(command, working_dir=".", stop_when_error=True):
+  """Execute shell commands"""
   output = subprocess.check_output(command,
                                    cwd=working_dir,
                                    shell=True,
                                    text=True)
+  print(output)
   return output
 
 
-def exec_gcloud_output(command, working_dir="."):
+def exec_gcloud_output(command, working_dir=".", hide_error=False):
   output = ""
   try:
     output = exec_output(command)
@@ -137,7 +150,7 @@ def exec_gcloud_output(command, working_dir="."):
 
 def list_subfolders(path):
   modules = get_immediate_subdirectories(path)
-  for module_name in sorted(modules):
+  for module_name in modules:
     print_highlight(f"- {module_name}")
   print()
 
@@ -155,6 +168,30 @@ def check_git_url(url):
   return match is not None
 
 
+def clone_remote_git(source_url):
+  git_url, git_subfolder = source_url.split(".git")
+  git_url += ".git"
+  current_dir = os.path.dirname(__file__)
+  dest_dir = current_dir + "/../downloaded_repos/" + git_url
+
+  if os.path.exists(dest_dir):
+    if confirm(
+      f"🎤 Git repo '{git_url}' has been downloaded before. \n   "
+            "Do you want to re-download it?", abort=False):
+      shutil.rmtree(dest_dir)
+      git.Repo.clone_from(git_url, dest_dir)
+  else:
+    git.Repo.clone_from(git_url, dest_dir)
+
+  print()
+  return dest_dir + "/" + git_subfolder
+
+
+def get_package_dir():
+  current_dir = os.path.dirname(__file__)
+  return current_dir + "/../"
+
+
 def get_answers_dict(data):
   if data:
     return dict(s.split("=") for s in data.split(","))
@@ -168,7 +205,7 @@ def get_project_number(project_id):
     """
   print(f"(Retrieving project number for {project_id}...)")
   command = f"gcloud projects describe {project_id} --format='value(projectNumber)'"
-  project_number = exec_gcloud_output(command)
+  project_number = exec_gcloud_output(command, hide_error=True)
   project_number = project_number.strip()
   if not project_number.isnumeric():
     return ""
@@ -176,8 +213,66 @@ def get_project_number(project_id):
   return project_number
 
 
-# Print success message with styling.
+def set_gcloud_project(project_id):
+  """
+    Set GCP project based on project_id using gcloud command.
+    """
+  if project_id:
+    print(f"(Setting gcloud to project '{project_id}'...)")
+    exec_gcloud_output(f"gcloud config set project {project_id} --quiet")
+
+
+def create_default_artifact_repo(project_id, repo_name, region="us"):
+  """
+    Create default artifact repository.
+  """
+  print(f"(Creating default artifact repository...)")
+  exec_gcloud_output(f"gcloud config set project {project_id}")
+  exec_gcloud_output(
+    f"gcloud artifacts repositories create {repo_name}"
+    f" --repository-format=docker --location={region}")
+
+
+def set_debug_flag(is_debug):
+  DEBUG = is_debug
+
+
+def verify_copier_file(path):
+  "Check if copier.yaml exists in folder path"
+  if not os.path.isfile(path + "/copier.yaml"):
+    confirm(f"No copier.yaml found in {path}. Do you still want to continue?")
+
+
+def update_global_var(var_name, var_value, solution_path="."):
+  """
+    Update global variable.
+    """
+  sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
+  global_variables = sb_yaml.get("global_variables", {})
+  global_variables[var_name] = var_value
+  sb_yaml["global_variables"] = global_variables
+  write_yaml(f"{solution_path}/sb.yaml", sb_yaml)
+
+
+def run_module_template(module_name, modules_dir="modules",
+                        dest_dir=".", data={}, answers_file=None):
+  """
+    Run module template.
+    """
+  print(f"Adding module '{module_name}'...\n")
+
+  current_dir = os.path.dirname(__file__)
+  template_dir = f"{current_dir}/../{modules_dir}/{module_name}"
+  worker = run_copy(template_dir,
+                    dest_dir,
+                    data=data,
+                    answers_file=answers_file,
+                    unsafe=True)
+  return worker.answers.user
+
+
 def print_success(msg):
+  """Print success message with styling."""
   typer.echo(typer.style(msg, fg=typer.colors.GREEN, bold=True))
 
 

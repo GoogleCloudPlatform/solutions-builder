@@ -14,7 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import re, os, yaml
+import re
+import os
+import yaml
 import subprocess
 from jinja2.ext import Extension
 
@@ -25,6 +27,7 @@ def read_yaml(filepath):
     data = yaml.safe_load(f)
   return data
 
+
 def print_indent(text, offest=6):
   text = " " * offest + text
   print(text)
@@ -34,10 +37,10 @@ def print_indent(text, offest=6):
 def exec_output(command, working_dir=".", stop_when_error=False):
   try:
     output = subprocess.check_output(command,
-                                    stderr=subprocess.STDOUT,
-                                    cwd=working_dir,
-                                    shell=True,
-                                    text=True)
+                                     stderr=subprocess.STDOUT,
+                                     cwd=working_dir,
+                                     shell=True,
+                                     text=True)
   except subprocess.CalledProcessError as e:
     # print("Status : FAIL", e.returncode, e.output)
     raise e
@@ -53,6 +56,24 @@ def exec_gcloud_output(command, working_dir="."):
   return output
 
 
+def check_project_exist(project_id):
+  """
+    Check if a GCP project exists.
+    """
+  print_indent(f"(Retrieving project info for {project_id}...)")
+  command = f"gcloud projects describe {project_id} --format='value(projectId)'"
+  try:
+    project_id = exec_gcloud_output(command).strip()
+    if not project_id:
+      return False
+    return True
+
+  except subprocess.CalledProcessError:
+    print_indent(
+      f"Unable to retrieve '{project_id}'. GCP project may not exist yet.\n")
+    return False
+
+
 def get_project_number(project_id):
   """
     Get GCP project number based on project_id using gcloud command.
@@ -60,20 +81,60 @@ def get_project_number(project_id):
   print_indent(f"(Retrieving project number for {project_id}...)")
   command = f"gcloud projects describe {project_id} --format='value(projectNumber)'"
   try:
-    project_number = exec_gcloud_output(command)
-    project_number = project_number.strip()
-
+    project_number = exec_gcloud_output(command).strip()
     if not project_number.isnumeric():
       print_indent(f"project_number is not numeric: {project_number}")
       return ""
+    return project_number
+
+  except subprocess.CalledProcessError:
+    print_indent(
+      f"Unable to retrieve project_number for '{project_id}'. GCP project may not exist yet.\n")
+    return ""
+
+
+def get_current_gcloud_auth_account():
+  command = "gcloud config list account --format 'value(core.account)'"
+  return exec_gcloud_output(command).strip()
+
+
+def get_current_billing_account(project_id):
+  command = "gcloud alpha billing accounts list --format='value(ACCOUNT_ID)' --quiet"
+  return exec_gcloud_output(command).strip()
+
+
+def create_gcp_project(project_id):
+  """
+    Get GCP project number based on project_id using gcloud command.
+    """
+  print_indent(f"(Creating GCP project '{project_id}'...)")
+  try:
+    # Create account.
+    command = f"gcloud projects create {project_id}"
+    exec_gcloud_output(command)
+
+    # Link billing account.
+    billing_account = get_current_billing_account()
+    command = f"gcloud beta billing projects link {project_id} --billing-account={billing_account}"
+    exec_gcloud_output(command)
 
   except subprocess.CalledProcessError as e:
     print_indent(f"{e.output}")
-    print_indent(f"Unable to retrieve project_number for '{project_id}'. GCP project '{project_id}' may not exist on GCP yet.\n")
-    return ""
+    print_indent(
+      f"Unable to create GCP project '{project_id}'.\n")
 
-  else:
-    return project_number
+
+def ask_to_create_gcp_project(project_id):
+  # raw_input returns the empty string for "enter"
+  yes = {"yes", "y", "ye"}
+  no = {"no", "n"}
+
+  choice = input(f"🎤 Create GCP project '{project_id}'? (y/n) ").lower()
+  if choice.lower() in yes:
+    create_gcp_project(project_id)
+    return True
+  elif choice.lower() in no:
+    return False
 
 
 def get_existing_firestore(project_id):
@@ -88,8 +149,10 @@ def get_existing_firestore(project_id):
     return database_name
 
   except subprocess.CalledProcessError as e:
-    print_indent(f"Unable to retrieve default Firestore database name for '{project_id}'. GCP project '{project_id}' may not exist on GCP yet.\n")
+    print_indent(
+      f"Unable to retrieve default Firestore database name for '{project_id}'. GCP project '{project_id}' may not exist on GCP yet.\n")
     return ""
+
 
 def get_current_user(project_id):
   """
@@ -182,6 +245,8 @@ class SolutionsTemplateHelpersExtension(Extension):
   def __init__(self, environment):
     super().__init__(environment)
     environment.filters["get_project_number"] = get_project_number
+    environment.filters["check_project_exist"] = check_project_exist
+    environment.filters["get_current_billing_account"] = get_current_billing_account
     environment.filters["get_existing_firestore"] = get_existing_firestore
     environment.filters["get_current_user"] = get_current_user
     environment.filters["get_cloud_run_services"] = get_cloud_run_services

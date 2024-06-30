@@ -14,7 +14,7 @@ terraform_stage_name:
   help: Terraform stage name?
   default: 3-gke-autopilot
 
-gcp_region:
+region:
   type: str
   help: Which Google Cloud region?
   default: us-central1
@@ -24,7 +24,7 @@ cluster_name:
   help: GKE cluster name?
   default: main-cluster
 
-_answers_file: ".st/module_answers/{{component_name}}.yaml"
+_answers_file: ".sb/module_answers/{{component_name}}.yaml"
 
 _templates_suffix: ""
 

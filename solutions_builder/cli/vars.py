@@ -38,7 +38,7 @@ def replace_var_to_template(var_name, text, custom_template=False):
   # match_pattern matches lines with sb-var anchor in the comment at the end.
   # For example:
   #   PROJECT_ID: 12345          # sb-var:project_id
-  #   GCP_REGION = "us-central1" # sb-var:gcp_region
+  #   region = "us-central1" # sb-var:region
   match_pattern = f"(\\s*[\":=-][ ]*)(-[ ]*)?([\"\']?)([^\"^\'^\r^\n]*)([\"\']?)\\s*#\\s*sb-var:{var_name}"
 
   # output_pattern prints the jinja2 template for the specific variable name.
@@ -144,7 +144,7 @@ def set_var(
     solution_path: Annotated[Optional[str], typer.Argument()] = ".",
 ):
   validate_solution_folder(solution_path)
-  print(f"Setting {var_name} to '{var_value}'...")
+  print(f"Setting variable '{var_name}' to '{var_value}'...")
 
   # Update to the root sb.yaml
   root_st_yaml = read_yaml(f"{solution_path}/sb.yaml")

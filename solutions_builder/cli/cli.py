@@ -17,33 +17,40 @@ limitations under the License.
 import typer
 import traceback
 import os
+import re
 import importlib.metadata
 from typing import Optional
 from typing_extensions import Annotated
 from copier import run_copy
-from .component import component_app, list as components_list
+from .add import add_command
+from .update import update_command
+from .component import list_components
 from .infra import infra_app
 from .template import template_app
 from .set import set_app, project_id as set_project_id
-from .vars import vars_app
+from .vars import vars_app, set_var
+from .list import list_app
 from .cli_utils import *
 from .cli_constants import DEBUG, PLACEHOLDER_VALUES
 
 __version__ = importlib.metadata.version("solutions-builder")
-DEFAULT_DEPLOY_PROFILE = "default-deploy"
+DEFAULT_DEPLOY_PROFILE = "cloudrun"
 
 app = typer.Typer(
     add_completion=False,
     help="Solutions Builder CLI. See https://github.com/GoogleCloudPlatform/solutions-builder for details."
 )
-app.add_typer(component_app,
-              name="components",
-              help="Add or update components.")
-app.add_typer(component_app,
-              name="component",
-              help="Add or update components.")
+app.add_typer(add_command,
+              name="add",
+              help="Add components.")
+app.add_typer(update_command,
+              name="update",
+              help="Update components.")
 app.add_typer(infra_app,
               name="infra",
+              help="Alias of [terraform] commands. Manage infrastructure (terraform).")
+app.add_typer(infra_app,
+              name="terraform",
               help="Manage infrastructure (terraform).")
 app.add_typer(template_app,
               name="template",
@@ -53,14 +60,18 @@ app.add_typer(set_app,
               help="Set properties to an existing solution folder.")
 app.add_typer(vars_app,
               name="vars",
-              help="Set variables in an existing solutions-builder folder.")
+              help="Set variables in an existing solution folder.")
+app.add_typer(list_app,
+              name="list",
+              help="List modules or other resources.")
 
 
 # Create a new solution
 @app.command()
 def new(folder_name,
         output_dir: Annotated[Optional[str], typer.Argument()] = ".",
-        template_path=None,
+        template_path: Annotated[str,
+                                 typer.Option("--template", "-t")] = None,
         answers=None):
   """
   Create a new solution folder.
@@ -69,65 +80,41 @@ def new(folder_name,
   output_path = output_path.replace("//", "/")
   answers_dict = get_answers_dict(answers)
 
-  if not template_path:
-    current_dir = os.path.dirname(__file__)
-    template_path = f"{current_dir}/../template_root"
-
   if os.path.exists(output_path):
     raise FileExistsError(f"Solution folder {output_path} already exists.")
 
-  # Copy template_root to destination.
-  print(f"template_path = {template_path}")
-  answers_dict["folder_name"] = folder_name
-  run_copy(template_path, output_path, data=answers_dict, unsafe=True)
-
-  print_success(f"Complete. New solution folder created at {output_path}.\n")
-
-
-# Update a solution
-@app.command()
-def update(solution_path: Annotated[Optional[str],
-                                    typer.Argument()] = ".",
-           template_path=None):
-  """
-  Update an existing solution folder.
-  """
-  if not solution_path:
-    solution_path = "."
-
-  validate_solution_folder(solution_path)
-
-  if not os.path.exists(solution_path):
-    raise FileNotFoundError(f"Solution folder {solution_path} does not exist.")
-
-  confirm_msg = "This will update the current solution folder. Continue?"
-  if solution_path != ".":
-    confirm_msg = "This will update solution root folder at " \
-        "'{solution_path}'. Continue?"
-  confirm(confirm_msg)
-
-  # Copy template_root to destination, excluding skaffold.yaml.
-  orig_sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
-
-  if not template_path:
+  # If the component name is a Git URL, use the URL as-is in copier.
+  if template_path:
+    if check_git_url(template_path):
+      template_path = clone_remote_git(template_path)
+    else:
+      if not os.path.exists(template_path):
+        raise FileNotFoundError(
+            f"Template '{template_path}' does not exist.")
+  else:
     current_dir = os.path.dirname(__file__)
     template_path = f"{current_dir}/../template_root"
-    if not os.path.exists(template_path):
-      raise FileNotFoundError(f"{template_path} does not exist.")
 
-  worker = run_copy(template_path,
-                    solution_path,
-                    exclude=["skaffold.yaml", "sb.yaml"],
-                    unsafe=True)
-  answers = worker.answers.last
+  # Copy template_root to destination.
+  print(f"template_path: {template_path}\n")
+  answers_dict["folder_name"] = folder_name
+  verify_copier_file(template_path)
+  worker = run_copy(template_path, output_path, data=answers_dict, unsafe=True)
 
-  # Restore some fields in sb.yaml.
-  sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
-  sb_yaml["created_at"] = orig_sb_yaml["created_at"]
-  sb_yaml["components"] = orig_sb_yaml["components"]
-  write_yaml(f"{solution_path}/sb.yaml", sb_yaml)
+  # Get answer values inputed by user.
+  answers = worker.answers.user
 
-  print_success(f"Complete. Solution folder updated at {solution_path}.\n")
+  # Optionally set up base terraform
+  if answers.get("terraform_base"):
+    run_module_template("terraform_base", dest_dir=output_path, data=answers)
+
+  # Optionally set up CI/CD
+  cicd_type = answers.get("cicd")
+  if cicd_type:
+    run_module_template(f"cicd_{cicd_type}",
+                        dest_dir=output_path, data=answers)
+
+  print_success(f"Complete. New solution folder created at {output_path}.\n")
 
 
 # Build and deploy services.
@@ -139,6 +126,7 @@ def deploy(
           "--component", "-c", "-m")] = None,
         namespace: Annotated[str, typer.Option("--namespace", "-n")] = None,
         dev: Optional[bool] = False,
+        dev_cleanup: Optional[bool] = False,
         solution_path: Annotated[Optional[str],
                                  typer.Argument()] = ".",
         skaffold_args: Optional[str] = "",
@@ -151,9 +139,15 @@ def deploy(
   sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
   global_variables = sb_yaml.get("global_variables", {})
 
-  # Get project_id from sb.yaml.
+  # Get global vars from sb.yaml.
   project_id = global_variables.get("project_id", None)
+  region = global_variables.get("region", None)
   assert project_id, "project_id is not set in 'global_variables' in sb.yaml."
+  assert region, "region is not set in 'global_variables' in sb.yaml."
+
+  # Check default deploy method.
+  if not profile:
+    profile = global_variables.get("deploy_method", "cloudrun")
 
   # Check namespace
   deploy_config = sb_yaml.get("deploy", {})
@@ -172,17 +166,13 @@ def deploy(
     sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
     global_variables = sb_yaml.get("global_variables", {})
 
-  # Get terraform_gke component settings.
-  terraform_gke = sb_yaml["components"].get("terraform_gke")
-  env_vars = {
-    "PROJECT_ID": project_id,
-  }
-  commands = []
+  # Set gcloud to project_id
+  set_gcloud_project(project_id)
+  create_default_artifact_repo(project_id, "default", "us")
 
-  if component:
-    component_flag = f" -m {component} "
-  else:
-    component_flag = ""
+  commands = []
+  component_flag = f" -m {component} " if component else ""
+  no_prune_flag = " --no-prune " if not dev_cleanup else ""
 
   port_forwarding_flag = ""
   if dev:
@@ -191,9 +181,11 @@ def deploy(
   else:
     skaffold_command = "skaffold run"
 
+  # Get terraform_gke component settings.
+  terraform_gke = sb_yaml["components"].get("terraform_gke")
   if terraform_gke:
     cluster_name = terraform_gke["cluster_name"]
-    region = terraform_gke["gcp_region"]
+    region = terraform_gke["region"]
     commands.append(
         f"gcloud container clusters get-credentials {cluster_name} --region {region} --project {project_id}"
     )
@@ -201,10 +193,16 @@ def deploy(
   # Set Skaffold namespace
   namespace_flag = f"-n {namespace}" if namespace else ""
 
+  # Set default repo to Artifact Registry
+  artifact_region = "us"  # TODO: Add support to other multi-regions.
+  default_repo = f"\"{artifact_region}-docker.pkg.dev/{project_id}/default\""
+
   # Add skaffold command.
-  commands.append(
-      f"{skaffold_command} -p {profile} {component_flag} {namespace_flag} --default-repo=\"gcr.io/{project_id}\" {skaffold_args} {port_forwarding_flag}"
-  )
+  command_str = \
+      f"{skaffold_command} -p {profile} {component_flag} {namespace_flag}" \
+      f" --default-repo={default_repo}" \
+      f" {skaffold_args} {port_forwarding_flag} {no_prune_flag}"
+  commands.append(re.sub(" +", " ", command_str.strip()))
   print("This will build and deploy all services using the command "
         "and variables below:")
   for command in commands:
@@ -214,11 +212,14 @@ def deploy(
   print("\nnamespace:")
   print_success(f"- {namespace_str}")
 
-  print("\nenvironment variables:")
-  env_var_str = ""
-  for key, value in env_vars.items():
-    print_success(f"- {key}={value}")
-    env_var_str += f"{key}={value} "
+  # print("\nenvironment variables:")
+  # env_vars = {
+  #   "PROJECT_ID": project_id,
+  # }
+  # env_var_str = ""
+  # for key, value in env_vars.items():
+  #   print_success(f"- {key}={value}")
+  #   env_var_str += f"{key}={value} "
 
   print("\nglobal_variables in sb.yaml:")
   for key, value in sb_yaml.get("global_variables", {}).items():
@@ -226,14 +227,15 @@ def deploy(
 
   print()
   confirm("This may take a few minutes. Continue?", skip=yes)
+  set_gcloud_project(project_id)
+  exec_shell("gcloud auth configure-docker us-docker.pkg.dev",
+             working_dir=solution_path)
 
   for command in commands:
-    exec_shell(env_var_str + command, working_dir=solution_path)
-
-# Destory deployment.
+    exec_shell(command, working_dir=solution_path)
 
 
-@app.command()
+@ app.command()
 def delete(profile: str = DEFAULT_DEPLOY_PROFILE,
            component: Annotated[str, typer.Option(
              "--component", "-c", "-m")] = None,
@@ -249,28 +251,86 @@ def delete(profile: str = DEFAULT_DEPLOY_PROFILE,
   sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
   global_variables = sb_yaml.get("global_variables", {})
 
-  # Get project_id from sb.yaml.
+  # Get global vars from sb.yaml.
   project_id = global_variables.get("project_id", None)
   assert project_id, "project_id is not set in 'global_variables' in sb.yaml."
 
-  if component:
-    component_flag = f" -m {component} "
-  else:
-    component_flag = ""
+  component_flag = f" -m {component} " if component else ""
 
   # Set Skaffold namespace
   namespace_flag = f"-n {namespace}" if namespace else ""
 
-  command = f"skaffold delete -p {profile} {component_flag} {namespace_flag} --default-repo=\"gcr.io/{project_id}\""
+  # Set default repo to Artifact Registry
+  artifact_region = "us"  # TODO: Add support to other multi-regions.
+  default_repo = f"\"{artifact_region}-docker.pkg.dev/{project_id}\""
+
+  command = f"skaffold delete -p {profile} {component_flag} {namespace_flag}" \
+            f" --default-repo={default_repo}"
   print("This will DELETE deployed services using the command below:")
   print_highlight(command)
   confirm("\nThis may take a few minutes. Continue?", default=False, skip=yes)
   exec_shell(command, working_dir=solution_path)
 
 
-@app.command()
-def info(solution_path: Annotated[Optional[str],
-                                  typer.Argument()] = "."):
+@ app.command()
+def init(solution_path: Annotated[Optional[str], typer.Argument()] = "."):
+  """
+  Initialize sb.yaml for a solution folder.
+  """
+  components = None
+
+  if os.path.isfile(solution_path + "/sb.yaml"):
+    confirm(f"This will override the existing 'sb.yaml' in '{solution_path}'. "
+            "Continue?", default=False)
+    sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
+    components = sb_yaml.get("components", {})
+
+  else:
+    confirm(f"This will create a new 'sb.yaml' in '{solution_path}'. "
+            "Continue?", default=True)
+
+  template_path = get_package_dir() + "/helper_modules/init_sb_yaml"
+  run_copy(template_path, solution_path, data={}, unsafe=True)
+
+  # Restore components.
+  if components:
+    sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
+    sb_yaml["components"] = components
+    write_yaml(f"{solution_path}/sb.yaml", sb_yaml)
+
+  print_success("Complete.")
+
+
+@ app.command("set-var")
+def set_variable(
+    var_name,
+    var_value,
+    solution_path: Annotated[Optional[str], typer.Argument()] = "."
+):
+  "Set a specific variable."
+  set_var(var_name, var_value, solution_path)
+  update_global_var(var_name, var_value, solution_path)
+
+
+@ app.command("set-project")
+def set_project(
+        project_id,
+        solution_path: Annotated[Optional[str], typer.Argument()] = ".",):
+  "Set 'project_id' and 'project_number' variables."
+  confirm(
+      f"This will set project_id to '{project_id}' and update project_number. "
+      + "Continue?")
+
+  set_var("project_id", project_id, solution_path)
+  update_global_var("project_id", project_id, solution_path)
+
+  project_number = get_project_number(project_id)
+  set_var("project_number", project_number, solution_path)
+  update_global_var("project_number", project_number, solution_path)
+
+
+@ app.command()
+def info(solution_path: Annotated[Optional[str], typer.Argument()] = "."):
   """
   Print info from ./sb.yaml.
   """
@@ -284,10 +344,10 @@ def info(solution_path: Annotated[Optional[str],
   print()
 
   # List of installed components.
-  components_list()
+  list_components()
 
 
-@app.command()
+@ app.command()
 def version():
   """
   Print version.
@@ -310,8 +370,8 @@ def main():
       print_error(f"Error: {e}")
     else:
       print_error(f"Error: {e}")
-      print("\nTip: try adding 'SB_DEBUG=true' to your environment variables to get more details.")
-      print("E.g. SB_DEBUG=true sb new your-project\n")
+      print("\nTip: try adding 'DEBUG=true' to your environment variables to get more details.")
+      print("E.g. DEBUG=true sb new your-project\n")
 
     return -1
 

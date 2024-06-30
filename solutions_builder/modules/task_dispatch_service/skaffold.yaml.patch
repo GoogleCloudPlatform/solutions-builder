@@ -1,4 +1,0 @@
-requires:
-  - configs:
-      - {{component_name}}
-    path: ./components/{{component_name}}

@@ -1,0 +1,55 @@
+# questions
+project_name:
+  type: str
+  help: What is your project name? (Spaces are allowed.)
+  default: "{{folder_name}}"
+
+project_id:
+  type: str
+  help: What is your Google Cloud project ID?
+  default: "{{folder_name}}"
+
+project_number:
+  type: str
+  help: What is your Google Cloud project number? (Leave it as empty if the project hasn't created yet.)
+  default: "{{project_id | get_project_number}}"
+
+region:
+  type: str
+  help: Which Google Cloud region?
+  default: us-central1
+
+deploy_method:
+  type: str
+  help: Default deploy method? (cloudrun or gke)
+  choices:
+    Cloud Run: cloudrun
+    GKE: gke
+  default: cloudrun
+
+has_common:
+  type: bool
+  help: Include a common container image for shared libraries, data models, utils, etc?
+  default: false
+
+common_path:
+  type: str
+  help: Destination path of this common container?
+  default: "common"
+  when: "{{has_common}}"
+
+_templates_suffix: ""
+
+_exclude:
+  - "copier.yaml"
+  - ".terraform*"
+  - ".tmp"
+  - ".venv"
+  - ".pytest_cache"
+  - "__pycache__"
+  - "*-debug.log"
+
+_jinja_extensions:
+  - jinja2_time.TimeExtension
+  - copier_templates_extensions.TemplateExtensionLoader
+  - ../../copier_extensions/sb_helpers.py:SolutionsTemplateHelpersExtension

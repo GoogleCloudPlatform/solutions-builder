@@ -13,36 +13,48 @@ project_id:
   help: What is your Google Cloud project ID?
   default: "{{folder_name}}"
 
-project_number:
-  type: str
-  help: What is your Google Cloud project number? (Leave it as empty if the project hasn't created yet.)
-  default: "{{project_id | get_project_number}}"
+# project_number:
+#   type: str
+#   help: What is your Google Cloud project number? (Leave it as empty if the project hasn't created yet.)
+#   default: "{{project_id | get_project_number}}"
 
-gcp_region:
+region:
   type: str
   help: Which Google Cloud region?
   default: us-central1
 
-use_jump_host:
-  type: bool
-  help: Use a jump-host for running terraform foundations?
-  default: true
-
-jump_host_zone:
+default_deploy_method:
   type: str
-  help: Google Cloud zone for creating the jump host?
-  default: us-central1-a
-  when: "{{use_jump_host}}"
+  help: Default deploy method? (cloudrun or gke)
+  choices:
+    Cloud Run: cloudrun
+    GKE: gke
+  default: cloudrun
 
 has_common:
   type: bool
   help: Include a common container image for shared libraries, data models, utils, etc?
+  default: false
+
+common_path:
+  type: str
+  help: Destination path of this common container?
+  default: "common"
+  when: "{{has_common}}"
+
+terraform_base:
+  type: bool
+  help: Add Terraform IaC (Infrastructure as Code)?
   default: true
 
-terraform_backend_gcs:
-  type: bool
-  help: Use GCS Bucket for Terraform backend?
-  default: true
+# cicd:
+#   type: str
+#   help: Set up a CI/CD?
+#   choices:
+#     None: ""
+#     GitHub: github
+#     GitLab: gitlab
+#   default: ""
 
 advanced_settings:
   type: bool

@@ -4,8 +4,11 @@ components: {}
 created_at: "{% now 'utc', '%Y-%b-%d %H:%M:%S UTC' %}"
 modified_at: "{% now 'utc', '%Y-%b-%d %H:%M:%S UTC' %}"
 deploy:
+  deploy_method: {{deploy_method}} # sb-var:deploy_method
   require_namespace: false
+cicd: {{cicd}}
 global_variables:
-  project_number: {{project_number}} # sb-var:project_number
   project_id: {{project_id}} # sb-var:project_id
   project_name: {{project_name}} # sb-var:project_name
+  project_number: {{project_number}} # sb-var:project_number
+  region: {{region}} # sb-var:region

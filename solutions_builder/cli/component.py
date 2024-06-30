@@ -15,51 +15,54 @@ limitations under the License.
 """
 
 import typer
+import git
+import shutil
 from typing import Optional
 from typing_extensions import Annotated
 from copier import run_copy
 from .cli_utils import *
 
-component_app = typer.Typer()
 
+def add_component(component_name,
+                  template_path: Annotated[str,
+                                           typer.Option("--template", "-t")] = None,
+                  solution_path: Annotated[Optional[str],
+                                           typer.Argument()] = ".",
+                  destination_path: Annotated[str,
+                                              typer.Option("--dest", "-d")] = "components",
+                  yes: Optional[bool] = False,
+                  answers=None):
+  # validate_solution_folder(solution_path)
 
-@component_app.command()
-def add(component_name,
-        component_template: Annotated[str,
-                                      typer.Option("--template", "-t")] = None,
-        solution_path: Annotated[Optional[str],
-                                 typer.Argument()] = ".",
-        yes: Optional[bool] = False,
-        answers=None):
-  validate_solution_folder(solution_path)
-
-  # Check if component_template is empty.
-  if not component_template:
-    print("Missing component_template. Please set --template or -t with one "
-          " of the component templates:")
+  # Check if template_path is empty.
+  if not template_path:
+    print("Please set --template or -t to a local folder path, "
+          "remote git repo, or one of modules below:")
     list_component_templates()
     return
 
   confirm(
       f"This will add component '{component_name}' to "
-      f"{solution_path}/components folder. Continue?",
+      f"'{destination_path}' folder. Continue?",
       skip=yes)
 
   answers_dict = get_answers_dict(answers)
+  answers_dict["destination_path"] = destination_path
   process_component("add",
-                    component_name, component_template,
-                    solution_path, data=answers_dict)
+                    component_name, template_path,
+                    solution_path, destination_path, data=answers_dict)
   print_success(
       f"Complete. Component {component_name} added to solution at {solution_path}\n"
   )
 
 
-@component_app.command()
-def update(component_name,
-           solution_path: Annotated[Optional[str],
-                                    typer.Argument()] = ".",
-           yes: Optional[bool] = False,
-           answers=None):
+def update_component(component_name,
+                     solution_path: Annotated[Optional[str],
+                                              typer.Argument()] = ".",
+                     destination_path: Annotated[str,
+                                                 typer.Option("--dest", "-d")] = "components",
+                     yes: Optional[bool] = False,
+                     answers=None):
   validate_solution_folder(solution_path)
   confirm(
       f"This will update '{component_name}' in "
@@ -69,40 +72,50 @@ def update(component_name,
   sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
   components = sb_yaml.get("components", {})
   component_dict = components.get(component_name, {})
-  component_template = component_dict.get("component_template")
+  template_path = component_dict.get("template_path")
 
   answers_dict = get_answers_dict(answers)
   process_component("update",
                     component_name,
-                    component_template,
+                    template_path,
                     solution_path,
+                    destination_path,
                     data=answers_dict,
                     use_existing_answers=yes)
   print_success(
-      f"Complete. Component {component_name} updated to solution at {solution_path}\n"
+      f"Complete. Component {component_name} updated.\n"
   )
 
 
-def update_component_to_root_yaml(component_name, answers, solution_path):
+def update_root_yaml(component_name, answers, solution_path):
   # Update Solution root YAML with new component name.
   solution_yaml_dict = read_yaml(f"{solution_path}/sb.yaml") or {}
-  components = solution_yaml_dict["components"] or {}
+  components = solution_yaml_dict.get("components", {})
   components[component_name] = answers
   solution_yaml_dict["components"] = components
+
+  # Update global variables.
+  global_variables = solution_yaml_dict.get("global_variables", {})
+  if "project_id" in answers:
+    global_variables["project_id"] = answers["project_id"]
+  if "project_number" in answers:
+    global_variables["project_number"] = answers["project_number"]
+  solution_yaml_dict["global_variables"] = global_variables
+
   write_yaml(f"{solution_path}/sb.yaml", solution_yaml_dict)
 
 
 def process_component(method,
                       component_name,
-                      component_template,
+                      template_path,
                       solution_path,
+                      destination_path,
                       data={},
                       use_existing_answers=False):
 
-  assert component_template, f"component_template is not empty."
-
-  destination_path = "."
+  assert template_path, "template_path is empty."
   current_dir = os.path.dirname(__file__)
+  template_dir = f"{current_dir}/../modules/{template_path}"
   answers_file = None
 
   # Get basic info from root sb.yaml.
@@ -111,9 +124,8 @@ def process_component(method,
   component_answers = {}
 
   # If the component name is a Git URL, use the URL as-is in copier.
-  if check_git_url(component_template):
-    print(f"Loading component from remote Git URL: {component_template}")
-    template_path = component_template
+  if check_git_url(template_path):
+    template_dir = clone_remote_git(template_path)
 
   # Otherwise, try to locate the component in local modules/ folder.
   else:
@@ -124,9 +136,8 @@ def process_component(method,
             f"Component {component_name} is not defined in the root yaml 'sb.yaml' file."
         )
       component_answers = sb_yaml["components"][component_name]
-      component_template = component_answers["component_template"]
-      template_path = f"{current_dir}/../modules/{component_template}"
-      answers_file = f".st/module_answers/{component_name}.yaml"
+      template_path = component_answers["template_path"]
+      answers_file = f".sb/module_answers/{component_name}.yaml"
 
       # Use existing answer values in data, skipping the prompt.
       if use_existing_answers:
@@ -135,26 +146,32 @@ def process_component(method,
           data[key] = value
 
     else:
-      template_path = f"{current_dir}/../modules/{component_template}"
-      if not os.path.exists(template_path):
-        raise FileNotFoundError(
-            f"Component {component_template} does not exist in modules folder.")
+      template_dir = f"{current_dir}/../modules/{template_path}"
+      if not os.path.exists(template_dir):
+        # If module does not exist in the solutions-builder package,
+        # try loading from the local file path.
+        template_dir = template_path
+        if not os.path.exists(template_dir):
+          raise FileNotFoundError(
+              f"Component '{template_path}' does not exist.")
 
-    # Get destination_path defined in copier.yaml
-    copier_dict = get_copier_yaml(template_path)
-    destination_path = solution_path + "/" + copier_dict["_metadata"].get(
-        "destination_path")
-    destination_path = destination_path.replace("//", "/")
+    # # Get destination_path defined in copier.yaml
+    # destination_path = solution_path + "/" + copier_dict["_metadata"].get(
+    #     "destination_path")
+    # destination_path = destination_path.replace("//", "/")
 
+  copier_dict = get_copier_yaml(template_dir)
   data["component_name"] = component_name
-  data["project_id"] = global_variables["project_id"]
-  data["project_number"] = global_variables["project_number"]
+  if "project_id" in data:
+    data["project_id"] = global_variables.get("project_id")
+  if "project_number" in data:
+    data["project_number"] = global_variables.get("project_number")
   data["solution_path"] = solution_path
   data["template_path"] = template_path
 
   # Run copier with data.
-  worker = run_copy(template_path,
-                    destination_path,
+  worker = run_copy(template_dir,
+                    ".",
                     data=data,
                     answers_file=answers_file,
                     unsafe=True)
@@ -165,44 +182,41 @@ def process_component(method,
   for key, value in worker.answers.user_defaults.items():
     if key not in answers:
       answers[key] = component_answers.get(key) or value
-  answers["component_template"] = component_template
-  answers["destination_path"] = copier_dict["_metadata"].get(
-      "destination_path")
+  answers["template_path"] = template_path
+  answers["destination_path"] = destination_path
 
   # Update component's answer back to sb.yaml.
-  update_component_to_root_yaml(answers["component_name"], answers,
-                                solution_path)
+  update_root_yaml(component_name,
+                   answers,
+                   solution_path)
 
   # Patch skaffold.yaml
   for patch_file in copier_dict.get("_patch", []):
     print(f"Patching {patch_file}...")
     new_yaml = patch_yaml(f"{solution_path}/{patch_file}",
                           f"{solution_path}/{patch_file}.patch")
-    new_yaml["requires"] = dedupe(new_yaml["requires"])
+    new_yaml["requires"] = dedupe(new_yaml.get("requires"))
     write_yaml(f"{solution_path}/{patch_file}", new_yaml)
     os.remove(f"{solution_path}/{patch_file}.patch")
 
   print()
 
-# List installed components.
 
-
-@component_app.command()
-def list(solution_path: Annotated[Optional[str], typer.Argument()] = "."):
+def list_components(solution_path: Annotated[Optional[str], typer.Argument()] = "."):
+  """List installed components."""
   sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
   components = sb_yaml.get("components", [])
   print("Installed components:")
   for component_name, properties in components.items():
     typer.echo(
         typer.style(f"- {component_name} ", fg=typer.colors.WHITE, bold=True) +
-        typer.style(f"(from: {properties['component_template']})",
+        typer.style(f"(template: {properties['template_path']})",
                     fg=typer.colors.BLACK,
                     bold=True))
   print()
 
 
 # List available components to add.
-@component_app.command()
-def available():
+def list_available_components():
   print("Available components to add:\n")
   list_component_templates()

@@ -1,0 +1,76 @@
+_metadata:
+  module_name: streamlit_app
+  version: 1.0.0
+  destination_path: .
+
+destination_path:
+  type: str
+  help: Destination path?
+  default: "{{destination_path}}"
+
+component_name:
+  type: str
+  help: What is the name of this component (snake_case)?
+  default: my_service
+  validator: "{% if not component_name %}Required{% endif %}"
+
+resource_name:
+  type: str
+  help: Resource name (lower case, alphanumeric characters, '-')?
+  default: "{{ component_name | to_kebab }}"
+  validator: "{% if not resource_name %}Required{% endif %}"
+
+streamlit_app_name:
+  type: str
+  help: What is the name of the Streamlit app?
+  default: "Streamlit App"
+
+region:
+  type: str
+  help: Which Google Cloud region?
+  default: us-central1
+
+sample_api:
+  type: bool
+  help: Add a sample API?
+  default: true
+
+depend_on_common:
+  type: bool
+  help: Does this component require the Common image?
+  default: false
+
+deploy_method:
+  type: str
+  help: Default deploy method? (cloudrun or gke)
+  choices:
+    Cloud Run: cloudrun
+    GKE: gke
+  default: cloudrun
+
+# _subdirectory: "{{module_version}}"
+
+_answers_file: ".sb/component_answers/{{component_name}}.yaml"
+
+_templates_suffix: ""
+
+_patch:
+  - "skaffold.yaml"
+
+_exclude:
+  - "README.md"
+  - "copier.yaml"
+  - "copier_extensions"
+  - ".terraform*"
+  - ".tmp"
+  - ".venv"
+  - ".pytest_cache"
+  - "__pycache__"
+  - "*-debug.log"
+  - ".skip"
+
+_jinja_extensions:
+  - jinja2_time.TimeExtension
+  - jinja2_strcase.StrcaseExtension
+  - copier_templates_extensions.TemplateExtensionLoader
+  - ../../copier_extensions/sb_helpers.py:SolutionsTemplateHelpersExtension
