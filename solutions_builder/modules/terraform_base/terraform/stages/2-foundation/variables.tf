@@ -30,16 +30,6 @@ variable "project_id" {
   }
 }
 
-variable "project_number" {
-  type        = string
-  description = "GCP Project Number"
-
-  validation {
-    condition     = length(var.project_number) > 0
-    error_message = "The project_number value must be an non-empty string."
-  }
-}
-
 variable "region" {
   type        = string
   description = "Default GCP region"

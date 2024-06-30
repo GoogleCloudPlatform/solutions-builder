@@ -2,16 +2,31 @@
 
 > This codebase is generated from https://github.com/GoogleCloudPlatform/solutions-builder
 
-## Prerequisites
+## Overview
 
-## Prerequisite
+### Context & Background
 
-| Tool       | Required Version | Installation                                         |
-| ---------- | ---------------- | ---------------------------------------------------- |
-| Python     | &gt;= 3.11       |                                                      |
-| gcloud CLI | Latest           | https://cloud.google.com/sdk/docs/install            |
-| Terraform  | &gt;= v1.3.7     | https://developer.hashicorp.com/terraform/downloads  |
-| Skaffold   | &gt;= v2.4.0     | https://skaffold.dev/docs/install/#standalone-binary |
+TODO: Fill in context & background
+
+### Objectives & Scope
+
+TODO: Fill in objectives & scope
+
+### Project Timeline
+
+TODO: Fill in Project Timeline
+
+## Setup
+
+### Prerequisite
+
+| Tool              | Required Version | Installation                                             |
+| ----------------- | ---------------- | -------------------------------------------------------- |
+| Python            | &gt;= 3.11       |                                                          |
+| gcloud CLI        | Latest           | https://cloud.google.com/sdk/docs/install                |
+| Terraform         | &gt;= v1.3.7     | https://developer.hashicorp.com/terraform/downloads      |
+| Skaffold          | &gt;= v2.4.0     | https://skaffold.dev/docs/install/#standalone-binary     |
+| solutions-builder | latest           | https://github.com/GoogleCloudPlatform/solutions-builder |
 
 [Optional] For deploying to a GKE cluster, please install the following:
 
@@ -19,103 +34,68 @@
 | --------- | ---------------- | ---------------------------------------------------------- |
 | Kustomize | &gt;= v5.0.0     | https://kubectl.docs.kubernetes.io/installation/kustomize/ |
 
-## Setup
+### Set up a GCP project
 
-### Create a new Google Cloud project
+To start from a brand new GCP project, create a new GCP project and set the billing account:
 
-We'd recommend starting from a brand new GCP project. Create a new GCP project at [https://console.cloud.google.com/projectcreate]
+```
+export PROJECT_ID=my-project-id
+export BILLING_ACCOUNT=$(gcloud alpha billing accounts list --format='value(ACCOUNT_ID)')
+gcloud projects create $PROJECT_ID
+gcloud projects set-billing-account $PROJECT_ID $BILLING_ACCOUNT
+gcloud config set project $PROJECT_ID
 
-### Install Solutions Builder package
+```
+
+### Install Solutions Builder CLI
+
+With `pip`:
 
 ```
 pip install solutions-builder
 ```
 
-### Set up gcloud CLI
+With `pipx`:
 
 ```
-export PROJECT_ID=<my-project-id>
-gcloud config set project $PROJECT_ID
+pip install --user pipx && pipx install solutions-builder
 ```
 
-### Check Org policies (Optional)
-
-Make sure that policies are not enforced (`enforce: false` or `NOT_FOUND`). You must be an organization policy administrator to set a constraint.
-https://console.cloud.google.com/iam-admin/orgpolicies/compute-requireShieldedVm?project=$PROJECT_ID
-https://console.cloud.google.com/iam-admin/orgpolicies/requireOsLogin?project=$PROJECT_ID
+### Initialize the Cloud infrastructure (Terraform)
 
 ```
-gcloud resource-manager org-policies disable-enforce constraints/compute.requireOsLogin --project="${PROJECT_ID}"
-gcloud resource-manager org-policies disable-enforce constraints/compute.requireShieldedVm --project="${PROJECT_ID}"
-gcloud resource-manager org-policies delete constraints/compute.vmExternalIpAccess --project="${PROJECT_ID}"
-gcloud resource-manager org-policies delete constraints/iam.allowedPolicyMemberDomains --project="${PROJECT_ID}"
+sb terraform apply --all
 ```
 
-### Create jump host for the project (Recommended)
-
-Log in to the jump host
-
-```
-sb infra apply 0-jumphost
-export JUMP_HOST_ZONE=$(gcloud compute instances list --format="value(zone)")
-echo Jump host zone is $JUMP_HOST_ZONE
-gcloud compute ssh --zone=$JUMP_HOST_ZONE --tunnel-through-iap jump-host
-```
-
-Startup script for the just host (takes about 5-10 min)
-
-```
-# Verify that startup script has completed
-ls -l /tmp/jumphost_ready
-
-# Look at the output of startup script, in case of errors
-sudo journalctl -u google-startup-scripts.service
-```
-
-Note: For a fresh start, here are the steps to delete/destroy jump host and corresponding resources from project. However, this not clean up any resources that were deployed from the jump host
-
-```
-gcloud compute instances update jump-host --no-deletion-protection --project="${PROJECT_ID}"
-sb infra destroy 0-jumphost
-```
-
-### Continue to Cloud Infra and foundation steps
-
-Initialize the Cloud infra:
-
-```
-gcloud auth login
-gcloud auth application-default login
-export PROJECT_ID=$(gcloud config get project)
-echo PROJECT_ID=$PROJECT_ID
-sb set project-id $PROJECT_ID
-sb infra apply 1-bootstrap
-```
-
-Set up Cloud foundation
-
-```
-sb infra apply 2-foundation
-```
+- This will run `terraform init` commands in all stages folder.
+-
 
 ## Deploy
 
-### Set up each microservice:
+### Deploy all microservices
 
-Follow README files of each microservice to setup:
-
-- TBD
-
-### Deploy all microservices (optionally with Ingress) to GKE cluster:
+Deploy all services to Cloud Run
 
 ```
-sb deploy
+sb deploy -m cloudrun
 ```
+
+- All services are defined in the root `skaffold.yaml`.
+
+Or, deploy all services to a GKE cluster:
+
+```
+sb deploy -m gke
+```
+
+### Other deployment options
+
+For other deployment and scenarios, please see https://github.com/GoogleCloudPlatform/solutions-builder/blob/main/docs/CLI_USAGE.md
+
+## Design
+
+TODO: Fill in your design here.
 
 ## Development
 
-Please refer to [DEVELOPMENT.md](docs/DEVELOPMENT.md) for more details on development and code submission.
-
-## Troubleshoot
-
-Please refer to [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) for any Terraform errors
+TODO: Fill in your development details here.

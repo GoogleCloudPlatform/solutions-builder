@@ -5,9 +5,9 @@ to accelerate your project setup.**
 
 ## TL;DR
 
-Solutions Builder is a boilerplate template for building repeatable
-solutions with the best practices in architecture on Google Cloud, including Cloud Run, GKE
-clusters, Test Automation, CI/CD, etc.
+Solutions Builder is a boilerplate tool for building repeatable solutions with the
+best practices in architecture on Google Cloud, including Cloud Run, GKE clusters,
+Test Automation, CI/CD, etc.
 
 Solutions Builder provides built-in and ready-to-ship modules including:
 
@@ -15,7 +15,7 @@ Solutions Builder provides built-in and ready-to-ship modules including:
 - Modular microservice templates, deployable to Cloud Run or a Kubernetes cluster.
 - Support using templates from remote Git repo (e.g. a private Git repo)
 - Unified deployment using Skaffold.
-- Automatically generated OpenAPI schema with [FastAPI](https://fastapi.tiangolo.com/).
+- Auto-generated OpenAPI schema with [FastAPI](https://fastapi.tiangolo.com/).
 - CI/CD deployment templates.
 
 ## Roadmap
@@ -37,7 +37,7 @@ Please see [Feature Requests in the GitHub issue list](https://github.com/Google
 | --------- | ---------------- | ---------------------------------------------------------- |
 | Kustomize | &gt;= v5.0.0     | https://kubectl.docs.kubernetes.io/installation/kustomize/ |
 
-## Installing Solutions Builder CLI
+## Install Solutions Builder CLI
 
 With `pip`:
 
@@ -75,8 +75,6 @@ This will prompt options and variables:
    my-project-id
 🎤 Create GCP project 'my-project-id'? (yes/no)
    yes
-🎤 What is your Google Cloud project number?
-   12345678
 🎤 Which Google Cloud region?
    us-central1
 🎤 Default deploy method? (cloudrun or gke)

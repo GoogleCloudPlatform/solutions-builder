@@ -1,6 +1,5 @@
-project_id              = "{{project_id}}"     # sb-var:project_id
-project_number          = "{{project_number}}" # sb-var:project_number
-region                  = "{{gcp_region}}"     # sb-var:gcp_region
+project_id              = "{{project_id}}" # sb-var:project_id
+region                  = "{{region}}"     # sb-var:region
 storage_multiregion     = "US"
 vpc_network             = "{{vpc_network}}"
 vpc_subnetwork          = "{{vpc_subnetwork}}"

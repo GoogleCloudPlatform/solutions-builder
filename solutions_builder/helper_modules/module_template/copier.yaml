@@ -35,7 +35,7 @@ _jinja_extensions:
   - jinja2_time.TimeExtension
   - jinja2_strcase.StrcaseExtension
   - copier_templates_extensions.TemplateExtensionLoader
-  - ../copier_extensions/sb_helpers.py:SolutionsTemplateHelpersExtension
+  - ../../copier_extensions/sb_helpers.py:SolutionsTemplateHelpersExtension
 
 _tasks:
   - "mv template_copier.yaml copier.yaml"

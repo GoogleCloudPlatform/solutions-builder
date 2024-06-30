@@ -14,6 +14,8 @@ There are three ways of adding a component:
 - Add a component with a template in local folder
 - Add a component with a template in remote Git repo
 
-## Create a new template (module) from scratch
+## Create a Copier template
 
-## Convert an existing module (terraform or microservice) into a template
+Solutions Builder uses Copier as templates.
+
+To learn how to create a Copier template, see https://copier.readthedocs.io/en/stable/creating/.

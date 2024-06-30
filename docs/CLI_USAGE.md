@@ -349,8 +349,7 @@ And in the `sb.yaml` file in your project root folder:
 global_variables:
   project_id: MY_PROJECT_ID
   project_name: core-solution-services
-  project_number: MY_PROJECT_NUMBER
-  gcp_region: us-central1
+  region: us-central1
 ```
 
 Run the following to apply all these values to existing variables in all files.
@@ -361,17 +360,15 @@ sb vars apply-all
 
 All files with the corresponding anchors will be updated altogether.
 
-### Set up project_id and project_number
+### Set up project_id
 
 ```
-sb set-project <my-project-id>
+sb set-var project_id <my-project-id>
 ```
 
 This will run the following:
 
 - Update all `project_id` values.
-- Retrieve the corresponding project number.
-- Update all `project_number` values.
 
 ## For developer only
 

@@ -40,11 +40,11 @@ Test package upload to Test-PyPI:
 ```
 # Publish
 poetry config repositories.test-pypi https://test.pypi.org/legacy/
-poetry config pypi-token.test-pypi $PYPI_TOKEN
+poetry config pypi-token.test-pypi $TEST_PYPI_TOKEN
 poetry publish -r test-pypi
 
 # Install and test
-python3 -m pip install --index-url https://test.pypi.org/simple/ solutions-builder
+pip install -U --index-url https://test.pypi.org/simple/ solutions-builder
 ```
 
 Publish to official PyPI:

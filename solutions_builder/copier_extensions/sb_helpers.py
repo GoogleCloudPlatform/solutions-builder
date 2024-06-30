@@ -56,6 +56,24 @@ def exec_gcloud_output(command, working_dir="."):
   return output
 
 
+def check_project_exist(project_id):
+  """
+    Check if a GCP project exists.
+    """
+  print_indent(f"(Retrieving project info for {project_id}...)")
+  command = f"gcloud projects describe {project_id} --format='value(projectId)'"
+  try:
+    project_id = exec_gcloud_output(command).strip()
+    if not project_id:
+      return False
+    return True
+
+  except subprocess.CalledProcessError:
+    print_indent(
+      f"Unable to retrieve '{project_id}'. GCP project may not exist yet.\n")
+    return False
+
+
 def get_project_number(project_id):
   """
     Get GCP project number based on project_id using gcloud command.
@@ -67,21 +85,12 @@ def get_project_number(project_id):
     if not project_number.isnumeric():
       print_indent(f"project_number is not numeric: {project_number}")
       return ""
+    return project_number
 
-  except subprocess.CalledProcessError as e:
-    print_indent(f"{e.output}")
+  except subprocess.CalledProcessError:
     print_indent(
       f"Unable to retrieve project_number for '{project_id}'. GCP project may not exist yet.\n")
-
-    if ask_to_create_gcp_project(project_id):
-      project_number = exec_gcloud_output(command).strip()
-      if project_number.isnumeric():
-        return project_number
-
     return ""
-
-  else:
-    return project_number
 
 
 def get_current_gcloud_auth_account():
@@ -89,8 +98,8 @@ def get_current_gcloud_auth_account():
   return exec_gcloud_output(command).strip()
 
 
-def get_current_billing_account():
-  command = "gcloud alpha billing accounts list --format='value(ACCOUNT_ID)'"
+def get_current_billing_account(project_id):
+  command = "gcloud alpha billing accounts list --format='value(ACCOUNT_ID)' --quiet"
   return exec_gcloud_output(command).strip()
 
 
@@ -120,13 +129,12 @@ def ask_to_create_gcp_project(project_id):
   yes = {"yes", "y", "ye"}
   no = {"no", "n"}
 
-  while True:
-    choice = input(f"🎤 Create GCP project '{project_id}'? (yes/no) ").lower()
-    if choice in yes:
-      create_gcp_project(project_id)
-      return True
-    elif choice in no:
-      return False
+  choice = input(f"🎤 Create GCP project '{project_id}'? (y/n) ").lower()
+  if choice.lower() in yes:
+    create_gcp_project(project_id)
+    return True
+  elif choice.lower() in no:
+    return False
 
 
 def get_existing_firestore(project_id):
@@ -237,6 +245,8 @@ class SolutionsTemplateHelpersExtension(Extension):
   def __init__(self, environment):
     super().__init__(environment)
     environment.filters["get_project_number"] = get_project_number
+    environment.filters["check_project_exist"] = check_project_exist
+    environment.filters["get_current_billing_account"] = get_current_billing_account
     environment.filters["get_existing_firestore"] = get_existing_firestore
     environment.filters["get_current_user"] = get_current_user
     environment.filters["get_cloud_run_services"] = get_cloud_run_services

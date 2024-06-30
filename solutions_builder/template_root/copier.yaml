@@ -13,12 +13,12 @@ project_id:
   help: What is your Google Cloud project ID?
   default: "{{folder_name}}"
 
-project_number:
-  type: str
-  help: What is your Google Cloud project number? (Leave it as empty if the project hasn't created yet.)
-  default: "{{project_id | get_project_number}}"
+# project_number:
+#   type: str
+#   help: What is your Google Cloud project number? (Leave it as empty if the project hasn't created yet.)
+#   default: "{{project_id | get_project_number}}"
 
-gcp_region:
+region:
   type: str
   help: Which Google Cloud region?
   default: us-central1
@@ -44,17 +44,17 @@ common_path:
 
 terraform_base:
   type: bool
-  help: Add Terraform foundation?
+  help: Add Terraform IaC (Infrastructure as Code)?
   default: true
 
-cicd:
-  type: str
-  help: Set up a CI/CD?
-  choices:
-    None: ""
-    GitHub: github
-    # GitLab: gitlab
-  default: ""
+# cicd:
+#   type: str
+#   help: Set up a CI/CD?
+#   choices:
+#     None: ""
+#     GitHub: github
+#     GitLab: gitlab
+#   default: ""
 
 advanced_settings:
   type: bool

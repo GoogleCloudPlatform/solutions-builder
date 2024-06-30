@@ -44,7 +44,7 @@ resource "google_project_iam_member" "cloudbuild-sa-iam" {
   depends_on = [module.project_services]
   for_each   = toset(local.roles_for_default_sa)
   role       = each.key
-  member     = "serviceAccount:${var.project_number}@cloudbuild.gserviceaccount.com"
+  member     = "serviceAccount:${data.google_project.project.number}@cloudbuild.gserviceaccount.com"
   project    = var.project_id
 }
 
@@ -52,7 +52,7 @@ resource "google_project_iam_member" "default-compute-sa-iam" {
   depends_on = [module.project_services]
   for_each   = toset(local.roles_for_default_sa)
   role       = each.key
-  member     = "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+  member     = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
   project    = var.project_id
 }
 
@@ -63,5 +63,5 @@ module "deployment_service_account" {
   name         = "deployment"
   display_name = "deployment"
   description  = "Service Account for deployment"
-  roles        = roles_for_default_sa
+  roles        = local.roles_for_default_sa
 }

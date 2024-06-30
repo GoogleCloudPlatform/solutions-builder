@@ -27,8 +27,18 @@ locals {
   ]
 }
 
+{% if terraform_create_project == true -%}
+resource "google_project" "gcp_project" {
+  name       = var.project_id
+  project_id = var.project_id
+  billing_account = var.billing_account_id
+}
+{%- endif %}
+
 # basic APIs needed to get project up and running
 resource "google_project_service" "project-apis" {
+  depends_on = [google_project.gcp_project]
+
   for_each                   = toset(local.services)
   project                    = var.project_id
   service                    = each.value
@@ -43,6 +53,8 @@ resource "time_sleep" "wait_60_seconds" {
 
 {% if terraform_backend_gcs == true -%}
 resource "google_storage_bucket" "tfstate-bucket" {
+  depends_on = [google_project_service.project-apis]
+
   name                        = "${var.project_id}-tfstate"
   location                    = var.storage_multiregion
   project                     = var.project_id

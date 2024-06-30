@@ -20,7 +20,7 @@
 
 
 project_id                 = "{{project_id}}" # sb-var:project_id
-region                     = "{{gcp_region}}" # sb-var:gcp_region
+region                     = "{{region}}"     # sb-var:region
 task_pubsub_topic          = "{{task_pubsub_topic}}"
 message_retention_duration = "{{pubsub_message_retention_duration}}"
 eventarc_trigger_name      = "{{eventarc_trigger_name}}"

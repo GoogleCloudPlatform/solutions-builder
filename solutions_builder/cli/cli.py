@@ -141,13 +141,13 @@ def deploy(
 
   # Get global vars from sb.yaml.
   project_id = global_variables.get("project_id", None)
-  gcp_region = global_variables.get("gcp_region", None)
+  region = global_variables.get("region", None)
   assert project_id, "project_id is not set in 'global_variables' in sb.yaml."
-  assert gcp_region, "gcp_region is not set in 'global_variables' in sb.yaml."
+  assert region, "region is not set in 'global_variables' in sb.yaml."
 
   # Check default deploy method.
   if not profile:
-    profile = global_variables.get("default_deploy_method", "cloudrun")
+    profile = global_variables.get("deploy_method", "cloudrun")
 
   # Check namespace
   deploy_config = sb_yaml.get("deploy", {})
@@ -166,10 +166,11 @@ def deploy(
     sb_yaml = read_yaml(f"{solution_path}/sb.yaml")
     global_variables = sb_yaml.get("global_variables", {})
 
-  # Get terraform_gke component settings.
-  terraform_gke = sb_yaml["components"].get("terraform_gke")
-  commands = []
+  # Set gcloud to project_id
+  set_gcloud_project(project_id)
+  create_default_artifact_repo(project_id, "default", "us")
 
+  commands = []
   component_flag = f" -m {component} " if component else ""
   no_prune_flag = " --no-prune " if not dev_cleanup else ""
 
@@ -180,9 +181,11 @@ def deploy(
   else:
     skaffold_command = "skaffold run"
 
+  # Get terraform_gke component settings.
+  terraform_gke = sb_yaml["components"].get("terraform_gke")
   if terraform_gke:
     cluster_name = terraform_gke["cluster_name"]
-    region = terraform_gke["gcp_region"]
+    region = terraform_gke["region"]
     commands.append(
         f"gcloud container clusters get-credentials {cluster_name} --region {region} --project {project_id}"
     )

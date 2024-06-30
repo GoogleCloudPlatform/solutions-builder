@@ -1,12 +1,12 @@
-resource "null_resource" "build_container" {
+resource "null_resource" "{{component_name}}_build_container" {
   provisioner "local-exec" {
-    command = "cd ../../../ && skaffold run -p cloudrun -m test_service --default-repo=us-docker.pkg.dev/${var.project_id}/default"
+    command = "cd ../../../ && skaffold build -p cloudrun -m {{component_name}} --default-repo=us-docker.pkg.dev/${var.project_id}/default"
   }
 }
 
-resource "google_cloud_run_v2_service" "test_service" {
+resource "google_cloud_run_v2_service" "{{component_name}}" {
   depends_on = [
-    null_resource.build_container
+    null_resource.{{component_name}}_build_container
   ]
   name     = "{{resource_name}}"
   project  = var.project_id

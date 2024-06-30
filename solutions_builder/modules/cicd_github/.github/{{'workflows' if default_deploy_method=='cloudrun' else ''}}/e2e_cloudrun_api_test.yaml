@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
 env:
   PROJECT_ID: {{project_id}}
-  REGION: {{gcp_region}}
+  REGION: {{region}}
   ENV: dev
 
 # copier:raw {% raw %}

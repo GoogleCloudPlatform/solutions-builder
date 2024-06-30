@@ -14,12 +14,12 @@ project_number:
   help: What is your Google Cloud project number? (Leave it as empty if the project hasn't created yet.)
   default: "{{project_id | get_project_number}}"
 
-gcp_region:
+region:
   type: str
   help: Which Google Cloud region?
   default: us-central1
 
-default_deploy_method:
+deploy_method:
   type: str
   help: Default deploy method? (cloudrun or gke)
   choices:

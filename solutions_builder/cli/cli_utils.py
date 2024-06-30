@@ -132,10 +132,11 @@ def exec_output(command, working_dir=".", stop_when_error=True):
                                    cwd=working_dir,
                                    shell=True,
                                    text=True)
+  print(output)
   return output
 
 
-def exec_gcloud_output(command, working_dir="."):
+def exec_gcloud_output(command, working_dir=".", hide_error=False):
   output = ""
   try:
     output = exec_output(command)
@@ -204,7 +205,7 @@ def get_project_number(project_id):
     """
   print(f"(Retrieving project number for {project_id}...)")
   command = f"gcloud projects describe {project_id} --format='value(projectNumber)'"
-  project_number = exec_gcloud_output(command)
+  project_number = exec_gcloud_output(command, hide_error=True)
   project_number = project_number.strip()
   if not project_number.isnumeric():
     return ""
@@ -218,7 +219,18 @@ def set_gcloud_project(project_id):
     """
   if project_id:
     print(f"(Setting gcloud to project '{project_id}'...)")
-    f"gcloud config set project {project_id}"
+    exec_gcloud_output(f"gcloud config set project {project_id} --quiet")
+
+
+def create_default_artifact_repo(project_id, repo_name, region="us"):
+  """
+    Create default artifact repository.
+  """
+  print(f"(Creating default artifact repository...)")
+  exec_gcloud_output(f"gcloud config set project {project_id}")
+  exec_gcloud_output(
+    f"gcloud artifacts repositories create {repo_name}"
+    f" --repository-format=docker --location={region}")
 
 
 def set_debug_flag(is_debug):

@@ -14,7 +14,7 @@ terraform_stage_name:
   help: Terraform stage name?
   default: 3-gke-autopilot
 
-gcp_region:
+region:
   type: str
   help: Which Google Cloud region?
   default: us-central1

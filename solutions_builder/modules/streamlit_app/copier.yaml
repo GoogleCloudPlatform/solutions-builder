@@ -1,13 +1,7 @@
 _metadata:
-  module_name: blank_service
+  module_name: streamlit_app
   version: 1.0.0
   destination_path: .
-
-# questions
-# module_version:
-#   type: str
-#   help: Module version (Default to 1.0)?
-#   default: "1.0"
 
 destination_path:
   type: str
@@ -26,15 +20,20 @@ resource_name:
   default: "{{ component_name | to_kebab }}"
   validator: "{% if not resource_name %}Required{% endif %}"
 
-service_path:
+streamlit_app_name:
   type: str
-  help: "The relative path used in ingress as http://my-domain/[service_path]"
-  default: "{{resource_name}}"
+  help: What is the name of the Streamlit app?
+  default: "Streamlit App"
 
 region:
   type: str
   help: Which Google Cloud region?
   default: us-central1
+
+sample_api:
+  type: bool
+  help: Add a sample API?
+  default: true
 
 depend_on_common:
   type: bool

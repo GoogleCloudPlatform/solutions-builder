@@ -4,14 +4,14 @@
 
 ### Refactor CLI structure
 
-- Changed `sb component add` to `sb new component ...` commands.
+- Changed `sb component add` to `sb add component ...` commands.
 - Added `sb terraform *` as alias of `sb infra *` commands.
   - `sb terraform apply --all` to init an apply all terraform stages.
 - Added `sb init` to restore `sb.yaml`.
-- Added `sb replay` to re-install components according to a `sb.yaml` file.
 - Added template path supports for local folder and remote Git repo.
 - Updated `sb new` to support external path.
 - Updated template_root to load other modules dynamically.
+- Updated with Artifact Registry from Container Registry.
 
 ### Misc updates
 

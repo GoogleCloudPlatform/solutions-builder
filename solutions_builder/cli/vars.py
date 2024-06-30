@@ -38,7 +38,7 @@ def replace_var_to_template(var_name, text, custom_template=False):
   # match_pattern matches lines with sb-var anchor in the comment at the end.
   # For example:
   #   PROJECT_ID: 12345          # sb-var:project_id
-  #   GCP_REGION = "us-central1" # sb-var:gcp_region
+  #   region = "us-central1" # sb-var:region
   match_pattern = f"(\\s*[\":=-][ ]*)(-[ ]*)?([\"\']?)([^\"^\'^\r^\n]*)([\"\']?)\\s*#\\s*sb-var:{var_name}"
 
   # output_pattern prints the jinja2 template for the specific variable name.

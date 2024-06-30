@@ -22,11 +22,11 @@ service_path:
   help: "The relative path used in ingress as http://my-domain/[service_path]"
   default: "{{resource_name}}"
 
-gcp_region:
+region:
   type: str
   help: Which Google Cloud region?
   default: us-central1
-  validator: "{% if not gcp_region %}Required{% endif %}"
+  validator: "{% if not region %}Required{% endif %}"
 
 task_pubsub_topic:
   type: str

@@ -83,7 +83,7 @@ profiles:
         before:
         - host:
             dir: .
-            command: ["sh", "-c", "gcloud container clusters get-credentials 'main-cluster' --region '{{gcp_region}}' --project '{{project_id}}'"]
+            command: ["sh", "-c", "gcloud container clusters get-credentials 'main-cluster' --region '{{region}}' --project '{{project_id}}'"]
 
 # Profile for GKE Horizontal Pod Autoscaler.
 # This profile only works with `gke` profile together.
@@ -107,7 +107,7 @@ profiles:
   deploy:
     cloudrun:
       projectid: {{project_id}}
-      region: {{gcp_region}}
+      region: {{region}}
   portForward:
   - resourceType: service
     resourceName: {{resource_name}}

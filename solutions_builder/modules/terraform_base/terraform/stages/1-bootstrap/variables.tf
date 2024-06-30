@@ -25,6 +25,26 @@ variable "project_id" {
   }
 }
 
+variable "billing_account_id" {
+  type        = string
+  description = "Billing Account ID"
+
+  validation {
+    condition     = length(var.billing_account_id) > 0
+    error_message = "The billing_account_id value must be an non-empty string."
+  }
+}
+
+variable "region" {
+  type        = string
+  description = "Default GCP region"
+
+  validation {
+    condition     = length(var.region) > 0
+    error_message = "The region value must be an non-empty string."
+  }
+}
+
 variable "storage_multiregion" {
   type        = string
   description = "Storage Region or Multiregion"

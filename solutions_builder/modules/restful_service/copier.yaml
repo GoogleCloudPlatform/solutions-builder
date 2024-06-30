@@ -21,7 +21,7 @@ service_path:
   help: "The relative path used in ingress as http://my-domain/[service_path]"
   default: "{{resource_name}}"
 
-gcp_region:
+region:
   type: str
   help: Which Google Cloud region?
   default: us-central1

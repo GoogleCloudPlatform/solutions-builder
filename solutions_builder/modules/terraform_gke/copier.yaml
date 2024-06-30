@@ -19,7 +19,7 @@ resource_name:
   help: Ingress resource name (lower case, alphanumeric characters, '-')?
   default: gke-ingress
 
-gcp_region:
+region:
   type: str
   help: Which Google Cloud region?
   default: us-central1
