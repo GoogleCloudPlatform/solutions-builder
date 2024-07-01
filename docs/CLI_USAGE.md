@@ -1,31 +1,5 @@
 # Solutions Builder CLI Usage
 
-## Concept
-
-### Copier-based templates
-
-- All templates and modules are created using [Copier](https://copier.readthedocs.io/en/stable/).
-- Each template folder (e.g. in /modules) has a `copier.yaml` to define questions and variables.
-
-### sb.yaml
-
-- Once creating a solution folder, it will create a `sb.yaml` file in the solution folder.
-- When adding a new component/module, it will add the configuration for the component to the `sb.yaml` file.
-
-### Components / Modules
-
-- A component (or module) can be a Terraform module, a microservice (Python) module, or a frontend module.
-- A template must have a `copier.yaml` to define variables
-  and other configurations. You can still proceed if there's no
-  `copier.yaml` in the template folder, but it will just copy
-  entire folder without any modification.
-
-There are three ways of adding a component:
-
-- Add a component with built-in module template
-- Add a component with a template in local folder
-- Add a component with a template in remote Git repo
-
 ## Installation
 
 With `pip`:
@@ -109,10 +83,11 @@ sb new my-solution-folder -t /path/to/my-template-folder
 To create a new solution folder with a template a remote Git repo, add `-t <path/to/remote.git/folder>` like below:
 
 ```
-sb new my-solution-folder -t git@github.com:GoogleCloudPlatform/solutions-builder.git/modules/blank_service
+sb new my-solution-folder -t git@github.com:GoogleCloudPlatform/solutions-builder.git/modules/root_template
 ```
 
 - This will download the Git repo automatically, and use the "subfolder" as the template path.
+- In this case, the repo path is `git@github.com:GoogleCloudPlatform/solutions-builder.git`, with the subfolder `modules/root_template`.
 
 ## Add a component
 
@@ -202,6 +177,8 @@ To create a component using a template from a remote Git repo:
 sb add component my_service -t git@github.com:GoogleCloudPlatform/solutions-builder.git/modules/blank_service
 ```
 
+- The git repo path is `git@github.com:GoogleCloudPlatform/solutions-builder.git` with the subfolder `modules/blank_service`.
+
 ## Terraform modules
 
 If you create a solution folder using `sb new <my-solution-folder>`, it will create the Terraform base module for you.
@@ -234,16 +211,39 @@ sb terraform apply --all
 - Optionally, add `--yes` to the end of the command to skip the confirmation prompt. E.g.:
 
   ```
+  # This will init and apply all Terraform stages.
   sb terraform apply --all --yes
   ```
 
-- This will init and apply all Terraform stages.
+What's behind the `sb terraform apply` command?
+
+- `sb terraform` runs `terraform` command behind the scene. The `sb terraform apply --all`
+  runs the following steps:
+  ```
+  cd $SOLUTION_FOLDER/terraform/stages/1-bootstrap
+  terraform init
+  terraform apply -auto-approve
+  cd $SOLUTION_FOLDER/terraform/stages/2-foundation
+  terraform init
+  terraform apply -auto-approve
+  cd $SOLUTION_FOLDER/terraform/stages/3-application
+  terraform init
+  terraform apply -auto-approve
+  ```
 
 ### Apply a specific Terraform stage
 
 ```
 sb terraform apploy 3-application
 ```
+
+- Alternatively, this command is equivalent to the following steps:
+
+  ```
+  cd $SOLUTION_FOLDER/terraform/stages/3-application
+  terraform init
+  terraform apply -auto-approve
+  ```
 
 ### Destroy a specific Terraform stage
 

@@ -16,13 +16,11 @@ Test Automation, CI/CD, etc, with built-in modules including:
 - Modules and templates based on [Copier](https://copier.readthedocs.io/en/stable/).
 - CI/CD deployment templates.
 
-## Build a solution by adding modules
+### Build a solution by adding modules
 
-Solutions Builder is designed with modules and templates. When creating a new solution
-folder, it starts from a base template with a terraform foundation and project skeleton.
-Then, you can start adding modules into this solution folder.
+Solutions Builder is designed with modules and templates. It starts from a base project skeleton, then start adding modules into this solution folder.
 
-For example, these are examples of creating a new solution:
+For example, here are the steps when creating a new solution:
 
 - Start a new solution with a base (skeleton) code from a "root template"
 - Add a Cloud Run microservice with APIs
@@ -31,36 +29,41 @@ For example, these are examples of creating a new solution:
 
 ![alt text](docs/assets/adding_modules.png)
 
-Check out the [Quick Start](#quick-start---create-a-new-solution) section to create a sample solution.
+See [Quick Start](#quick-start---create-a-new-solution) section to create a sample solution.
+
+### Concepts and Design Details
+
+- See [Overview](docs/OVERVIEW.md) for overall concepts and design details.
 
 ## Prerequisite
 
-| Tool       | Required Version | Installation                                         |
-| ---------- | ---------------- | ---------------------------------------------------- |
-| Python     | &gt;= 3.11       |                                                      |
-| gcloud CLI | Latest           | https://cloud.google.com/sdk/docs/install            |
-| Terraform  | &gt;= v1.3.7     | https://developer.hashicorp.com/terraform/downloads  |
-| Skaffold   | &gt;= v2.4.0     | https://skaffold.dev/docs/install/#standalone-binary |
+Required dependencies:
 
-[Optional] For deploying to a GKE cluster, please install the following:
+- Python (3.10 or later)
+- [gcloud CLI](https://cloud.google.com/sdk/docs/install) (Latest)
+- [Terraform](https://www.terraform.io/) (v1.4.0 or later)
+- [Skaffold](https://skaffold.dev/docs/install/#standalone-binary) (v2.4.0 or later)
 
-| Tool      | Required Version | Installation                                               |
-| --------- | ---------------- | ---------------------------------------------------------- |
-| Kustomize | &gt;= v5.0.0     | https://kubectl.docs.kubernetes.io/installation/kustomize/ |
+Optional dependencies for GKE cluster deployment:
 
-Install all packages:
+- [Kustomize](https://kubectl.docs.kubernetes.io/installation/kustomize) (v5.0.1 or later)
 
-Mac:
+Install dependencies with package managers:
 
-```
-brew install gcloud terraform skaffold
-```
+- Mac:
 
-Windows:
+  ```
+  brew install gcloud terraform skaffold
+  ```
 
-```
-choco install gcloud terraform skaffold
-```
+- Windows:
+
+  ```
+  choco install gcloud terraform skaffold
+  ```
+
+- Others
+  - Google Cloud Shell - See [docs/guides/cloudshell.md](docs/guides/cloudshell.md)
 
 ## Install Solutions Builder CLI
 
@@ -131,7 +134,11 @@ Copying from template
 Complete. New solution folder created at ./my-solution-folder.
 ```
 
-Add a Sample Cloud Run microservice using `blank_service` module template:
+- At this point, you'll see a solution folder created at `./my-solution-folder`, and a `sb.yaml`
+  file with all configuration about this solution folder.
+- See [overview.md](docs/OVERVIEW.md) for more details about `sb.yaml`.
+
+Next, add a Sample Cloud Run microservice using `blank_service` module template:
 
 ```
 cd my-solution-folder

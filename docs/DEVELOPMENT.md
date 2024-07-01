@@ -9,7 +9,7 @@ git clone https://github.com/GoogleCloudPlatform/solutions-builder
 cd solutions-builder
 ```
 
-To development locally with editable files:
+### To development locally
 
 ```
 poetry lock && poetry install
@@ -35,22 +35,34 @@ poetry build
 
 - If encountering any errors, run `poetry build -vvv` to troubleshoot.
 
-Test package upload to Test-PyPI:
+### Test package upload to Test-PyPI
+
+Publish to Test-PyPI:
 
 ```
-# Publish
 poetry config repositories.test-pypi https://test.pypi.org/legacy/
 poetry config pypi-token.test-pypi $TEST_PYPI_TOKEN
-poetry publish -r test-pypi
+poetry build && poetry publish -r test-pypi
 
-# Install and test
+```
+
+Install and test from Test-PyPI
+
+```
 pip install -U --index-url https://test.pypi.org/simple/ solutions-builder
 ```
 
-Publish to official PyPI:
+### Publish to official PyPI
+
+Publish to PyPI
 
 ```
-# Publish to Test-PyPI
 poetry config pypi-token.pypi $PYPI_TOKEN
-poetry publish
+poetry build && poetry publish
+```
+
+Test with the published package:
+
+```
+pip install -U solutions-builder
 ```

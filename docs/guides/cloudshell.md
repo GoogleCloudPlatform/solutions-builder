@@ -1,42 +1,51 @@
-# Getting started a new Solution using Cloud Shell
+# Using Solutions Builder in Google Cloud Shell
 
-## Create a new Solution
+## Install dependencies
 
-- Create a new GCP project
-- Open up Cloud Shell
-- Run the following in the Cloud Shell
-  ```
-  export PROJECT_ID=$DEVSHELL_PROJECT_ID
-  sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
-  ```
+By default, Google Cloud Shell has the following installed (as of Jun 30th, 2024):
 
-- Ensure `kustomize` version to be >= v5.0.0
-  > kustomize
-  ```
-  cd ~
-  wget https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh
-  sudo rm /usr/local/bin/kustomize
-  sudo ./install_kustomize.sh 5.0.0 /usr/local/bin
-  ```
+- Python 3.10
+- Terraform v1.5.7
+- Skaffold v2.11.1
 
-- Ensure `skaffold` version to be &gt;= v2.4.0
-  ```
-  skaffold version
-  # v2.4.0
-  ```
+Optionally, install the following for GKE cluster deployment.
 
-- Generate skeleton code in a new folder:
-  ```
-  cookiecutter https://github.com/GoogleCloudPlatform/solutions-builder.git
-  ```
-  - Provide the required variables to Cookiecutter prompt.
+```
+wget https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh
+sudo rm /usr/local/bin/kustomize
+sudo ./install_kustomize.sh 5.0.0 /usr/local/bin
+```
 
-- Build and deploy services to CloudRun:
-  ```
-  cd <my-project-id>
+Install Solutions Builder:
 
-  # Choose the microservice deployment options: "gke", "cloudrun" or "gke|cloudrun"
-  export TEMPLATE_FEATURES="cloudrun"
-  source setup/init_env_var.sh
-  bash setup/setup_all.sh
-  ```
+```
+pip3 install -U solutions-builder
+```
+
+- Make sure to run with python3 pip.
+
+## Create a new GCP project
+
+It's highly recommended to create a new GCP project before running Solutions Builder in a Google Cloud Shell.
+
+- To avoid overriding the GCP resources in other existing project.
+
+## Create a new solution
+
+The following steps are the same as running Solutions Builder in your local environment.
+
+```
+sb new my-project-id
+```
+
+Then, add a component with the `blank_service` template:
+
+```
+sb add component test_service -t blank_service
+```
+
+Run the following to apply all terraforms, build and deploy to Cloud Run.
+
+```
+sb terraform apply --all --yes
+```
