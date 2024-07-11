@@ -15,7 +15,7 @@ A generic RESTful API service module that manages one data model in Firestore.
 
 To add a new RESTful service with a specific data model:
 ```
-st components add restful_service
+sb add component [component_name] -t restful_service
 ```
 
 Fill details in the prompt:
@@ -34,7 +34,7 @@ Once completed, it will add a new component folder
 ### Update an existing module in a solution folder
 
 ```
-st components update [component_name]
+sb update component [component_name]
 ```
 
 ## Development
